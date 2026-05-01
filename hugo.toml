@@ -1,0 +1,34 @@
+baseURL = "https://derek.engineer/"
+languageCode = "en-us"
+title = "Derek Welty"
+theme = "PaperMod"
+paginate = 10
+
+[params]
+  author = "Derek Welty"
+  description = "Electrical engineer. Building things."
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+
+  [params.homeInfoParams]
+    Title = "Hi, I'm Derek"
+    Content = "Electrical engineer building projects at the intersection of hardware and software."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/dcwfz9"
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+    weight = 10
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 20

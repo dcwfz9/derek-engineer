@@ -5,4 +5,4 @@ layout: "page"
 
 Electrical engineer. Intermediate Python developer. Building things.
 
-Reach me at [dwelty329@gmail.com](mailto:dwelty329@gmail.com).
+[Resume / personal site](https://derekwelty.com) · [derek@derekwelty.com](mailto:derek@derekwelty.com)

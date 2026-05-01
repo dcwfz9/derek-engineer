@@ -4,7 +4,10 @@
       "Bash(hugo version *)",
       "Bash(brew install *)",
       "Bash(git init *)",
-      "Bash(git submodule *)"
+      "Bash(git submodule *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

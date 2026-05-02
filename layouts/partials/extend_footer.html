@@ -1,6 +1,30 @@
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
-                 window.matchMedia('(prefers-color-scheme: dark)').matches;
-  mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'neutral' });
+
+  function getTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ||
+           window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark' : 'neutral';
+  }
+
+  async function renderMermaid() {
+    mermaid.initialize({ startOnLoad: false, theme: getTheme() });
+    document.querySelectorAll('.mermaid').forEach(el => {
+      el.removeAttribute('data-processed');
+      el.innerHTML = el.getAttribute('data-source') || el.innerHTML;
+    });
+    await mermaid.run();
+  }
+
+  // Store original source before first render
+  document.querySelectorAll('.mermaid').forEach(el => {
+    el.setAttribute('data-source', el.innerHTML);
+  });
+
+  renderMermaid();
+
+  new MutationObserver(renderMermaid).observe(
+    document.documentElement,
+    { attributeFilter: ['data-theme'] }
+  );
 </script>

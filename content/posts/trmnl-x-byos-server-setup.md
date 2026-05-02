@@ -13,12 +13,18 @@ I ordered a [TRMNL X](https://usetrmnl.com/) e-ink display to put on my desk. It
 [This FastAPI BYOS server](https://github.com/rcarmo/python-fastapi-trmnl-server) handles everything: the firmware-facing API, plugin scheduling, image rendering, and a minimal web dashboard. The firmware protocol is simple:
 
 ```mermaid
-flowchart LR
-    F[TRMNL X] -->|GET /api/display| S[FastAPI server]
-    S -->|image_url, filename, refresh_time| F
-    F -->|GET image_url| S
-    S -->|screen.bmp| F
-    F -->|render| E[e-ink panel]
+flowchart TD
+    subgraph mac["Mac mini"]
+        S["FastAPI server"]
+        P["Plugin scheduler"] -->|writes images| G["var/generated/"]
+        G --> S
+    end
+
+    F["TRMNL X\nESP32"] -->|"① GET /api/display"| S
+    S -->|"② image_url + filename"| F
+    F -->|"③ GET image_url"| S
+    S -->|"④ screen.bmp"| F
+    F -->|"⑤ render"| E["e-ink panel"]
 ```
 
 The `filename` alternates between `screen.bmp` and `screen1.bmp` each cycle so the ESP32 knows the image actually changed and doesn't skip the render.

@@ -6,11 +6,7 @@ tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]
 description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
 ---
 
-A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end.
-
-## The goal
-
-Build a Govee/Philips-Hue-Sync style TV backlight that mirrors on-screen colors to an LED strip behind the TV. Source-agnostic (works with anything plugged into HDMI, not just smart TV apps), running fully local, no cloud, no subscription.
+I wanted a TV backlight that works with any source — Apple TV, PS5, anything — not just apps that have native Hue Sync support. Govee and Philips both require their own ecosystems. I wanted something fully local, no cloud, no subscription, no device lock-in. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
 
 ## The architecture
 
@@ -34,7 +30,7 @@ Three things matter about this architecture:
 
 What I had on hand:
 - Raspberry Pi 3 Model B v1.2
-- Auvidea B101 HDMI-to-CSI capture board (TC358743 chip)
+- [Auvidea B101](https://auvidea.eu/b101-hdmi-to-csi-2-bridge-15-pin-fpc/) HDMI-to-CSI capture board (TC358743 chip)
 - CSI ribbon cable
 
 What I ordered:
@@ -322,7 +318,7 @@ bash <(curl -sL https://releases.hyperion-project.org/install)
 
 The current method is direct .deb install from GitHub releases. APT repo also broken for both Trixie and Bookworm (`Release file not found`).
 
-What worked:
+What worked — direct .deb from [Hyperion-NG GitHub releases](https://github.com/hyperion-project/hyperion.ng/releases):
 
 ```bash
 curl -s https://api.github.com/repos/hyperion-project/hyperion.ng/releases/latest | grep "browser_download_url"

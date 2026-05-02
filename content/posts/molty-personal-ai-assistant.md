@@ -12,7 +12,7 @@ So I built Molty.
 
 ## Architecture
 
-Molty runs on [OpenClaw](https://openclaw.ai) — a hosted agent platform that handles the gateway infrastructure: Telegram integration, Claude API routing, session management, the VPS. I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
+Molty runs on [OpenClaw](https://openclaw.ai) — a hosted agent platform that handles the gateway infrastructure: Telegram integration, Claude API routing, session management, and the VPS (hosted on Hostinger). I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
 
 ```mermaid
 flowchart LR
@@ -38,6 +38,14 @@ Four layers:
 **Refs** (`refs/`) — domain-specific files loaded on demand. Career context, fitness data, finance targets. Not loaded every session — only pulled in when the relevant topic comes up. Keeps the context window lean.
 
 **USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time.
+
+## Dream Pass
+
+The memory maintenance happens via a scheduled cron job called the Dream Pass — runs overnight while I'm not active. It reads through the recent daily notes, distills anything significant into `MEMORY.md`, prunes what's stale, and flags open loops to surface when I'm back.
+
+The name is intentional. It's the closest thing to REM sleep the system has — consolidating short-term logs into long-term context so sessions don't start with a week of raw notes to catch up on. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
+
+It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless).
 
 ## Heartbeat
 

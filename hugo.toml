@@ -1,6 +1,6 @@
 baseURL = "https://derek.engineer/"
 languageCode = "en-us"
-title = "Derek Welty"
+title = "derek.engineer"
 theme = "PaperMod"
 paginate = 10
 
@@ -9,17 +9,19 @@ paginate = 10
 
 [params]
   author = "Derek Welty"
-  description = "Electrical engineer. Building things."
+  description = "A build log by Derek Welty — electronics, home automation, software tools, and whatever else needed documenting."
+  keywords = ["home assistant", "raspberry pi", "electronics", "home lab", "python", "hugo", "embedded", "DIY", "derek welty"]
   defaultTheme = "auto"
   ShowReadingTime = true
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
   ShowToc = true
+  env = "production"
 
   [params.homeInfoParams]
     Title = "Hi, I'm Derek"
-    Content = "Electrical engineer building projects at the intersection of hardware and software."
+    Content = "Electrical engineer with a software habit. Hardware, home automation, and tooling — documented here so future-me can remember, and in case it saves you the same late night."
 
   [[params.socialIcons]]
     name = "github"
@@ -31,12 +33,13 @@ paginate = 10
     name = "Posts"
     url = "/posts/"
     weight = 10
-  [[menu.main]]
-    identifier = "archive"
-    name = "Archive"
-    url = "/archive/"
-    weight = 15
-  [[menu.main]]
+  # archive hidden until more posts — re-add when ready
+  # [[menu.main]]
+  #   identifier = "archive"
+  #   name = "Archive"
+  #   url = "/archive/"
+  #   weight = 15
+[[menu.main]]
     identifier = "tags"
     name = "Tags"
     url = "/tags/"

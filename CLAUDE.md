@@ -52,6 +52,7 @@ Write the way Derek writes: direct, technical, no fluff. Document what actually 
 ## Known TODOs
 
 - **Mermaid dark/light toggle**: diagram doesn't re-render when toggling theme after page load. MutationObserver is wired but not working — likely a timing or SVG restore issue. Low priority.
+- **Archive nav link**: hidden until more posts exist. Re-add by uncommenting the `[[menu.main]]` block in `hugo.toml`.
 
 ## Preview locally
 

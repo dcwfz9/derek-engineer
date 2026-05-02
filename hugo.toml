@@ -18,6 +18,7 @@ paginate = 10
   ShowCodeCopyButtons = true
   ShowToc = true
   env = "production"
+  images = ["/og-default.png"]
 
   [params.homeInfoParams]
     Title = "Hi, I'm Derek"

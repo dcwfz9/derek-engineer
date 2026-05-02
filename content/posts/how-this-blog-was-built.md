@@ -1,6 +1,6 @@
 ---
 title: "How This Blog Was Built (and Who's Writing It)"
-date: 2026-05-01
+date: 2026-05-16
 draft: true
 tags: ["hugo", "netlify", "claude-code", "meta"]
 description: "Setting up a Hugo blog with PaperMod, deploying via Netlify, and wiring up Claude Code as the publishing agent."

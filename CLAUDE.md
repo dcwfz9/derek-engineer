@@ -49,6 +49,10 @@ Rules:
 
 Write the way Derek writes: direct, technical, no fluff. Document what actually happened — what worked, what didn't, and why. Reader is a technical peer, not a beginner.
 
+## Known TODOs
+
+- **Mermaid dark/light toggle**: diagram doesn't re-render when toggling theme after page load. MutationObserver is wired but not working — likely a timing or SVG restore issue. Low priority.
+
 ## Preview locally
 
 ```bash

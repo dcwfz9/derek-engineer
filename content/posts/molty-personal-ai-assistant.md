@@ -41,7 +41,7 @@ Four layers:
 
 **USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time. The north star line at the bottom of the file:
 
-> *Rich days, not just impressive resumes.*
+> *Is he preserving a dead option because it's prestigious, or because it's alive?*
 
 ## Dream Pass
 
@@ -49,9 +49,9 @@ The memory maintenance happens via a scheduled cron job called the Dream Pass �
 
 The name is intentional. It's the closest thing to REM sleep the system has — consolidating short-term logs into long-term context so sessions don't start with a week of raw notes to catch up on. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
 
-It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). The instruction in `HEARTBEAT.md` is three words:
+It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). The closest description of what it's actually doing comes from `SOUL.md`:
 
-> *Do NOT message Derek. Silent pass.*
+> *More like a friend who's been thinking about your stuff and says "hey, I noticed something."*
 
 ## Heartbeat
 

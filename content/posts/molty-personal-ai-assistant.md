@@ -12,7 +12,7 @@ So I built Molty.
 
 ## Architecture
 
-Molty runs on [OpenClaw](https://openclaw.ai) — a hosted agent platform that handles the gateway infrastructure: Telegram integration, Claude API routing, session management, and the VPS (hosted on Hostinger). I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
+Molty runs on [OpenClaw](https://openclaw.ai) — a hosted agent platform that handles the gateway infrastructure: Telegram integration, LLM API routing, session management, and the VPS (hosted on Hostinger). I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
 
 ```mermaid
 flowchart LR

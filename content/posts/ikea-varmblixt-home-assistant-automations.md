@@ -6,28 +6,25 @@ tags: ["home-assistant", "zigbee", "home-lab"]
 description: "Turning the IKEA Varmblixt donut lamp into a context-aware status light with weather reactions, cycling alerts, door alerts, and three color scripts."
 ---
 
-The IKEA Varmblixt is a $30 RGB+white Zigbee pendant. It pairs directly to ZHA in Home Assistant, has smooth color transitions, and a wide enough color gamut to be useful as a status indicator. I turned it into an ambient display for my apartment — weather during the day, a sunset script at night, a cycling green light at 6:30am, and a solid red door alarm when I forget to close the front door.
+I wanted a passive ambient display that tells me something useful without picking up my phone — weather at a glance during the day, a wind-down mode at night, green at 6:30am if it's worth cycling to work. The IKEA Varmblixt is $30, Zigbee-native, and pairs directly to ZHA without an IKEA hub.
 
-## Hardware
+## Pairing
 
-- **IKEA Varmblixt** ($30 at IKEA) — RGB+white, Zigbee
-- Pairs over ZHA (no hub, no IKEA Dirigera needed)
-- Entity: `light.led_light0x07c2_varmblixt_table_wall_lamp`
+Not obvious. There's no reset button. To enter pairing mode, power-cycle the lamp 12 times in rapid succession — plug, unplug, plug, unplug... It flashes white 3–4 times when it's ready. A smart plug makes this way easier than fumbling with the physical outlet. [Source](https://www.reddit.com/r/homeassistant/comments/1rnhn78/new_ikea_varmblixt/)
 
-Pairing is not obvious. There's no reset button. To enter pairing mode, power-cycle the lamp 12 times in rapid succession — plug, unplug, plug, unplug... The lamp flashes white 3–4 times when it's ready. A smart plug makes this way easier than doing it by hand with the physical outlet. [Source](https://www.reddit.com/r/homeassistant/comments/1rnhn78/new_ikea_varmblixt/)
+Entity after pairing: `light.led_light0x07c2_varmblixt_table_wall_lamp`
 
 ## Scripts
 
-Three color scripts live in `scripts.yaml`. All use `mode: restart` so calling a new script immediately cancels the previous one without any cleanup logic.
+Three color scripts in `scripts.yaml`. All use `mode: restart` — calling a new one immediately kills whatever's running, no cleanup needed.
 
 ### cotton_candy_sunset
 
-The default sunset mode. Slow amber drift, 45-second crossfades between two warm tones. Runs continuously until midnight.
+The default after sunset. Two warm amber tones crossfading on 45-second transitions. Runs until midnight.
 
 ```yaml
 cotton_candy_sunset:
   alias: Cotton Candy Sunset
-  description: Slow dreamy fade between sunset amber and warm magenta — default sunset mode
   sequence:
   - repeat:
       count: 500
@@ -51,14 +48,15 @@ cotton_candy_sunset:
   mode: restart
 ```
 
+The `count: 500` at this pace is ~14 hours — long enough to cover any night. The midnight automation kills it before the loop ends.
+
 ### color_drift
 
-Six colors, 4-second transitions, 5-second holds. Lava lamp pacing. Good for background ambience when not using the sunset mode.
+Six colors, 4-second transitions, 5-second holds. Lava lamp pacing.
 
 ```yaml
 color_drift:
   alias: Color Drift
-  description: Slow hypnotic color cycle on the donut — lava lamp vibe
   sequence:
   - repeat:
       count: 500
@@ -98,12 +96,11 @@ color_drift:
 
 ### party_pulse
 
-Five colors, 1-second transitions, 1-second holds. For when you want it to be annoying on purpose.
+Five colors, 1-second transitions. For when you want it to be annoying on purpose.
 
 ```yaml
 party_pulse:
   alias: Party Pulse
-  description: Fast energetic color flashes on the donut
   sequence:
   - repeat:
       count: 500
@@ -140,7 +137,9 @@ party_pulse:
 
 ### Weather + Sunset
 
-Triggers on sunrise, sunset, and every hour. After sunset: runs `cotton_candy_sunset`. During the day: sets a static color based on the PirateWeather condition — fog is a cool blue-white, sun is yellow, rain is blue, clouds are light blue.
+Triggers on sunrise, sunset, and every hour. After sunset it kicks off `cotton_candy_sunset`. During the day it sets a static color based on current conditions.
+
+SF has brutal microclimate variance — Met.no (the HA default) was consistently wrong about fog and made the cycling trigger useless. Switched to PirateWeather, which is a free Dark Sky API replacement using the same model. Night and day difference for fog.
 
 ```yaml
 - id: varmblixt_sf_weather_sunset
@@ -191,7 +190,7 @@ Triggers on sunrise, sunset, and every hour. After sunset: runs `cotton_candy_su
 
 ### Cycling Green Light
 
-At 6:30am, checks PirateWeather. If temperature is 55–78°F, wind under 15mph, and no rain or fog, the lamp goes green. It's a go/no-go signal before I check my phone. At 9am a second automation triggers the weather automation to revert it.
+At 6:30am, if it's 55–78°F, wind under 15mph, and no rain or fog, the lamp goes green. Go/no-go without touching a phone. At 9am it reverts to the weather color.
 
 ```yaml
 - id: cycling_weather_green
@@ -232,7 +231,7 @@ At 6:30am, checks PirateWeather. If temperature is 55–78°F, wind under 15mph,
 
 ### Door Open Alert
 
-If the front door stays open for more than 10 seconds, the lamp goes solid red at 100% brightness — visible from anywhere in the apartment. When the door closes, it automatically reverts to the correct mode (sunset script or weather color depending on time of day).
+If the front door stays open more than 10 seconds, the lamp goes solid red at full brightness — visible from anywhere in the apartment. Reverts automatically when the door closes.
 
 ```yaml
 - id: door_open_light_flash
@@ -287,7 +286,7 @@ If the front door stays open for more than 10 seconds, the lamp goes solid red a
 
 ### Midnight Off
 
-Stops all running scripts and turns the lamp off at midnight. Without this, `cotton_candy_sunset` runs indefinitely on its 500-iteration loop.
+Stops all running scripts and kills the lamp at midnight.
 
 ```yaml
 - id: '1758620017271'
@@ -310,10 +309,4 @@ Stops all running scripts and turns the lamp off at midnight. Without this, `cot
   mode: single
 ```
 
-The explicit Varmblixt entity in the `light.turn_off` call is there because the lamp wasn't reliably included in `light.all_lights` before a full HA restart — turning off `all_lights` alone didn't always catch it.
-
-## Notes
-
-- **PirateWeather** is the weather integration used here. SF has brutal microclimate variance — Met.no (the HA default) was consistently wrong about fog and was useless for the cycling trigger. PirateWeather is a free Dark Sky API replacement that uses the same ML-based model and returns the same condition strings. Night and day difference for anything fog-related. Any weather integration that exposes a `weather.*` entity with standard condition states will work — just swap the entity ID.
-- The `count: 500` in each script is a practical cap. At the slowest pace (cotton candy sunset: ~100 seconds per cycle) that's about 14 hours, more than enough to cover any night. The midnight automation cleans it up before the loop ends anyway.
-- `mode: restart` on scripts means calling `script.turn_on` on one while another is running kills the previous immediately. No extra cleanup needed.
+The lamp is listed explicitly alongside `light.all_lights` because it wasn't reliably included in the group before a full HA restart. Turning off `all_lights` alone didn't always catch it.

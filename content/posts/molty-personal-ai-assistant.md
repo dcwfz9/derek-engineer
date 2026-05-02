@@ -57,9 +57,10 @@ It's one of the more useful design decisions in the system. Without it, `MEMORY.
 
 The thing that made Molty useful beyond a reactive chatbot was the heartbeat — a scheduled loop that fires whether or not I've said anything. It checks the daily note for open threads, surfaces Strava activity from the day before, flags emails worth seeing, and sends a Monday summary of the week's fitness data.
 
-Proactive beats reactive. Most of the value comes from Molty reaching out, not from me asking questions. The weekly life review prompt captures the tone it's supposed to hit:
+Proactive beats reactive. Most of the value comes from Molty reaching out, not from me asking questions. From `HEARTBEAT.md`:
 
-> *Honest, not cheerful. If nothing's drifting, say so.*
+> - Review today's `memory/YYYY-MM-DD.md` for completeness
+> - Distill anything significant into `MEMORY.md`
 
 The cost implication was immediate: running Opus for heartbeats burned through API budget fast. Fixed by running heartbeats on Sonnet unless the content genuinely warrants depth, and explicitly de-escalating before going quiet.
 

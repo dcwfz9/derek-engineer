@@ -1,3 +1,12 @@
 .first-entry {
     min-height: unset;
 }
+
+/* Strip code block styling from mermaid diagrams */
+pre.mermaid {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    overflow: visible;
+}

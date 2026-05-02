@@ -7,19 +7,20 @@
       ? 'dark' : 'neutral';
   }
 
+  // Capture raw source text BEFORE mermaid touches the DOM
+  const sources = new Map();
+  document.querySelectorAll('.mermaid').forEach(el => {
+    sources.set(el, el.textContent);
+  });
+
   async function renderMermaid() {
     mermaid.initialize({ startOnLoad: false, theme: getTheme() });
-    document.querySelectorAll('.mermaid').forEach(el => {
+    sources.forEach((source, el) => {
       el.removeAttribute('data-processed');
-      el.innerHTML = el.getAttribute('data-source') || el.innerHTML;
+      el.textContent = source;
     });
     await mermaid.run();
   }
-
-  // Store original source before first render
-  document.querySelectorAll('.mermaid').forEach(el => {
-    el.setAttribute('data-source', el.innerHTML);
-  });
 
   renderMermaid();
 

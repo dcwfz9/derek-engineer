@@ -20,7 +20,7 @@ flowchart TD
         G --> S
     end
 
-    F["TRMNL X\nESP32"] -->|"① GET /api/display"| S
+    F["TRMNL X"] -->|"① GET /api/display"| S
     S -->|"② image_url + filename"| F
     F -->|"③ GET image_url"| S
     S -->|"④ screen.bmp"| F

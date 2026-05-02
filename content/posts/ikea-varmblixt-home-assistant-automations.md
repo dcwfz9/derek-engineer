@@ -314,6 +314,6 @@ The explicit Varmblixt entity in the `light.turn_off` call is there because the 
 
 ## Notes
 
-- **PirateWeather** is the weather integration used here. It's a free alternative to the deprecated Dark Sky API and returns the same condition strings. Any weather integration that exposes a `weather.*` entity with the standard condition states will work — just swap the entity ID.
+- **PirateWeather** is the weather integration used here. SF has brutal microclimate variance — Met.no (the HA default) was consistently wrong about fog and was useless for the cycling trigger. PirateWeather is a free Dark Sky API replacement that uses the same ML-based model and returns the same condition strings. Night and day difference for anything fog-related. Any weather integration that exposes a `weather.*` entity with standard condition states will work — just swap the entity ID.
 - The `count: 500` in each script is a practical cap. At the slowest pace (cotton candy sunset: ~100 seconds per cycle) that's about 14 hours, more than enough to cover any night. The midnight automation cleans it up before the loop ends anyway.
 - `mode: restart` on scripts means calling `script.turn_on` on one while another is running kills the previous immediately. No extra cleanup needed.

@@ -6,7 +6,7 @@ tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]
 description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
 ---
 
-I wanted a TV backlight that works with any source — Apple TV, PS5, anything — not just apps that have native Hue Sync support. Govee and Philips both require their own ecosystems. I wanted something fully local, no cloud, no subscription, no device lock-in. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
+I kept seeing FancyLEDs sponsorships on YouTube and figured I could build the same thing myself for less, with hardware I already had lying around. The commercial options (Govee, Philips Hue Sync) work fine if you're in their ecosystem, but they only react to content from their own apps — not a standalone Apple TV or PS5. I wanted something source-agnostic, fully local, no subscription. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
 
 ## The architecture
 

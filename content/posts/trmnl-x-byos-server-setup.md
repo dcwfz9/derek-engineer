@@ -1,6 +1,6 @@
 ---
 title: "TRMNL X BYOS: Self-Hosting the Server Before the Device Arrives"
-date: 2026-05-01
+date: 2026-04-23
 draft: false
 tags: ["home-lab", "python", "networking", "home-assistant"]
 description: "Setting up a FastAPI BYOS server for the TRMNL X e-ink display, with local DNS and Caddy reverse proxy, before the hardware even ships."

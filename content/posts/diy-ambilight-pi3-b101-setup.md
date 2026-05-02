@@ -405,12 +405,12 @@ The 5m reel (300 LEDs) gives ~32 LEDs of buffer for cuts and corner gaps. Power 
 
 | Item | Source | Cost |
 |------|--------|------|
-| BTF-Lighting SK6812 RGBW Natural White, 5m, 60 LED/m, IP30 | Amazon B079ZW1265 | ~$45 |
-| HiLetgo ESP32-WROOM-32, 2-pack (USB-C) | Amazon B0718T232Z | ~$15 |
-| ALITOVE 5V 15A 75W PSU (upgraded from 10A for headroom) | Amazon B077PX9V79 | ~$30 |
-| Barrel jack to screw terminal adapters, 5-pack | Amazon B07C61434H | ~$7 |
-| 18 AWG silicone wire kit, red/black 25ft each | Amazon B07G2L6YHS | ~$13 |
-| Electronic components kit (capacitors, resistors) | Amazon B07PBQXQNS | ~$13 |
+| [BTF-Lighting SK6812 RGBW Natural White, 5m, 60 LED/m, IP30](https://www.amazon.com/dp/B079ZW1265) | Amazon | ~$45 |
+| [HiLetgo ESP32-WROOM-32, 2-pack (USB-C)](https://www.amazon.com/dp/B0718T232Z) | Amazon | ~$15 |
+| [ALITOVE 5V 15A 75W PSU (upgraded from 10A for headroom)](https://www.amazon.com/dp/B077PX9V79) | Amazon | ~$30 |
+| [Barrel jack to screw terminal adapters, 5-pack](https://www.amazon.com/dp/B07C61434H) | Amazon | ~$7 |
+| [18 AWG silicone wire kit, red/black 25ft each](https://www.amazon.com/dp/B07G2L6YHS) | Amazon | ~$13 |
+| [Electronic components kit (capacitors, resistors)](https://www.amazon.com/dp/B07PBQXQNS) | Amazon | ~$13 |
 | **Total** | | **~$123** |
 
 Why these specific choices:

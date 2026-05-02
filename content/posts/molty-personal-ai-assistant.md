@@ -12,11 +12,11 @@ So I built Molty.
 
 ## Architecture
 
-The core is simple: a Node.js server on a VPS, a Telegram bot as the interface, and the Claude API doing the heavy lifting. Messages in from Telegram → Claude → response out. The gateway itself isn't clever. Everything interesting is built on top of it.
+Molty runs on [OpenClaw](https://openclaw.ai) — a hosted agent platform that handles the gateway infrastructure: Telegram integration, Claude API routing, session management, the VPS. I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
 
 ```mermaid
 flowchart LR
-    T["Telegram"] -->|"message"| G["Gateway\nNode.js / VPS"]
+    T["Telegram"] -->|"message"| G["OpenClaw\nGateway"]
     G -->|"API call"| C["Claude API"]
     C -->|"response"| G
     G --> T

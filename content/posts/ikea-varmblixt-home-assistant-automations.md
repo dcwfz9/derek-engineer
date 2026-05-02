@@ -139,7 +139,7 @@ party_pulse:
 
 Triggers on sunrise, sunset, and every hour. After sunset it kicks off `cotton_candy_sunset`. During the day it sets a static color based on current conditions.
 
-SF has brutal microclimate variance — Met.no (the HA default) was consistently wrong about fog and made the cycling trigger useless. Switched to PirateWeather, which is a free Dark Sky API replacement using the same model. Night and day difference for fog.
+SF has brutal microclimate variance — Met.no (the HA default) was consistently wrong about fog and made the cycling trigger useless. Switched to PirateWeather, which is a free Dark Sky API replacement using the same model. Night and day difference for fog. Setup docs: [pirateweather.net/en/latest/ha](https://docs.pirateweather.net/en/latest/ha/)
 
 ```yaml
 - id: varmblixt_sf_weather_sunset

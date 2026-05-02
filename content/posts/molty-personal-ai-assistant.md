@@ -31,13 +31,17 @@ The biggest design decision was how to handle memory across sessions. There's no
 
 Four layers:
 
-**Daily notes** (`memory/YYYY-MM-DD.md`) — raw log of what happened. Written as things happen, not summarized at the end. If a session dies before the end-of-day write, whatever wasn't logged is gone.
+**Daily notes** (`memory/YYYY-MM-DD.md`) — raw log of what happened. Written as things happen, not summarized at the end. The rule in `AGENTS.md` is blunt about it:
+
+> *Derek may kill the session at any time. If it's not written, it's gone.*
 
 **Long-term memory** (`MEMORY.md`) — curated context. Career threads, integration states, ongoing projects, preferences. Maintained during heartbeats: review recent daily notes, distill anything significant, prune what's stale.
 
 **Refs** (`refs/`) — domain-specific files loaded on demand. Career context, fitness data, finance targets. Not loaded every session — only pulled in when the relevant topic comes up. Keeps the context window lean.
 
-**USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time.
+**USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time. The north star line at the bottom of the file:
+
+> *Rich days, not just impressive resumes.*
 
 ## Dream Pass
 
@@ -45,13 +49,17 @@ The memory maintenance happens via a scheduled cron job called the Dream Pass �
 
 The name is intentional. It's the closest thing to REM sleep the system has — consolidating short-term logs into long-term context so sessions don't start with a week of raw notes to catch up on. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
 
-It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless).
+It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). The instruction in `HEARTBEAT.md` is three words:
+
+> *Do NOT message Derek. Silent pass.*
 
 ## Heartbeat
 
 The thing that made Molty useful beyond a reactive chatbot was the heartbeat — a scheduled loop that fires whether or not I've said anything. It checks the daily note for open threads, surfaces Strava activity from the day before, flags emails worth seeing, and sends a Monday summary of the week's fitness data.
 
-Proactive beats reactive. Most of the value comes from Molty reaching out, not from me asking questions.
+Proactive beats reactive. Most of the value comes from Molty reaching out, not from me asking questions. The weekly life review prompt captures the tone it's supposed to hit:
+
+> *Honest, not cheerful. If nothing's drifting, say so.*
 
 The cost implication was immediate: running Opus for heartbeats burned through API budget fast. Fixed by running heartbeats on Sonnet unless the content genuinely warrants depth, and explicitly de-escalating before going quiet.
 

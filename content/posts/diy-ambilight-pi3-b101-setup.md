@@ -14,13 +14,14 @@ Build a Govee/Philips-Hue-Sync style TV backlight that mirrors on-screen colors 
 
 ## The architecture
 
-```
-Apple TV (4K) → HDCP-stripping HDMI splitter ─┬→ Samsung TV (4K passthrough)
-                                               └→ Auvidea B101 (1080p) → 
-                                                  Pi 3 (Hyperion-NG) → 
-                                                  Ethernet → 
-                                                  ESP32 (WLED) → 
-                                                  SK6812 LED strip
+```mermaid
+flowchart LR
+    ATV["Apple TV\n4K HDR"] --> SPL["HDMI Splitter\nHDCP strip"]
+    SPL -->|"Out 1\n4K passthrough"| TV["Samsung TV"]
+    SPL -->|"Out 2\n1080p"| B101["Auvidea B101\nCSI capture board"]
+    B101 -->|"CSI ribbon"| PI["Pi 3\nHyperion-NG"]
+    PI -->|"DDP / Ethernet"| ESP["ESP32\nWLED"]
+    ESP --> LED["SK6812\nLED strip"]
 ```
 
 Three things matter about this architecture:
@@ -408,10 +409,9 @@ The 5m reel (300 LEDs) gives ~32 LEDs of buffer for cuts and corner gaps. Power 
 | [BTF-Lighting SK6812 RGBW Natural White, 5m, 60 LED/m, IP30](https://www.amazon.com/dp/B079ZW1265) | Amazon | ~$45 |
 | [HiLetgo ESP32-WROOM-32, 2-pack (USB-C)](https://www.amazon.com/dp/B0718T232Z) | Amazon | ~$15 |
 | [ALITOVE 5V 15A 75W PSU (upgraded from 10A for headroom)](https://www.amazon.com/dp/B077PX9V79) | Amazon | ~$30 |
-| [Barrel jack to screw terminal adapters, 5-pack](https://www.amazon.com/dp/B07C61434H) | Amazon | ~$7 |
+| [Barrel jack to screw terminal adapters, 5-pack](https://www.amazon.com/dp/B07C61434H) | Amazon | $0 (on hand) |
 | [18 AWG silicone wire kit, red/black 25ft each](https://www.amazon.com/dp/B07G2L6YHS) | Amazon | ~$13 |
-| [Electronic components kit (capacitors, resistors)](https://www.amazon.com/dp/B07PBQXQNS) | Amazon | ~$13 |
-| **Total** | | **~$123** |
+| **Total** | | **~$103** |
 
 Why these specific choices:
 - **SK6812 RGBW > WS2812B RGB** — true white channel for bias lighting and skin tones, $10 more

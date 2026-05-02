@@ -23,16 +23,9 @@ Write Markdown → commit → push to GitHub → Netlify builds and deploys → 
 
 ## Why Hugo
 
-I wanted a blog, not a project. That meant:
+I wanted a blog, not a project — no build pipeline to maintain, no CMS to update, no dependencies that rot. Markdown files in a git repo, deploy on push. Hugo does exactly that and nothing else. `hugo server --buildDrafts` spins up a live preview in under a second.
 
-- No frontend build pipeline to maintain
-- Markdown as the writing format
-- Git-backed history
-- Fast local preview
-
-Hugo fits. `hugo server --buildDrafts` spins up a live-reloading local preview in under a second. `hugo` builds the full site in milliseconds. There's nothing to babysit.
-
-PaperMod was the obvious theme choice — minimal, dark mode by default, readable code blocks, and well-maintained. I didn't need a custom design, I needed a sane starting point.
+PaperMod for the theme — minimal, dark mode by default, readable code blocks. I didn't need a custom design, I needed something I could ignore.
 
 ## Netlify setup
 
@@ -47,7 +40,7 @@ The `netlify.toml` pins the Hugo version so the production build matches local:
   HUGO_VERSION = "0.161.1"
 ```
 
-Netlify picks this up automatically. New commit to `main` → deploys. No CI to configure, no Actions YAML, no deploy scripts. It just works.
+Netlify picks this up automatically. New commit to `main` → deploys. No CI to configure, no Actions YAML, no deploy scripts.
 
 Custom domain setup took a bit more than two minutes — here's the actual detail.
 
@@ -100,7 +93,7 @@ Every Hugo project can have a `CLAUDE.md` file that instructs Claude Code how to
 
 The result: when I finish a project, I can describe what I built in a conversation and Dex (my Claude Code instance) writes, formats, and publishes the post. I review it, maybe tweak a line or two, and it's live.
 
-That's how most of the posts on this site were written. I ran the build, described what happened, and Dex turned it into a post.
+That's how most of the posts on this site were written. I built something, described what happened, and it turned into a post.
 
 ## Enhancements added after launch
 
@@ -131,8 +124,8 @@ Every `git push` to `main` triggers a deploy. If you're iterating — pushing sm
 
 The fix is simple: batch changes locally and push once per session. Commit as much as you want, just don't push until you're done with a logical chunk of work.
 
-## What I'd do differently
+## The gotcha
 
-Not much on the stack itself. The one workflow change: push less frequently. Netlify's deploy budget is tight enough on the free tier that each push should count.
+Netlify's free tier gives 300 credits/month, 15 per deploy — 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
 
-The `CLAUDE.md` integration is the one thing I'd add to any similar project immediately. Lowering the activation energy for publishing is the most important factor in whether a blog actually gets posts.
+The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It's what tells the AI how to write and publish posts. Without it, the activation energy to write something up is too high and the blog dies.

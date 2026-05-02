@@ -8,7 +8,7 @@ description: "How I built a personal AI assistant that lives in Telegram, mainta
 
 I was using ChatGPT as a daily driver and it was fine — but it only did anything when I asked it to. No proactive check-ins, no model choice, no way to wire it into my actual files and tools. I wanted something I could actually configure: pick the model, give it direct access to my calendar and fitness data, and have it reach out when something was worth knowing rather than waiting to be asked.
 
-So I built Molty.
+So I built Molty 🦞.
 
 ## Architecture
 

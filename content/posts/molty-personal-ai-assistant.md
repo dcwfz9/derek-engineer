@@ -6,7 +6,7 @@ tags: ["tooling", "home-lab", "ai"]
 description: "How I built a personal AI assistant that lives in Telegram, maintains memory across sessions, and reaches out proactively — and what I'd do differently."
 ---
 
-I was using ChatGPT as a daily driver but kept running into the same wall: every conversation started from zero. No memory of what I was working on, no context about my life, no way to reach out unprompted. It was a tool I had to constantly re-prime before it was useful. I wanted something closer to a co-pilot — one that knew what I was building this week, could flag things without being asked, and was wired into the systems I actually use.
+I was using ChatGPT as a daily driver and it was fine — but it only did anything when I asked it to. No proactive check-ins, no model choice, no way to wire it into my actual files and tools. I wanted something I could actually configure: pick the model, give it direct access to my calendar and fitness data, and have it reach out when something was worth knowing rather than waiting to be asked.
 
 So I built Molty.
 

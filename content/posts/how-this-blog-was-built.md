@@ -123,8 +123,16 @@ ShowToc = true
 
 **Tags in nav** — Already generating `/tags/` pages, just needed a menu entry.
 
+## Netlify credit limits
+
+One gotcha worth knowing: Netlify's free tier gives you **300 credits/month**, and each production deploy costs 15 credits. That's 20 deploys per month.
+
+Every `git push` to `main` triggers a deploy. If you're iterating — pushing small fixes, tweaks, and content changes separately — you'll burn through credits fast. I hit 180/300 in a single session by pushing every change individually.
+
+The fix is simple: batch changes locally and push once per session. Commit as much as you want, just don't push until you're done with a logical chunk of work.
+
 ## What I'd do differently
 
-Nothing significant. This setup is boring in the right way — it doesn't compete for attention. The hard part of a blog is writing, not the infrastructure. Hugo + Netlify + Markdown in GitHub makes that as frictionless as I've found.
+Not much on the stack itself. The one workflow change: push less frequently. Netlify's deploy budget is tight enough on the free tier that each push should count.
 
 The `CLAUDE.md` integration is the one thing I'd add to any similar project immediately. Lowering the activation energy for publishing is the most important factor in whether a blog actually gets posts.

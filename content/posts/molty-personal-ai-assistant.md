@@ -39,9 +39,9 @@ Four layers:
 
 **Refs** (`refs/`) — domain-specific files loaded on demand. Career context, fitness data, finance targets. Not loaded every session — only pulled in when the relevant topic comes up. Keeps the context window lean.
 
-**USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time. The north star line at the bottom of the file:
+**USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time. The file closes with a North Star section:
 
-> *Is he preserving a dead option because it's prestigious, or because it's alive?*
+> Derek is building a life that is technically sharp, emotionally honest, physically alive, socially warm, and strategically free. He wants to become more fully himself while building a life with real depth, real motion, and real choice.
 
 ## Dream Pass
 

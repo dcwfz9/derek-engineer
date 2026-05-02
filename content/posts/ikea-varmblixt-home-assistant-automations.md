@@ -14,7 +14,7 @@ The IKEA Varmblixt is a $30 RGB+white Zigbee pendant. It pairs directly to ZHA i
 - Pairs over ZHA (no hub, no IKEA Dirigera needed)
 - Entity: `light.led_light0x07c2_varmblixt_table_wall_lamp`
 
-Pair it the same as any ZHA device: hold the reset button until it blinks, then add device in the ZHA integration.
+Pairing is not obvious. There's no reset button. To enter pairing mode, power-cycle the lamp 12 times in rapid succession — plug, unplug, plug, unplug... The lamp flashes white 3–4 times when it's ready. A smart plug makes this way easier than doing it by hand with the physical outlet. [Source](https://www.reddit.com/r/homeassistant/comments/1rnhn78/new_ikea_varmblixt/)
 
 ## Scripts
 

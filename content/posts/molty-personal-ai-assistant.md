@@ -1,6 +1,6 @@
 ---
 title: "Designing Molty: A Personal AI That Actually Knows Me"
-date: 2026-05-02
+date: 2026-04-08
 draft: true
 tags: ["tooling", "home-lab", "ai"]
 description: "How I built a personal AI assistant that lives in Telegram, maintains memory across sessions, and reaches out proactively — and what I'd do differently."

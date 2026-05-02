@@ -6,7 +6,7 @@ tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]
 description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
 ---
 
-I saw a FancyLEDs sponsorship on YouTube and figured I could build the same thing myself for less, with hardware I already had. Govee makes something similar but it only works with their own app — useless with an Apple TV or PS5. I wanted something source-agnostic, fully local, no subscription. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
+I saw a FancyLEDs sponsorship on YouTube and figured I could build the same thing myself for less, with hardware I already had. Govee makes something similar but it only works with their own app — useless with an Apple TV or anything else plugged into HDMI. I wanted something source-agnostic, fully local, no subscription. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
 
 ## The architecture
 

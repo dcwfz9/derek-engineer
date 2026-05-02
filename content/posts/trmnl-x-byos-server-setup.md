@@ -21,7 +21,7 @@ flowchart LR
     F -->|render| E["e-ink\npanel"]
 ```
 
-The `filename` alternates between `screen.bmp` and `screen1.bmp` each cycle so the ESP32 knows the image actually changed and doesn't skip the render.
+The `filename` alternates between `screen.bmp` and `screen1.bmp` each cycle so the firmware knows the image actually changed and doesn't skip the render.
 
 ### Plugins
 

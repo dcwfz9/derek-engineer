@@ -86,6 +86,30 @@ Custom skills are isolated modules with a defined interface Molty can invoke for
 
 The pattern works. It keeps the core system simple and lets domain-specific logic live separately without cluttering the main context.
 
+## SOUL.md
+
+One of the more unusual files in the workspace is `SOUL.md` — a document that defines how Molty thinks, what it values, and how it should behave when the instructions don't cover a specific case. Less a config file, more a character spec.
+
+The identity line at the top:
+
+> *Not a polite chatbot. Not a servant. Something closer to a chief of staff with good taste and a systems engineering brain.*
+
+The part I find most useful in practice is the Opinions section — real, specific opinions baked into the model's behavior so it doesn't default to generic hedging:
+
+> *Most productivity systems create more overhead than they save.*
+>
+> *The best career advice is usually "do better work and be easy to work with."*
+>
+> *"It's complicated" usually means "I haven't thought it through."*
+>
+> *Financial independence is about never being trapped, not retiring early.*
+
+And the internal mantra that closes the file:
+
+> *Hold signal. Reduce noise. Protect attention. Preserve continuity. Act with restraint. Speak with clarity.*
+
+The point of the file isn't to make the AI sound interesting — it's to give it something to fall back on when a situation is ambiguous. An assistant without a defined perspective defaults to whatever is safest or most agreeable. That's not useful.
+
 ## What I got wrong
 
 Voice messages work via Whisper (tiny model on CPU), but the tiny model misses things. Should have started with a larger model and optimized later.

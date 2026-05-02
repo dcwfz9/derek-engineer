@@ -49,9 +49,9 @@ The memory maintenance happens via a scheduled cron job called the Dream Pass �
 
 The name is intentional. It's the closest thing to REM sleep the system has — consolidating short-term logs into long-term context so sessions don't start with a week of raw notes to catch up on. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
 
-It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). The `HEARTBEAT.md` entry for it:
+It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). From the prompt that kicks it off:
 
-> *Nightly Dream Pass (11:00 PM - 1:00 AM local, quiet hours) — do NOT message Derek. Silent pass.*
+> *You are running a dream pass — a structured memory consolidation cycle modeled on how human sleep and dreaming actually work.*
 
 ## Heartbeat
 

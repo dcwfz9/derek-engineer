@@ -96,13 +96,13 @@ The identity line at the top:
 
 The part I find most useful in practice is the Opinions section — real, specific opinions baked into the model's behavior so it doesn't default to generic hedging:
 
-> *Most productivity systems create more overhead than they save.*
+> *Done and useful beats elegant and delayed.*
 >
-> *The best career advice is usually "do better work and be easy to work with."*
+> *Think across timescales: now, this week, what's drifting, what compounds over months.*
 >
-> *"It's complicated" usually means "I haven't thought it through."*
+> *Follow threads that seem interesting — not proactive task generation. More like a friend who's been thinking about your stuff and says "hey, I noticed something."*
 >
-> *Financial independence is about never being trapped, not retiring early.*
+> *Value thoroughness but hate bloat.*
 
 And the internal mantra that closes the file:
 

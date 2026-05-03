@@ -72,7 +72,7 @@ The discovery mode is what made me actually trust the tool. The first real test:
 What lands in Telegram every Monday (format — not real upcoming shows):
 
 ```
-🎵 Concert picks — week of May 5
+🎵 Concert picks — week of May 3
 
 🔥 Del Water Gap — Sat, May 10 @ Café Du Nord | $18
    10 liked songs (strong) · favorite venue · walking distance

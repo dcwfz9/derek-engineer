@@ -10,6 +10,21 @@ I kept missing shows I would have gone to — found out after the fact, sold out
 
 So I built it into Molty, my Telegram-based assistant. Every Monday morning it sends me a digest of upcoming shows from SF venues, ranked by how much I actually listen to the artist.
 
+## Spotify API setup
+
+Two scopes, that's it — `user-library-read` and `user-top-read`. No playlist access, no playback, nothing else.
+
+Setup is the standard Spotify OAuth dance: create an app at [developer.spotify.com](https://developer.spotify.com/dashboard), grab the client ID and secret, set the redirect URI to `http://localhost:8888/callback`. Then run the auth script, which spins up a local Express server, prints an authorize URL, waits for the callback, and saves the tokens.
+
+```bash
+node auth.js
+# → Open this URL in your browser: https://accounts.spotify.com/authorize?...
+# → Waiting for callback...
+# ✅ Tokens saved to auth/tokens.json
+```
+
+One thing worth knowing: Spotify refresh tokens don't expire as long as the app stays active and you don't revoke access. So you do this once and it just works — no re-auth loop to deal with.
+
 ## How it works
 
 Three layers:

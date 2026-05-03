@@ -65,6 +65,8 @@ The part I wasn't sure would be useful but turned out to be the best feature. Fo
 
 The idea being: a small venue a 10-minute walk away is worth taking a chance on, even for someone I haven't heard. The Greek Theatre is not.
 
+The discovery mode is what made me actually trust the tool. The first real test: it surfaced Ashes to Amber at Bottom of the Hill — not in my library, but strong genre overlap. I went. Worth it.
+
 ## The weekly digest
 
 What lands in Telegram every Monday:
@@ -82,8 +84,8 @@ What lands in Telegram every Monday:
    10 liked songs · walking distance · $28
 
 ── you might like ──
-✨ Adrianne Lenker — Sat, May 17 @ Café Du Nord | $20
-   strong genre match: indie folk, folk pop · underground · at your favorite venue
+✨ Ashes to Amber — Sat, May 3 @ Bottom of the Hill | $15
+   strong genre match: indie folk, folk pop · underground · closing end of 2026 ⏳
 ```
 
 Artist names link to Spotify, venue names link to tickets. Co-headliners on the same bill get merged into one entry.

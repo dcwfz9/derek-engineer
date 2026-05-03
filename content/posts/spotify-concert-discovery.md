@@ -1,7 +1,7 @@
 ---
 title: "Building a Spotify-Powered Concert Discovery Tool"
 date: 2026-03-29
-draft: true
+draft: false
 tags: ["tooling", "home-lab", "spotify"]
 description: "Scraping SF venue calendars, cross-referencing against my Spotify library, and scoring shows so I stop missing ones I'd actually go to."
 ---

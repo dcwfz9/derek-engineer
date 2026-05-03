@@ -8,8 +8,6 @@ description: "HDMI splitter arrived. Got a clean 1080p30 frame out of the B101, 
 
 The splitter finally showed up. This session was about seeing if the signal chain actually worked end to end — Apple TV → splitter → TV + B101 — and getting at least one real captured frame out of it. No LEDs wired yet, just proving the capture side works and figuring out the layout.
 
-*(Pictures coming — I'll add them before publishing.)*
-
 ## Getting the B101 to see the signal
 
 First step after wiring everything up was setting the EDID so the B101 knows what kind of signal to advertise to the Apple TV:
@@ -45,7 +43,9 @@ v4l2-ctl -d /dev/video0 \
 VIDIOC_STREAMON returned -1 (Invalid argument)
 ```
 
-Zero byte output file. The kernel log had this:
+Zero byte output file.
+
+![First capture attempt at 1080p60 — corrupted green output](/images/ambilight-part2/frame-bad-green.png) The kernel log had this:
 
 ```
 Device has requested 3 data lanes, which is >2 configured in DT
@@ -114,7 +114,11 @@ ffmpeg -y -f rawvideo \
   /tmp/frame-last.png
 ```
 
-That came out clean. Copied it off to verify:
+That came out clean.
+
+![Clean frame from Apple TV home screen — 1080p30, frame 9 of 10](/images/ambilight-part2/frame-clean.png)
+
+Copied it off to verify:
 
 ```bash
 # from Mac
@@ -124,6 +128,10 @@ scp derek@hyperion.local:/tmp/frame-last.png ~/Desktop/hyperion-frame-last.png
 ## Hyperion preview
 
 Started Hyperion, opened the dashboard in Chrome. The live video preview was working — virtual LED border reacting to actual Apple TV content, colors moving with the screen. That confirmed the full capture-to-color pipeline inside Hyperion is functional.
+
+![Hyperion dashboard — live LED preview reacting to Apple TV content](/images/ambilight-part2/hyperion-preview.png)
+
+![Raw frame check — clean B101 capture of the same scene](/images/ambilight-part2/raw-check.png)
 
 There was something that looked like a corrupted band at the top of the preview. Turned out to be the LED number overlay Hyperion renders in the preview UI, not a capture artifact. The raw frame check had already confirmed the B101 output was clean.
 
@@ -137,6 +145,8 @@ LED mapping area(s) have a huge number of pixels to be processed. Every 2 pixels
 CEC isn't being used, audio capture isn't part of this setup, and the LED mapping warning is about Hyperion processing load — not a problem.
 
 ## LED layout planning
+
+![Hyperion LED layout config — default 86/86/48/48, 268 LEDs, 17.7A estimate](/images/ambilight-part2/led-layout-config.png)
 
 Hyperion's default virtual layout was 86/86/48/48 (top/bottom/left/right = 268 LEDs). Measured the TV physically and the sides are probably closer to 40 each — the TV isn't as tall as the default assumed.
 

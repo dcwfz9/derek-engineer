@@ -1,5 +1,5 @@
 ---
-title: "DIY Ambilight Part 2: Capture Working, LEDs Planned"
+title: "DIY Ambilight Part 2: Capture Working, LEDs Are Next!"
 date: 2026-05-03
 draft: true
 tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]

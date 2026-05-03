@@ -65,7 +65,7 @@ The part I wasn't sure would be useful but turned out to be the best feature. Fo
 
 The idea being: a small venue a 10-minute walk away is worth taking a chance on, even for someone I haven't heard. The Greek Theatre is not.
 
-The discovery mode is what made me actually trust the tool. The first real test: it surfaced Ashes to Amber at Bottom of the Hill — not in my library, but strong genre overlap. I went. Worth it.
+The discovery mode is what made me actually trust the tool. The first real test: it surfaced Ashes to Amber at Bottom of the Hill — not in my library, but strong genre overlap. I'm going.
 
 ## The weekly digest
 

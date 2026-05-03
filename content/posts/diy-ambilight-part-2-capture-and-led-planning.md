@@ -90,7 +90,7 @@ ffmpeg -y -f rawvideo \
   /tmp/frame.png
 ```
 
-PNG produced, but the image was mostly green — visually corrupted. The file size was correct, so the capture path was working. My guess is the TC358743/unicam pipeline needs a few frames to stabilize after stream start and the first one is unreliable.
+PNG produced, but the bottom half was green — visually corrupted. The file size was correct, so the capture path was working. My guess is the TC358743/unicam pipeline needs a few frames to stabilize after stream start and the first one is unreliable.
 
 ![First frame out of v4l2-ctl — corrupted green](/images/ambilight-part2/frame-bad-green.png)
 

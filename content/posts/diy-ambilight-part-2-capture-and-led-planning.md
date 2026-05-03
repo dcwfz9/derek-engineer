@@ -43,9 +43,7 @@ v4l2-ctl -d /dev/video0 \
 VIDIOC_STREAMON returned -1 (Invalid argument)
 ```
 
-Zero byte output file.
-
-![First capture attempt at 1080p60 — corrupted green output](/images/ambilight-part2/frame-bad-green.png) The kernel log had this:
+Zero byte output file. The kernel log had this:
 
 ```
 Device has requested 3 data lanes, which is >2 configured in DT
@@ -93,6 +91,8 @@ ffmpeg -y -f rawvideo \
 ```
 
 PNG produced, but the image was mostly green — visually corrupted. The file size was correct, so the capture path was working. My guess is the TC358743/unicam pipeline needs a few frames to stabilize after stream start and the first one is unreliable.
+
+![First frame out of v4l2-ctl — corrupted green](/images/ambilight-part2/frame-bad-green.png)
 
 Captured 10 frames instead and pulled the 9th:
 
@@ -146,8 +146,6 @@ CEC isn't being used, audio capture isn't part of this setup, and the LED mappin
 
 ## LED layout planning
 
-![Hyperion LED layout config — default 86/86/48/48, 268 LEDs, 17.7A estimate](/images/ambilight-part2/led-layout-config.png)
-
 Hyperion's default virtual layout was 86/86/48/48 (top/bottom/left/right = 268 LEDs). Measured the TV physically and the sides are probably closer to 40 each — the TV isn't as tall as the default assumed.
 
 Rough plan:
@@ -174,6 +172,8 @@ Data input will be at bottom center — position 168 (128 + 40). I'll run the st
 If the physical direction doesn't match Hyperion's layout I'll just flip it in software rather than rewire.
 
 Hyperion estimated max current for the default 268-LED layout at 17.7A (~88W at 5V), which made it obvious the strip needs its own power supply. That part wasn't a surprise.
+
+![LED visualization with live video — 268 LEDs, file controller, /dev/null output path](/images/ambilight-part2/led-visualization.png)
 
 ## Next
 

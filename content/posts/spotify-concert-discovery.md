@@ -6,7 +6,7 @@ tags: ["tooling", "home-lab", "spotify"]
 description: "Scraping SF venue calendars, cross-referencing against my Spotify library, and scoring shows so I stop missing ones I'd actually go to."
 ---
 
-I kept missing shows I would have gone to — found out after the fact, sold out, whatever. Apps like Songkick or Bandsintown cover the venues fine, but the signal is opaque. You have to go check, wade through everything playing in the city, and figure out yourself what's worth caring about. I wanted something that did that filtering for me and surfaced the right shows without me having to ask.
+I kept missing shows I would have gone to — found out after the fact, sold out, whatever. The data was there. The problem was that finding it took dedicated attention: actively searching, or sifting through notifications that weren't really tailored to me. I wanted something proactive — something that already knew what I listened to, checked the venues I cared about, and just told me when something worth going to was coming up. And I wanted to be able to tune how it worked.
 
 So I built it into Molty, my Telegram-based assistant. Every Monday morning it sends me a digest of upcoming shows from SF venues, ranked by how much I actually listen to the artist.
 

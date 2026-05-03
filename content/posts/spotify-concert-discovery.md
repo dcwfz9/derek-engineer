@@ -69,7 +69,7 @@ The discovery mode is what made me actually trust the tool. The first real test:
 
 ## The weekly digest
 
-What lands in Telegram every Monday:
+What lands in Telegram every Monday (format — not real upcoming shows):
 
 ```
 🎵 Concert picks — week of May 5

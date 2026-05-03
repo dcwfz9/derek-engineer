@@ -72,18 +72,18 @@ What lands in Telegram every Monday:
 ```
 🎵 Concert picks — week of May 5
 
-🔥 Waxahatchee — Sat, May 10 @ The Independent | $25
-   8 liked songs (strong) · top 22 artist · walking distance
+🔥 Del Water Gap — Sat, May 10 @ Café Du Nord | $18
+   10 liked songs (strong) · favorite venue · walking distance
 
-🎶 Hand Habits — Thu, May 15 @ Café Du Nord | $18
-   3 liked songs (solid) · favorite venue · $18 · walking distance
+🎶 Bear's Den — Thu, May 15 @ Bottom of the Hill | $15
+   9 liked songs (solid) · indie venue · $15 · closing end of 2026 ⏳
 
-👀 Mutual Benefit — Fri, May 16 @ Bottom of the Hill | $15
-   2 liked songs · indie venue · $15 · closing end of 2026 ⏳
+👀 The Head and the Heart — Fri, May 16 @ The Independent | $28
+   10 liked songs · walking distance · $28
 
 ── you might like ──
-✨ Ohmme — Sat, May 17 @ Café Du Nord | $12
-   strong genre match: indie pop, chamber pop · underground · at your favorite venue
+✨ Adrianne Lenker — Sat, May 17 @ Café Du Nord | $20
+   strong genre match: indie folk, folk pop · underground · at your favorite venue
 ```
 
 Artist names link to Spotify, venue names link to tickets. Co-headliners on the same bill get merged into one entry.

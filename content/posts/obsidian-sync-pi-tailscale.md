@@ -2,7 +2,7 @@
 title: "Self-Hosted Obsidian Sync on a Raspberry Pi with Tailscale"
 date: 2026-05-16
 draft: true
-tags: ["raspberry-pi", "home-lab", "networking", "self-hosted"]
+tags: ["raspberry-pi", "home-lab", "networking", "self-hosted", "obsidian", "tailscale"]
 description: "Setting up CouchDB + Obsidian LiveSync on a Pi 3B with Tailscale for free E2E-encrypted vault sync from anywhere."
 ---
 
@@ -27,6 +27,8 @@ Things I considered and didn't do:
 - Ollama on the 3B v1.2 — 1GB RAM, not viable
 - Syncthing for vault sync — iOS experience requires paid [Möbius Sync](https://www.mobiussync.com/), not worth it
 - Multiple Obsidian vaults — one vault with good folder structure beats context switching
+
+Syncthing did get installed first by accident before I landed on CouchDB + LiveSync. It's still on the Pi and doesn't conflict — might end up using it for something else.
 
 ## PoE HAT boot issue (3B+ specific)
 
@@ -157,6 +159,20 @@ tailscale ip
 
 You'll get a `100.x.x.x` address. Use IPv4, not the IPv6 `fd7a:...` address — the plugin config is simpler and I didn't test IPv6.
 
+**Before opening Obsidian**, confirm CouchDB is actually reachable from your Mac via Tailscale:
+
+```bash
+curl http://100.x.x.x:5984
+```
+
+Should return the same welcome JSON you saw locally on the Pi. If it hangs or refuses, the bind address is wrong (should be `0.0.0.0`, not `localhost`) or Tailscale isn't up on one end. Fix this now — debugging it from inside the LiveSync UI is miserable.
+
+**UFW:** if you have `ufw` enabled on the Pi, port 5984 needs to be open:
+
+```bash
+sudo ufw allow 5984
+```
+
 Both the Pi and every device you want to sync from need to be on the same Tailscale account. iOS Tailscale doesn't stay connected aggressively in the background — if sync isn't firing on mobile, toggle Tailscale on and off.
 
 ## Configure LiveSync in Obsidian
@@ -174,6 +190,16 @@ In the CouchDB configuration screen:
 
 Hit **"Detect and Fix CouchDB Issues"**. It finds and patches any remaining config gaps — cleaner than manually verifying every CORS header. Hit Fix on everything it surfaces.
 
+## Encryption — set this before the first sync
+
+Enable E2E encryption in LiveSync settings **before doing anything else**. If you upload the vault first and enable encryption after, you have to wipe the database and re-upload — the existing unencrypted data doesn't get retroactively encrypted.
+
+In LiveSync settings, enable encryption with a strong passphrase. Also enable **"Obfuscate props"** — this hides file and folder names in CouchDB so vault structure isn't readable if someone gets access to the Pi. Without it, filenames are stored in plaintext even if content is encrypted.
+
+Store the passphrase in a password manager. There's no recovery — losing it means losing access to the encrypted data.
+
+## Initial vault upload
+
 **UI flow gotchas in order:**
 
 1. **"Fetch Remote Configuration Failed"** on first connect — expected, hit Skip
@@ -187,12 +213,6 @@ Hit **"Detect and Fix CouchDB Issues"**. It finds and patches any remaining conf
 5. **"Send all chunks before replication"** — appears a second time after chunk size changes. Say Yes again.
 6. **"All optional features are disabled"** notice (Customization Sync, Hidden File Sync) — fine to ignore for basic vault sync
 7. **Database size notification** — irrelevant for a local Pi, dismiss it
-
-## Encryption
-
-Enable E2E encryption in LiveSync settings with a strong passphrase before anything syncs. Also enable **"Obfuscate props"** — this hides file and folder names in CouchDB so vault structure isn't readable if someone gets access to the Pi. Without it, filenames are stored in plaintext even if content is encrypted.
-
-Store the passphrase in a password manager. There's no recovery — losing it means losing access to the encrypted data.
 
 ## iCloud
 

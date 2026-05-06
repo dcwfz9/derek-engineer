@@ -1,14 +1,14 @@
 ---
-title: "Designing Molty: A Personal AI That Actually Knows Me"
+title: "Building Molty: A Telegram Assistant with Memory and Scheduled Checks"
 date: 2026-04-08
 draft: false
-tags: ["tooling", "home-lab", "ai"]
-description: "How I built a personal AI assistant that lives in Telegram, maintains memory across sessions, and reaches out proactively — and what I'd do differently."
+tags: ["tooling", "home-lab", "automation"]
+description: "How Molty works: Telegram interface, file-backed memory, scheduled checks, model routing, integrations, and the parts I would rebuild."
 ---
 
-I was using ChatGPT as a daily driver and it was fine — but it only did anything when I asked it to. No proactive check-ins, no model choice, no way to wire it into my actual files and tools. I wanted something I could actually configure: pick the model, give it direct access to my calendar and fitness data, and have it reach out when something was worth knowing rather than waiting to be asked.
+ChatGPT worked fine for one-off questions, but it was isolated from the systems I actually use: calendar, email, Strava, GitHub, Obsidian, Spotify, and the half-finished project notes scattered across repos. I wanted a small assistant I could run myself, with persistent memory, scheduled checks, and enough tool access to be useful without turning into a full product.
 
-So I built Molty 🦞.
+So I built Molty.
 
 ## Architecture
 
@@ -23,7 +23,7 @@ flowchart LR
     G <-->|"read/write"| M["Memory\n+ Integrations"]
 ```
 
-Telegram was the right interface choice. It's always on my phone, supports reactions, and works in every context without an app to open. Reactions turned out to matter more than expected — most AI interactions don't need a full reply. A ⚡ to confirm something is logged beats a three-sentence "Got it, I've noted that down" every time. Using reactions as lightweight acknowledgments makes the thing feel less like a chatbot.
+Telegram was the right interface choice. It's already on my phone, works from desktop, and supports reactions. Reactions turned out to matter more than expected: most interactions don't need a full reply. A reaction that confirms something was logged is better than a three-sentence acknowledgment.
 
 ## Memory
 
@@ -39,7 +39,7 @@ Four layers:
 
 **Refs** (`refs/`) — domain-specific files loaded on demand. Career context, fitness data, finance targets. Not loaded every session — only pulled in when the relevant topic comes up. Keeps the context window lean.
 
-**USER.md** — who I am, how I communicate, what I care about. The kind of thing you'd tell a new assistant on day one so you don't have to re-explain your communication style every time. The file closes with a North Star section:
+**USER.md** — stable user context: communication style, priorities, recurring projects, and what "helpful" means in practice. The point is to avoid restating the same preferences every session. The file closes with a North Star section:
 
 > Derek is building a life that is technically sharp, emotionally honest, physically alive, socially warm, and strategically free. He wants to become more fully himself while building a life with real depth, real motion, and real choice.
 
@@ -47,17 +47,17 @@ Four layers:
 
 The memory maintenance happens via a scheduled cron job called the Dream Pass — runs overnight while I'm not active. It reads through the recent daily notes, distills anything significant into `MEMORY.md`, prunes what's stale, and flags open loops to surface when I'm back.
 
-The name is intentional. It's the closest thing to REM sleep the system has — consolidating short-term logs into long-term context so sessions don't start with a week of raw notes to catch up on. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
+The name is intentionally a little dramatic, but the job is simple: consolidate short-term logs into long-term context so sessions don't start by rereading a week of raw notes. Each pass commits the memory changes to GitHub and logs what it did in `memory/dream-log.md`.
 
-It's one of the more useful design decisions in the system. Without it, `MEMORY.md` would either be manually maintained (slow) or never maintained (useless). From the prompt that kicks it off:
+This is one of the decisions I would keep. Without it, `MEMORY.md` would either be manually maintained, which means it would drift, or never maintained, which means it would stop mattering. From the prompt that kicks it off:
 
 > *You are running a dream pass — a structured memory consolidation cycle modeled on how human sleep and dreaming actually work.*
 
-## Heartbeat
+## Scheduled checks
 
-The thing that made Molty useful beyond a reactive chatbot was the heartbeat — a scheduled loop that fires whether or not I've said anything. It checks the daily note for open threads, surfaces Strava activity from the day before, flags emails worth seeing, and sends a Monday summary of the week's fitness data.
+The scheduled loop is what made Molty useful beyond request/response chat. It fires whether or not I've said anything, checks the daily note for open threads, surfaces Strava activity from the day before, flags emails worth seeing, and sends a Monday summary of the week's fitness data.
 
-Proactive beats reactive. Most of the value comes from Molty reaching out, not from me asking questions. From `HEARTBEAT.md`:
+The value is in routine checks that I would not remember to run manually. From `HEARTBEAT.md`:
 
 > - Review today's `memory/YYYY-MM-DD.md` for completeness
 > - Distill anything significant into `MEMORY.md`
@@ -71,11 +71,11 @@ Two Claude models in rotation:
 - **Sonnet** — daily driver. Fast, cheap, handles 90% of requests.
 - **Opus** — for career strategy, complex builds, nuanced writing, anything that needs real depth.
 
-Switching is automatic based on what the conversation involves. Manual overrides via emoji reactions (🏆 to escalate, 🕊 to drop back). The goal was to never think about which model to use — it should just make the right call.
+Switching is automatic based on what the conversation involves. Manual overrides are available through reactions. The goal is to keep model choice out of the normal workflow unless I need to override it.
 
 ## Integrations
 
-The system gets more useful with each integration added. Current ones:
+Current integrations:
 
 **Strava** — post-ride recaps and weekly Monday summaries. 2026 goals tracked (2,000 miles cycling, 100 miles hiking + 25k ft elevation). Activity cache stored locally so it's not re-fetching on every question about my rides.
 
@@ -83,27 +83,27 @@ The system gets more useful with each integration added. Current ones:
 
 **Google Calendar** — event creation, schedule checks, conflict detection.
 
-**Spotify + concert discovery** — tracks my Spotify listening, scrapes SF venue pages, cross-references against liked tracks to score upcoming shows. Weighted by liked song count, venue size, price, and proximity. Filters down to small indie shows worth actually going to.
+**Spotify + concert discovery** — tracks my Spotify listening, scrapes SF venue pages, cross-references against liked tracks, and scores upcoming shows by liked song count, venue size, price, and proximity.
 
 **GitHub** — monitors my repos for awareness. No auto-actions.
 
-**Obsidian** — daily note writes. I write in Obsidian, it syncs to GitHub via the Obsidian Git plugin, Molty pulls on session start. It can append to daily notes without asking every time.
+**Obsidian** — daily note writes. I write in Obsidian, it syncs to GitHub via the Obsidian Git plugin, and Molty pulls on session start. It can append to daily notes without asking every time.
 
 ## Skills
 
-Custom skills are isolated modules with a defined interface Molty can invoke for specific tasks. Current ones: a trip planner (built from a voice interview about how I actually travel), Taiwan high-speed rail booking (including the real-name system quirks and kiosk pickup flow), and a read-later queue.
+Custom skills are isolated modules with a defined interface Molty can invoke for specific tasks. Current ones: a trip planner, Taiwan high-speed rail booking notes, and a read-later queue.
 
 The pattern works. It keeps the core system simple and lets domain-specific logic live separately without cluttering the main context.
 
 ## SOUL.md
 
-One of the more unusual files in the workspace is `SOUL.md` — a document that defines how Molty thinks, what it values, and how it should behave when the instructions don't cover a specific case. Less a config file, more a character spec.
+One of the more unusual files in the workspace is `SOUL.md` — a behavior spec for cases where the task instructions do not cover the situation. Less config file, more operating manual.
 
 The identity line at the top:
 
-> *Not a polite chatbot. Not a servant. Something closer to a chief of staff with good taste and a systems engineering brain.*
+> *Not a polite chatbot. Not a servant. Something closer to a chief of staff with a systems engineering brain.*
 
-The part I find most useful in practice is the Opinions section — real, specific opinions baked into the model's behavior so it doesn't default to generic hedging:
+The useful part is the Opinions section: explicit defaults for tradeoffs that otherwise turn into generic hedging.
 
 > *Done and useful beats elegant and delayed.*
 >
@@ -117,7 +117,7 @@ And the internal mantra that closes the file:
 
 > *Hold signal. Reduce noise. Protect attention. Preserve continuity. Act with restraint. Speak with clarity.*
 
-The point of the file isn't to make the AI sound interesting — it's to give it something to fall back on when a situation is ambiguous. An assistant without a defined perspective defaults to whatever is safest or most agreeable. That's not useful.
+The point of the file is not personality theater. It gives the system a fallback when a situation is ambiguous. Without a defined operating posture, assistants drift toward whatever is safest or most agreeable, which is often not the most useful answer.
 
 ## What I got wrong
 
@@ -130,7 +130,7 @@ Session history corruption happened early from malformed thinking blocks in the 
 ## What's next
 
 - Proper watchdog / process supervision
-- Gmail body access so it can actually read email content, not just find messages
+- Gmail body access so it can read email content, not just find messages
 - WhatsApp support for group chat context
 - Fidelity portfolio drift tracking via monthly CSV export
 - Habit tracking (spec exists, hasn't been built)

@@ -49,6 +49,42 @@ Rules:
 
 Write the way Derek writes: direct, technical, no fluff. Document what actually happened — what worked, what didn't, and why. Reader is a technical peer, not a beginner.
 
+Core voice:
+- First-person technical notes from the session, written while the annoying details are still fresh
+- Casual but not cute; opinionated but not performative
+- Practical build log, not polished marketing copy or generic tutorial voice
+- Dry humor is fine, but keep it sparse
+
+Default post shape:
+- What I was trying to do
+- Hardware/software setup
+- What failed first
+- The diagnostic clue
+- The fix or workaround
+- Current state, known gaps, and what I'd change next
+- Optional: known-good config, command sequence, logs, or table
+
+Writing rules:
+- Lead with the concrete problem, not a big thesis
+- Keep the "why" tied to decisions and tradeoffs
+- Use exact nouns: component names, commands, services, logs, file paths, versions
+- Include commands, configs, tables, logs, and measurements when they matter
+- Say how something failed; don't sand off the rough edge
+- Use short declarative sentences when something matters
+- Avoid overexplaining beginner concepts unless the failure mode depends on them
+- Avoid emoji unless Derek explicitly asks for it or the post is quoting existing UI/output
+
+Avoid AI-smell phrases:
+- "unlock", "seamless", "tailored", "robust", "delve", "leverage"
+- "game changer", "in today's fast-paced world", "not just X but Y"
+- inflated summaries that make a small script sound like a product launch
+- generic assistant language like "Got it, I've noted that down" unless critiquing it
+
+Good tone examples:
+- "The splitter finally showed up. This session was about proving the capture path before wiring LEDs."
+- "Silent output = success. Annoying, but at least consistent."
+- "This is good news disguised as bad news. The driver is fine. HDCP is the problem."
+
 ## Known TODOs
 
 - **Mermaid dark/light toggle**: diagram doesn't re-render when toggling theme after page load. MutationObserver is wired but not working — likely a timing or SVG restore issue. Low priority.

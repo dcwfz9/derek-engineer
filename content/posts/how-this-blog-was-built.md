@@ -1,12 +1,12 @@
 ---
-title: "How This Blog Was Built (and Who's Writing It)"
+title: "How This Blog Is Built and Published"
 date: 2026-05-16
 draft: true
 tags: ["hugo", "netlify", "claude-code", "meta"]
-description: "Setting up a Hugo blog with PaperMod, deploying via Netlify, and wiring up Claude Code as the publishing agent."
+description: "Hugo, PaperMod, Netlify, DNS, search, and the local writing workflow behind derek.engineer."
 ---
 
-This is a breakdown of how derek.engineer works — the stack, the setup, and why publishing a post sometimes means just describing what I built to an AI.
+This is how derek.engineer is wired: static Hugo site, PaperMod theme, Netlify deploys, Squarespace DNS, and a local writing workflow that keeps publishing from becoming its own project.
 
 ## The stack
 
@@ -80,20 +80,20 @@ www  CNAME  wonderful-fox-6a6371.netlify.app
 
 Once DNS propagated, Netlify verified both hostnames and provisioned the TLS certificate automatically. Until that finishes (~a few minutes), the browser will show "Not Secure" — expected, not broken.
 
-## The interesting part: Claude Code as the publishing agent
+## Local writing workflow
 
-The part that makes this setup different is `CLAUDE.md`.
+The part that makes this setup useful in practice is `CLAUDE.md`.
 
-Every Hugo project can have a `CLAUDE.md` file that instructs Claude Code how to work in that repo. Mine tells it exactly how to create and publish posts:
+Claude Code reads `CLAUDE.md` before working in the repo. Mine gives it the rules I would otherwise have to repeat every time:
 
 - Front matter format with required fields
 - File naming convention (kebab-case, descriptive)
-- The three-command publish workflow (`git add`, `git commit`, `git push`)
+- The publish workflow (`git add`, `git commit`, `git push`)
 - Voice and tone guidelines
 
-The result: when I finish a project, I can describe what I built in a conversation and Dex (my Claude Code instance) writes, formats, and publishes the post. I review it, maybe tweak a line or two, and it's live.
+The result: when I finish a project, I can dump rough notes from the session, have Dex format them into a post, then review the actual Markdown before publishing.
 
-That's how most of the posts on this site were written. I built something, described what happened, and it turned into a post.
+That is the workflow I want: the source stays plain Markdown, the git history stays normal, and the writing assistant is just part of the local toolchain.
 
 ## Enhancements added after launch
 
@@ -128,4 +128,4 @@ The fix is simple: batch changes locally and push once per session. Commit as mu
 
 Netlify's free tier gives 300 credits/month, 15 per deploy — 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
 
-The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It's what tells the AI how to write and publish posts. Without it, the activation energy to write something up is too high and the blog dies.
+The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It keeps the writing workflow explicit: front matter, file names, publish steps, and voice. Without that, the activation energy to write something up is too high and the blog dies.

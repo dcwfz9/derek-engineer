@@ -9,7 +9,7 @@ paginate = 10
 
 [params]
   author = "Derek Welty"
-  description = "A build log by Derek Welty — electronics, home automation, software tools, and whatever else needed documenting."
+  description = "Technical build notes by Derek Welty: electronics, home automation, local tooling, Raspberry Pi projects, and the debugging details worth keeping."
   keywords = ["home assistant", "raspberry pi", "electronics", "home lab", "python", "hugo", "embedded", "DIY", "derek welty"]
   defaultTheme = "auto"
   ShowReadingTime = true
@@ -22,7 +22,7 @@ paginate = 10
 
   [params.homeInfoParams]
     Title = "Hi, I'm Derek"
-    Content = "Electrical engineer with a software habit. Hardware, home automation, and tooling — documented here so future-me can remember, and in case it saves you the same late night."
+    Content = "Electrical engineer writing down the hardware, home automation, and software projects I build at home. Mostly implementation notes, failure modes, command lines, and the details I know I'll need again."
 
   [[params.socialIcons]]
     name = "github"

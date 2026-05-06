@@ -1,14 +1,14 @@
 ---
-title: "Building a Spotify-Powered Concert Discovery Tool"
+title: "Building a Concert Discovery Tool with Spotify and Venue Scrapers"
 date: 2026-03-29
 draft: false
 tags: ["tooling", "home-lab", "spotify"]
-description: "Scraping SF venue calendars, cross-referencing against my Spotify library, and scoring shows so I stop missing ones I'd actually go to."
+description: "Scraping SF venue calendars, matching artists against my Spotify library, and scoring shows by taste, venue, price, and distance."
 ---
 
-I kept missing shows I would have gone to — found out after the fact, sold out, whatever. The data was there. The problem was that finding it took dedicated attention: actively searching, or sifting through notifications that weren't really tailored to me. I wanted something proactive — something that already knew what I listened to, checked the venues I cared about, and just told me when something worth going to was coming up. And I wanted to be able to tune how it worked.
+I kept missing shows I would have gone to. The data was public, but checking it required a weird amount of manual attention: venue calendars, Spotify history, ticket prices, neighborhoods, and a final "would I actually leave the apartment for this?" filter.
 
-So I built it into Molty, my Telegram-based assistant. Every Monday morning it sends me a digest of upcoming shows from SF venues, ranked by how much I actually listen to the artist.
+I built a weekly concert digest into Molty, my Telegram-based assistant. Every Monday morning it checks SF venues, matches artists against my Spotify library, and sends a ranked list of shows.
 
 ## Spotify API setup
 
@@ -23,11 +23,11 @@ node auth.js
 # ✅ Tokens saved to auth/tokens.json
 ```
 
-One thing worth knowing: Spotify refresh tokens don't expire as long as the app stays active and you don't revoke access. So you do this once and it just works — no re-auth loop to deal with.
+Spotify refresh tokens don't expire as long as the app stays active and access is not revoked. In practice this is a one-time OAuth setup, not a recurring auth chore.
 
 ## How it works
 
-Three layers:
+Pipeline:
 
 ```mermaid
 flowchart TD
@@ -50,11 +50,11 @@ flowchart TD
 
 **Spotify matching** pulls my top 50 artists (medium-term) and unique artists from my last 500 liked songs, normalizes the names, and cross-references against whatever the venue scraper found. If there's a match, it goes to scoring.
 
-**Scoring** ranks shows by how likely I am to actually go. Liked track count is the primary signal — 5+ liked songs gets a big bump, 1 liked song barely registers. Secondary signals: venue tier, proximity to my apartment, ticket price, and one oddly specific modifier.
+**Scoring** ranks shows by how likely I am to go. Liked track count is the primary signal: 5+ liked songs gets a big bump, 1 liked song barely registers. Secondary signals: venue tier, proximity to my apartment, ticket price, and one specific modifier.
 
 ## The scoring logic
 
-The part I spent the most time on. In rough order of weight:
+This is where most of the tuning happened. In rough order of weight:
 
 | Signal | Points |
 |--------|--------|
@@ -70,37 +70,37 @@ The part I spent the most time on. In rough order of weight:
 | Venue closing soon | +12 |
 | Ticket > $50 | -5 |
 
-That last one — "venue closing soon" — is Bottom of the Hill, which is closing at the end of 2026. Felt like it deserved an urgency boost.
+That last one — "venue closing soon" — is Bottom of the Hill, which is closing at the end of 2026. That deserved an urgency boost.
 
-Scores map to tiers: 🔥 strong (45+), 🎶 match (25+), 👀 worth knowing (10+). Anything below that gets dropped from the digest unless it hits discovery mode.
+Scores map to tiers: strong (45+), match (25+), worth knowing (10+). Anything below that gets dropped from the digest unless it hits discovery mode.
 
 ## Discovery mode
 
-The part I wasn't sure would be useful but turned out to be the best feature. For Café Du Nord and Swedish American Hall — my two neighborhood venues, both walkable — unknown artists (not in my Spotify library) get checked against my genre profile instead of discarded. If there's enough genre overlap with what I actually listen to, they surface as ✨ discovery or 💡 maybe picks, capped at 5 per week.
+For Café Du Nord and Swedish American Hall — my two neighborhood venues, both walkable — unknown artists get checked against my genre profile instead of discarded. If there's enough genre overlap with what I listen to, they surface as discovery picks, capped at 5 per week.
 
 The idea being: a small venue a 10-minute walk away is worth taking a chance on, even for someone I haven't heard. The Greek Theatre is not.
 
-The discovery mode is what made me actually trust the tool. The first real test: it surfaced Ashes to Amber at Bottom of the Hill — not in my library, but strong genre overlap. I'm going.
+Discovery mode is what made the tool feel useful instead of narrow. First real test: it surfaced Ashes to Amber at Bottom of the Hill — not in my library, but strong genre overlap. I'm going.
 
 ## The weekly digest
 
 What lands in Telegram every Monday (format — not real upcoming shows):
 
 ```
-🎵 Concert picks — week of May 3
+Concert picks — week of May 3
 
-🔥 Del Water Gap — Sat, May 10 @ Café Du Nord | $18
+[strong] Del Water Gap — Sat, May 10 @ Café Du Nord | $18
    10 liked songs (strong) · favorite venue · walking distance
 
-🎶 Bear's Den — Thu, May 15 @ Bottom of the Hill | $15
-   9 liked songs (solid) · indie venue · $15 · closing end of 2026 ⏳
+[match] Bear's Den — Thu, May 15 @ Bottom of the Hill | $15
+   9 liked songs (solid) · indie venue · $15 · closing end of 2026
 
-👀 The Head and the Heart — Fri, May 16 @ The Independent | $28
+[worth knowing] The Head and the Heart — Fri, May 16 @ The Independent | $28
    10 liked songs · walking distance · $28
 
 ── you might like ──
-✨ Ashes to Amber — Sat, May 3 @ Bottom of the Hill | $15
-   strong genre match: indie folk, folk pop · underground · closing end of 2026 ⏳
+[discovery] Ashes to Amber — Sat, May 3 @ Bottom of the Hill | $15
+   strong genre match: indie folk, folk pop · underground · closing end of 2026
 ```
 
 Artist names link to Spotify, venue names link to tickets. Co-headliners on the same bill get merged into one entry.
@@ -112,8 +112,6 @@ Every venue parser is bespoke and fragile. Café Du Nord took the longest — to
 The other thing: venue websites change their markup. A parser that works today might miss everything next month if they update their CMS. There's no great solution to this short of headless browser scraping, which I haven't done yet for the JS-rendered venues.
 
 ## What's next
-
-A few things still on the list:
 
 - Ticketmaster API integration for venues that don't have scrapeable HTML
 - Headless browser fallback for GAMH and Rickshaw Stop

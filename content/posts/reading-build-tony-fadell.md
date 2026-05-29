@@ -24,6 +24,6 @@ A few things that stuck:
 
 What surprised me most was what the book did on the back end. I'm thirteen years into hardware engineering: consumer electronics, defense systems, networking hardware. I've shipped real things. But there's a version of this career I haven't reached yet, and reading this made that path feel concrete rather than aspirational.
 
-Fadell is specific about the ingredients: the right company size, how to find the engineers you want to become, treating each role as a stage in something longer. That's a framework I didn't have before. And there's something in that reminder that a long career is still mostly ahead, that the interesting choices are still coming, that kind of lit something back up.
+Fadell is specific about the ingredients: the right company size, how to find the engineers you want to become, treating each role as a stage in something longer. Useful framework. And there's something in that reminder that a long career is still mostly ahead, that the interesting choices are still coming, that kind of lit something back up.
 
 If you're an IC in consumer hardware, read it. The org design chapters alone are worth the time.

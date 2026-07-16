@@ -6,9 +6,9 @@ tags: ["home-assistant", "zigbee", "home-lab", "data"]
 description: "I bought an IKEA temp sensor for $8 while ordering batteries, stuck it in my living room, and ended up with a pretty clear picture of how SF apartments handle heat."
 ---
 
-I needed rechargeable batteries and grabbed an IKEA TIMMERFLOTTE while I was at it. It's a Zigbee temperature and humidity sensor, $8. I put it in my living room, which is the middle of the apartment, between all the windows, so it seemed like a decent spot for representative data. No real plan.
+I needed AA and AAA batteries and grabbed an [IKEA TIMMERFLOTTE](https://www.ikea.com/us/en/p/timmerflotte-temperature-humidity-sensor-smart-50618957/) while I was at it. It's a Zigbee temperature and humidity sensor, $8. I put it in my living room, which is the middle of the apartment, between all the windows, so it seemed like a decent spot for representative data. No real plan.
 
-This happened to land right in the middle of a brief SF heat wave. So I ended up with three days of data that tell a pretty clear story.
+The sensor started logging on July 13, which turned out to be one of those rare days where SF briefly hits 80°F. Typical highs here in early July are 63-65°F, so it was about 15°F above normal for two days before dropping back down. Lucky timing for the experiment.
 
 ## Setup
 

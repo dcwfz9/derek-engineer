@@ -1,7 +1,7 @@
 ---
 title: "How This Blog Is Built and Published"
-date: 2026-05-16
-draft: true
+date: 2026-06-12
+draft: false
 tags: ["hugo", "netlify", "claude-code", "meta"]
 description: "Hugo, PaperMod, Netlify, DNS, search, and the local writing workflow behind derek.engineer."
 ---

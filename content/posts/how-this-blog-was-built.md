@@ -10,10 +10,10 @@ This is how derek.engineer is wired: static Hugo site, PaperMod theme, Netlify d
 
 ## The stack
 
-- **Hugo** — static site generator, fast builds, zero frontend dependencies
-- **PaperMod** — clean Hugo theme, installed as a git submodule
-- **Netlify** — deploys on every push to `main`, custom domain + SSL handled automatically
-- **GitHub** — source of truth, all posts are Markdown files in `content/posts/`
+- **Hugo**: static site generator, fast builds, zero frontend dependencies
+- **PaperMod**: clean Hugo theme, installed as a git submodule
+- **Netlify**: deploys on every push to `main`, custom domain + SSL handled automatically
+- **GitHub**: source of truth, all posts are Markdown files in `content/posts/`
 
 The flow is simple:
 
@@ -23,9 +23,9 @@ Write Markdown → commit → push to GitHub → Netlify builds and deploys → 
 
 ## Why Hugo
 
-I wanted a blog, not a project — no build pipeline to maintain, no CMS to update, no dependencies that rot. Markdown files in a git repo, deploy on push. Hugo does exactly that and nothing else. `hugo server --buildDrafts` spins up a live preview in under a second.
+I wanted a blog, not a project, no build pipeline to maintain, no CMS to update, no dependencies that rot. Markdown files in a git repo, deploy on push. Hugo does exactly that and nothing else. `hugo server --buildDrafts` spins up a live preview in under a second.
 
-PaperMod for the theme — minimal, dark mode by default, readable code blocks. I didn't need a custom design, I needed something I could ignore.
+PaperMod for the theme, minimal, dark mode by default, readable code blocks. I didn't need a custom design, I needed something I could ignore.
 
 ## Netlify setup
 
@@ -42,7 +42,7 @@ The `netlify.toml` pins the Hugo version so the production build matches local:
 
 Netlify picks this up automatically. New commit to `main` → deploys. No CI to configure, no Actions YAML, no deploy scripts.
 
-Custom domain setup took a bit more than two minutes — here's the actual detail.
+Custom domain setup took a bit more than two minutes, here's the actual detail.
 
 ## DNS setup
 
@@ -50,7 +50,7 @@ The registrar is Squarespace. Netlify is just the deployment target. So the job 
 
 Two hostnames matter: the apex domain (`derek.engineer`) and the subdomain (`www.derek.engineer`). They're handled differently.
 
-**The www record** is straightforward — a CNAME pointing to the Netlify site instance:
+**The www record** is straightforward, a CNAME pointing to the Netlify site instance:
 
 | Type  | Name | Value                              |
 |-------|------|------------------------------------|
@@ -69,7 +69,7 @@ Squarespace supports ALIAS, so that's what I used:
 
 The `@` means the root domain itself.
 
-One thing to watch: at one point there was also a `derek.engineer → A → 75.2.60.5` record alongside the ALIAS. That's the fallback option — valid but redundant when you have ALIAS working. Remove it so there's one clear source of truth for the apex.
+One thing to watch: at one point there was also a `derek.engineer → A → 75.2.60.5` record alongside the ALIAS. That's the fallback option, valid but redundant when you have ALIAS working. Remove it so there's one clear source of truth for the apex.
 
 **Final DNS shape:**
 
@@ -78,7 +78,7 @@ One thing to watch: at one point there was also a `derek.engineer → A → 75.2
 www  CNAME  wonderful-fox-6a6371.netlify.app
 ```
 
-Once DNS propagated, Netlify verified both hostnames and provisioned the TLS certificate automatically. Until that finishes (~a few minutes), the browser will show "Not Secure" — expected, not broken.
+Once DNS propagated, Netlify verified both hostnames and provisioned the TLS certificate automatically. Until that finishes (~a few minutes), the browser will show "Not Secure", expected, not broken.
 
 ## Local writing workflow
 
@@ -99,33 +99,33 @@ That is the workflow I want: the source stays plain Markdown, the git history st
 
 A few quick PaperMod features enabled after the initial setup:
 
-**Search** — PaperMod ships with Fuse.js-based fuzzy search. Enabling it just required adding JSON to the Hugo output formats and creating a `search.md` page:
+**Search**, PaperMod ships with Fuse.js-based fuzzy search. Enabling it just required adding JSON to the Hugo output formats and creating a `search.md` page:
 
 ```toml
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 ```
 
-**Archive** — Chronological post list grouped by year/month. One `archive.md` page with `layout: archives`.
+**Archive**, Chronological post list grouped by year/month. One `archive.md` page with `layout: archives`.
 
-**Table of contents** — Auto-generated per post from headings. One line in `hugo.toml`:
+**Table of contents**, Auto-generated per post from headings. One line in `hugo.toml`:
 
 ```toml
 ShowToc = true
 ```
 
-**Tags in nav** — Already generating `/tags/` pages, just needed a menu entry.
+**Tags in nav**, Already generating `/tags/` pages, just needed a menu entry.
 
 ## Netlify credit limits
 
 One gotcha worth knowing: Netlify's free tier gives you **300 credits/month**, and each production deploy costs 15 credits. That's 20 deploys per month.
 
-Every `git push` to `main` triggers a deploy. If you're iterating — pushing small fixes, tweaks, and content changes separately — you'll burn through credits fast. I hit 180/300 in a single session by pushing every change individually.
+Every `git push` to `main` triggers a deploy. If you're iterating, pushing small fixes, tweaks, and content changes separately, you'll burn through credits fast. I hit 180/300 in a single session by pushing every change individually.
 
 The fix is simple: batch changes locally and push once per session. Commit as much as you want, just don't push until you're done with a logical chunk of work.
 
 ## The gotcha
 
-Netlify's free tier gives 300 credits/month, 15 per deploy — 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
+Netlify's free tier gives 300 credits/month, 15 per deploy, 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
 
 The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It keeps the writing workflow explicit: front matter, file names, publish steps, and voice. Without that, the activation energy to write something up is too high and the blog dies.

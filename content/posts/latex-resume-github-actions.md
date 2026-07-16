@@ -10,15 +10,15 @@ My resume lives in a git repo. Every time I push, a GitHub Action compiles it to
 
 ## Why LaTeX
 
-Word docs drift. PDFs exported from Google Docs look fine until they don't. LaTeX gives me exact control over layout and is just a text file — diffable, versionable, no binary blobs.
+Word docs drift. PDFs exported from Google Docs look fine until they don't. LaTeX gives me exact control over layout and is just a text file, diffable, versionable, no binary blobs.
 
-Because it's plain text, it's also machine readable. Parsers, scripts, LLMs — anything that can read a file can read your resume. That's increasingly useful.
+Because it's plain text, it's also machine readable. Parsers, scripts, LLMs, anything that can read a file can read your resume. That's increasingly useful.
 
 Git is version control by default. Every edit is tracked, every version is recoverable, and you can see exactly what changed between job applications.
 
 I'm using the [Awesome-CV](https://github.com/posquit0/Awesome-CV) template, which handles all the styling. I scaffolded the initial file with [resumake.io](https://resumake.io), then checked the output into [dcwfz9/resume](https://github.com/dcwfz9/resume) and took it from there.
 
-The compiler is `xelatex` — required by Awesome-CV for its font handling.
+The compiler is `xelatex`, required by Awesome-CV for its font handling.
 
 ## The workflow
 
@@ -76,7 +76,7 @@ The orphan `build` branch keeps compiled output completely separate from source.
 https://github.com/dcwfz9/resume/blob/build/resume.pdf
 ```
 
-That's a permanent link I can put anywhere — job applications, portfolio, whatever. It's always current.
+That's a permanent link I can put anywhere, job applications, portfolio, whatever. It's always current.
 
 ## Building locally
 

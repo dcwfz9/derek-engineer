@@ -106,4 +106,4 @@ A few things I want to build out once I have more data:
 
 ---
 
-*Data from Jul 13-15, 2026. Sensors: IKEA TIMMERFLOTTE (indoor, living room), Pirate Weather via Home Assistant (outdoor). SF Mission District.*
+*Data from Jul 13-15, 2026. Sensors: IKEA TIMMERFLOTTE (indoor, living room), Pirate Weather via Home Assistant (outdoor). San Francisco, CA.*

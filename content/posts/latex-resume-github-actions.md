@@ -1,7 +1,7 @@
 ---
 title: "LaTeX Resume with Auto-Build on GitHub"
-date: 2026-05-30
-draft: true
+date: 2026-07-10
+draft: false
 tags: ["tooling", "latex", "github-actions"]
 description: "How I write my resume in LaTeX and let GitHub Actions compile and publish the PDF on every push."
 ---

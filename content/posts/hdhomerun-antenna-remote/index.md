@@ -133,6 +133,8 @@ The airport experience made this obvious. The recorded MKV plays noticeably clea
 
 The reason is macroblocking. When a live MPEG-2 stream has packet loss, the decoder fills in the missing data with whatever it has, producing the familiar blocky artifact where a 16x16 pixel block freezes or smears. There is no way to recover the lost data after the fact. On airport WiFi this happens constantly.
 
+![Fox 2 live stream over airport WiFi — macroblocking on every frame](macroblocking.jpg)
+
 A recording is different: the stream is already on disk. The player buffers ahead with no network dependency during playback, and missing packets cannot happen because there are no packets, only file reads. Even a stream that would produce macroblocking at 5 Mbps live plays cleanly as a file.
 
 The source quality is the same. File I/O is just more reliable than real-time network delivery over a stressed connection. On a stable home network, live streaming is fine. On a plane, record first.

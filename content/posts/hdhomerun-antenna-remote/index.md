@@ -18,9 +18,7 @@ The fix was moving the antenna somewhere it would not get shadowed. I put it in 
 
 After moving it I ran a full channel scan. 15+ channels locked with strong signal. KPYX-DT on UHF 557 MHz came in at ss=97/snq=100. KGO ABC at ss=97. KNTV NBC at ss=95. Reception is now consistent regardless of what is happening in the living room.
 
-{{< callout "photo" >}}
-<!-- Photo of antenna placement in closet would go here -->
-{{< /callout >}}
+The HDHomeRun lives in the same closet. My desk is next to it and the eero PoE gateway is there, so I powered the HDHomeRun over the ethernet run using a [PoE Texas 802.3af 12V splitter](https://www.amazon.com/WT-GAF-12v12w-802-3af-Splitter-Ethernet-Switches/dp/B017J8WJ5E) and a [COOLM 5.5mm to 3.5mm barrel adapter](https://www.amazon.com/COOLM-Female-1-35mm-Socket-Adapter/dp/B07FJLZGPF) to match the HDHomeRun's power jack. No wall outlet needed. The eero reports 2.3W PoE draw, and one quirk: the FLEX DUO negotiates at 100 Mbps even though the link supports more. Fine for streaming — MPEG-2 OTA is well under 20 Mbps per channel.
 
 ---
 
@@ -47,18 +45,18 @@ Full system layout:
 flowchart LR
     ANT["OTA Antenna\n(bedroom closet\neast window)"]
     HDHR["HDHomeRun\nFLEX DUO\n10.0.4.67"]
+    EERO["eero PoE\nGateway"]
     MAC["Mac Mini\n100.87.180.98\nTailscale"]
     REC["TV Recordings\n~/Movies/"]
     HTTP["HTTP server\n:8765"]
-    TS["Tailscale\nsubnet route\n10.0.4.0/22"]
     PHONE["iPhone\nVLC"]
 
     ANT -->|coax| HDHR
-    HDHR -->|LAN| MAC
-    HDHR -->|live stream\n:5004/auto/v*| TS
+    EERO <-->|ethernet + PoE| HDHR
+    EERO -->|LAN| MAC
     MAC -->|ffmpeg| REC
     REC --> HTTP
-    TS -->|Tailscale| PHONE
+    EERO -->|Tailscale\nsubnet route| PHONE
     HTTP -->|Tailscale| PHONE
 ```
 

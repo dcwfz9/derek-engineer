@@ -6,9 +6,9 @@ tags: ["home-assistant", "zigbee", "home-lab", "data"]
 description: "I bought an IKEA temp sensor for $8 while ordering batteries, stuck it in my living room, and ended up with a pretty clear picture of how SF apartments handle heat."
 ---
 
-I needed AA and AAA batteries and grabbed an [IKEA TIMMERFLOTTE](https://www.ikea.com/us/en/p/timmerflotte-temperature-humidity-sensor-smart-50618957/) while I was at it. It's a Zigbee temperature and humidity sensor, $8. I put it in my living room, which is the middle of the apartment, between all the windows, so it seemed like a decent spot for representative data. No real plan.
+I needed AA and AAA batteries and grabbed an [IKEA TIMMERFLOTTE](https://www.ikea.com/us/en/p/timmerflotte-temperature-humidity-sensor-smart-50618957/) while I was at it. Zigbee temperature and humidity sensor, $8. I put it in my living room: middle of the apartment, between all the windows, so a reasonable representative reading. No real plan.
 
-The sensor started logging on July 13, which turned out to be one of those rare days where SF briefly hits 80°F. Typical highs here in early July are 63-65°F, so it was about 15°F above normal for two days before dropping back down. Lucky timing for the experiment.
+The sensor started logging July 13, which happened to be one of those rare days SF briefly hits 80°F. Typical highs in early July are 63-65°F, so it was about 15°F above normal for two days before dropping back. Lucky timing.
 
 ## Setup
 
@@ -32,15 +32,15 @@ Three days overlaid, indoor solid and outdoor dashed:
 
 The apartment barely cools overnight. Monday outdoor dropped to 58°F by 2am. Indoor at that same time: 70°F. 12 degrees of heat that the building held onto through the night while perfectly cool air was sitting right outside. Same pattern every day, outdoor swings 20°F between night and afternoon, indoor moves maybe 5°F.
 
-There's also a crossover that happens every afternoon around 2-3pm, when outdoor finally drops back below indoor after climbing all morning. Monday that was 2:54pm. Tuesday 1:48pm. Wednesday was a cooler day (high ~68°F) and outdoor never exceeded indoor at all.
+There's a crossover every afternoon around 2-3pm: outdoor climbs all morning, then drops back below indoor. Monday that was 2:54pm. Tuesday 1:48pm. Wednesday was a cooler day (high ~68°F), outdoor never exceeded indoor at all.
 
-The dew point picture is less alarming. Indoor is sitting in the 55-60°F range, right at the comfortable threshold. SF's marine layer keeps outdoor dew point surprisingly low even in July, so ventilating actually helps rather than pumping in humid air:
+Dew point is less alarming. Indoor sits in the 55-60°F range, right at the comfortable threshold. SF's marine layer keeps outdoor dew point low even in July, so ventilating actually helps rather than pumping in humid air:
 
 *[chart: dew point + humidity]*
 
 ## Why this happens
 
-SF apartments get solar gain all afternoon, the concrete and drywall absorb it, and then overnight the building releases that heat back into the room slowly instead of letting it escape outside. The insulation that keeps you warm in winter works against you in summer.
+SF apartments get solar gain all afternoon. Concrete and drywall absorb it, then release it overnight instead of letting it escape. The insulation that keeps you warm in winter works against you in summer.
 
 ## The fix
 
@@ -96,11 +96,11 @@ Tuesday (high ~77°F) gave 6 hours of ventilation window. Monday was 4h50m befor
 
 ## What's next
 
-A few things I want to build out once I have more data:
+A few things once I have more data:
 
-**Curtain timing.** My curtains open automatically at 6:45am, which is also a good detail for a future post. On a cool overcast morning there's no real reason to let the sun in early and add heat load. An adaptive version would adjust the open time based on forecast and current indoor temp, but on weekends only since I don't want my wake time varying on weekdays.
+**Curtain timing.** My curtains open automatically at 6:45am. On a cool overcast morning there's no real reason to let the sun in early and add heat load. An adaptive version would adjust the open time based on forecast and current indoor temp, but on weekends only since I don't want my wake time varying on weekdays.
 
-**Fan control.** I have two Rowenta fans. The table fan goes on a smart plug and can be automated directly based on the ventilation score. The tower fan uses an IR remote, so a smart plug can cut power but can't wake it without an IR blaster. Either waiting for the IR Mate to come back in stock, or building something with an ESP32 and an IR LED, which I've wanted to do anyway. Once that's in place: fans on when the ventilation window opens, off when it closes or when I leave.
+**Fan control.** I have two Rowenta fans. The table fan goes on a smart plug and can be automated directly based on the ventilation score. The tower fan uses an IR remote, so a smart plug can cut power but can't wake it without an IR blaster. Either I wait for the IR Mate to come back in stock or build something with an ESP32 and an IR LED, which I've wanted to do anyway. Once that's in place: fans on when the ventilation window opens, off when it closes or when I leave.
 
 **Ten days of data.** The sensor started logging July 13. I'll revisit with a full dataset once I have it, probably around July 23.
 

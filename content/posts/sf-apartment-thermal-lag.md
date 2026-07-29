@@ -1,7 +1,7 @@
 ---
 title: "Tracking Indoor vs Outdoor Temperature in an SF Apartment"
 date: 2026-07-29
-draft: true
+draft: false
 tags: ["home-assistant", "zigbee", "home-lab", "data"]
 description: "I bought an IKEA temp sensor for $8 while ordering batteries, stuck it in my living room, and ended up with a pretty clear picture of how SF apartments handle heat."
 ---

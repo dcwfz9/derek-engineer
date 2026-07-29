@@ -96,17 +96,23 @@ sensor:
 
 On a typical SF July day (high ~68°F), outdoor barely exceeds indoor at all. The ventilation window is effectively all day. On the July 21 heat spike, I had about 3 hours of actual lock-out before it cooled back down.
 
-## Unplanned experiment: window screens
+## Unplanned experiment: airflow changes
 
-On July 24 I added proper window screens to the bedroom and living room. Before that I had been opening windows but the screens were missing or didn't fit, so I was leaving them cracked rather than fully open. With screens in, I can leave windows wide open.
+Two things changed during this window, in unknown order.
 
-The effect shows up in the data.
+First, I flipped the fan direction: one fan blowing in through the kitchen, one blowing out through the bedroom. Cross-ventilation instead of two fans doing the same thing. I don't have the exact date for this one.
 
-![Daytime indoor–outdoor temperature delta before and after window screens.](/images/thermal-lag/chart_screens.png)
+Second, on July 24 I added proper window screens to the bedroom and living room. Before that I had been opening windows but the screens were missing, so I was leaving them cracked rather than fully open. With screens in, I can leave windows wide open all day.
 
-Before the screens (Jul 19–23, excluding the Jul 21 heat spike), the apartment ran about 5.9°F warmer than outdoor during the afternoon. After (Jul 25–28), that dropped to 2.2°F — a 3.7°F improvement just from better airflow. By July 28 the delta was 0.6°F: indoor and outdoor were nearly identical at midday.
+Both show up in the data.
 
-This is a bigger effect than the ventilation automation. The alert tells me *when* to open the windows. The screens let me leave them open all day without thinking about it.
+![Daytime indoor–outdoor temperature delta, before and after airflow changes. Gray bar = Jul 21 heat spike (82°F outdoor high, excluded from averages).](/images/thermal-lag/chart_screens.png)
+
+The gray bar is July 21: outdoor peaked at 82°F while indoor only reached 76°F, so the usual relationship inverted and I excluded it from the comparison. Every other day indoor was warmer than outdoor during the afternoon.
+
+The pre-screen period (Jul 19–23) already shows a downward trend — July 20 is notably lower than July 19, and the recovery after the heat spike on Jul 22–23 doesn't fully return to the earlier baseline. That's likely the fan direction change taking effect. Then the screens pushed it further: Jul 25–28 averaged +2.2°F vs +5.9°F before, ending at 0.6°F on July 28.
+
+I can't cleanly separate the two effects without knowing when the fans were switched. But the combined result is a 3.7°F reduction in the afternoon delta. The apartment that was stubbornly 6°F warmer than outside at midday is now tracking within 2°F on most days, and sometimes nearly equal.
 
 ## What's next
 

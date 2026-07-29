@@ -96,6 +96,18 @@ sensor:
 
 On a typical SF July day (high ~68°F), outdoor barely exceeds indoor at all. The ventilation window is effectively all day. On the July 21 heat spike, I had about 3 hours of actual lock-out before it cooled back down.
 
+## Unplanned experiment: window screens
+
+On July 24 I added proper window screens to the bedroom and living room. Before that I had been opening windows but the screens were missing or didn't fit, so I was leaving them cracked rather than fully open. With screens in, I can leave windows wide open.
+
+The effect shows up in the data.
+
+![Daytime indoor–outdoor temperature delta before and after window screens.](/images/thermal-lag/chart_screens.png)
+
+Before the screens (Jul 19–23, excluding the Jul 21 heat spike), the apartment ran about 5.9°F warmer than outdoor during the afternoon. After (Jul 25–28), that dropped to 2.2°F — a 3.7°F improvement just from better airflow. By July 28 the delta was 0.6°F: indoor and outdoor were nearly identical at midday.
+
+This is a bigger effect than the ventilation automation. The alert tells me *when* to open the windows. The screens let me leave them open all day without thinking about it.
+
 ## What's next
 
 **Curtain timing.** My curtains open automatically at 6:45am. On a cool overcast morning there's no real reason to let the sun in early and add heat load. An adaptive version would delay opening on warm mornings to block solar gain longer, but only on weekends — I don't want my wake schedule varying on weekdays.

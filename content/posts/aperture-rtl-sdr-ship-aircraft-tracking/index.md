@@ -242,5 +242,7 @@ question. Narrowing down the AM carrier - `-E dc` was the right call, now
 it's a question of exact frequency and maybe still more gain. A full-band
 hopping decode pass across 902-928 MHz to actually test whether the
 scattered activity there is frequency-hopping utility meters, which an
-occupancy scan alone couldn't resolve either way. And eventually, the real
-dashboard - this one's a proof of concept, not the destination.
+occupancy scan alone couldn't resolve either way.
+
+Tonight it's an overnight AIS run - live view up while I sleep, full logs
+to go through in the morning and see who else came through the bay.

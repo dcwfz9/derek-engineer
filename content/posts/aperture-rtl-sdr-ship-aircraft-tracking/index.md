@@ -1,5 +1,5 @@
 ---
-title: "aperture: tracking real ships and aircraft with a $30 SDR dongle"
+title: "aperture: tracking real ships and aircraft with a $25 SDR dongle"
 date: 2026-08-06
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python"]
@@ -7,8 +7,8 @@ description: "What started as a 433 MHz weather-sensor census turned into full-s
 ---
 
 The [Vornado fan remote project](/posts/vornado-eos-9-rf-remote-reverse-engineering/)
-left me with an RTL-SDR Blog V4 that had only ever looked at one fan's
-433 MHz remote. Once you own an SDR, parking it on a single known frequency
+left me with an RTL-SDR Blog V4 ($25, secondhand off Craigslist) that had
+only ever looked at one fan's 433 MHz remote. Once you own an SDR, parking it on a single known frequency
 forever feels like a waste, so I pointed it at everything else in range: the
 rest of the 433 MHz ISM band, 915 MHz, and eventually the whole 500 kHz to
 1.77 GHz the dongle can actually tune to.
@@ -158,6 +158,21 @@ console worked every time. Never fully root-caused it. Fix was to skip
 synchronous `L.map().setView()` call instead - no async step, nothing to
 race.)
 
+![Ship tracks plotted on a real OpenStreetMap of SF Bay, colored by vessel](figs/ais-map-real.png)
+
+Putting real tiles under the tracks caught something the abstract plot
+hid: a couple of lines crossed straight over Alameda. Not fake data - real
+timestamped gaps in AIS reception, one of them 76 minutes long, where the
+vessel could have gone anywhere and my code just drew the shortest line
+between the two points it actually had. A straight line across dry land
+during a 76-minute gap is obviously wrong, so I went back and split every
+track wherever the gap between consecutive messages passed 15 minutes,
+rather than bridge it with a segment implying motion nobody observed. Worth
+saying plainly: the map is what caught this, the coordinates on their own
+wouldn't have.
+
+![The same 8 tracks as an abstract lat/lon plot, no basemap](figs/ais-tracks-abstract.png)
+
 ## aircraft: dump1090, and gain mattered more than antenna match
 
 `dump1090-fa` (the binary's just called `dump1090` - that's a formula-naming
@@ -176,7 +191,7 @@ and one aircraft fully tracked - real flight number, real ICAO hex address,
 altitude, speed, squawk. Antenna mismatch turned out to be the smaller
 factor; dwell time and gain closed most of the gap on their own.
 
-## the dashboard is a working demo, not the architecture
+## the dashboard is a proof of concept, not the architecture
 
 One dongle means one live band at a time, which is a real constraint I
 didn't want to paper over. The dashboard says so directly - a visible banner
@@ -190,7 +205,7 @@ It's a local page served with `python3 -m http.server`, not a proper
 Postgres-plus-Grafana setup - that's still the plan for later, this is just
 enough to see live data today.
 
-## AM radio didn't work, and I'm not pretending it did
+## AM radio: still chasing it, and it's closer than it looked
 
 True AM broadcast resonance needs on the order of 130+ feet of antenna,
 nowhere close to anything in a handheld kit, so this was always going to be
@@ -200,18 +215,32 @@ near-silence - which turned out to be because 740 kHz barely clears the
 noise floor in the full-spectrum survey I'd already run (+4.9 dB, under the
 project's own 6 dB significance bar). Should have checked that before
 guessing a station. Retried at 1.55 MHz, the actual strongest AM-band point
-in the survey data, at higher gain: still no clean audio. A spectral check
-explains why - the output is dominated by a DC-offset spike at 0 Hz, not
-speech energy, which means `rtl_fm` almost certainly needed `-E dc` (its DC
-blocking filter) and I ran it without. Four attempts is a reasonable
-smoke-test budget before moving on to things with a stronger foundation
-already working. Left as a real todo, not a quiet failure.
+in the survey data: still no clean audio, and a spectral check explained
+why - the output was dominated by a DC-offset spike at 0 Hz, not speech
+energy, meaning `rtl_fm` almost certainly needed `-E dc` (its DC blocking
+filter), which I'd run without.
+
+Went back and actually tried it instead of leaving that as a guess. `-E dc`
+knocked the DC spike down by two orders of magnitude (from a spectral
+magnitude in the tens of millions to ~87,000) and the clip's amplitude
+variance jumped from a flat 1.4x to a real 5x - something is genuinely
+modulating now, not just noise. Not clean yet: the dominant tone sits at
+10 kHz instead of in the speech band, which reads like being tuned close to
+but not exactly on a real station's carrier - AM channels sit on a strict
+10 kHz grid, and my target was picked from a ~175 kHz-wide survey bin, not
+a precise frequency. Tried the neighboring grid points (1550, 1570 kHz)
+next; both went quiet instead, and a full minute at 1550 kHz stayed flat
+the whole way through, no sign of a station there at all. The 1560 kHz
+clip with `-E dc` is still the most alive one and is out for a second
+opinion - my ears aren't in this loop, someone else's should settle it
+faster than another round of spectral heuristics.
 
 ## what's still open
 
 Lower-gain rerun of the 41-167 MHz block to settle the FM-compression
-question. `-E dc` on the AM attempt. A full-band hopping decode pass across
-902-928 MHz to actually test whether the scattered activity there is
-frequency-hopping utility meters, which an occupancy scan alone couldn't
-resolve either way. And eventually, the real dashboard - this one's a
-demo, not the destination.
+question. Narrowing down the AM carrier - `-E dc` was the right call, now
+it's a question of exact frequency and maybe still more gain. A full-band
+hopping decode pass across 902-928 MHz to actually test whether the
+scattered activity there is frequency-hopping utility meters, which an
+occupancy scan alone couldn't resolve either way. And eventually, the real
+dashboard - this one's a proof of concept, not the destination.

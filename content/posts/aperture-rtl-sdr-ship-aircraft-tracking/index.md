@@ -69,7 +69,7 @@ obvious first guess. LoRa's chirp spread spectrum modulation is
 distinguishable from basically everything else in the band: every symbol is
 a linear frequency sweep, so I wrote a small detector that tracks the peak
 FFT bin per time-slice and looks for sustained monotonic runs. Zero
-monotonic ramps, across three separate captures on two different days, at
+monotonic ramps, across three separate captures on three different days, at
 two very different antenna tunings (the stock 5.5" dipole and, later, a much
 shorter 2.5" retune aimed closer to 916 MHz). Not LoRa, not Meshtastic, on
 any of the three tries.
@@ -77,10 +77,12 @@ any of the three tries.
 What is still unexplained: the "dominant tone" fraction (a crest-factor
 measure, not raw signal strength) dropped from ~40% on the long antenna to
 7% on the short one, even though the short antenna is objectively a better
-match for that frequency. Best guess - the long antenna's second harmonic
-sits close enough to 916 MHz that it may have been acting as an inefficient
+match for that frequency. Best guess - the long antenna resonates at
+446.6 MHz, and its second harmonic (893.2 MHz) sits just 2.6% below
+916.381 MHz, close enough that it may have been acting as an inefficient
 wideband receiver there, passing through broader clutter that read as
-"peaky" per time-slice. Not confirmed. Flagged for later.
+"peaky" per time-slice. That 2.6% is a real number, not a vibe check - but
+it's still a plausible mechanism, not a confirmed one. Flagged for later.
 
 ## a full-spectrum sweep found the real risk, and it isn't FM
 
@@ -134,11 +136,19 @@ public marine registries instead of just trusting my own decode.
 | 563144900 | KINLING | Real Singapore-flagged bulk carrier, built 2022 |
 
 Two of those aren't just "the MMSI exists somewhere" - they corroborate the
-actual behavior I captured. CAPE HUDSON's independently-documented status as
-a reserve-fleet ship laid up in SF matches its data: a single tight cluster
-of points, essentially motionless the whole capture. SCORPIO's confirmed
-high-speed passenger-ship profile matches the longest, most active track of
-any vessel in the set. Plotting the same tracks over a real OpenStreetMap
+actual behavior I captured, and I went back to check with actual numbers
+instead of eyeballing the map. AIS messages carry their own speed-over-ground
+field, independent of anything I'd infer from GPS clustering: CAPE HUDSON
+reported exactly **0.0 kt on all 102 of its own messages** - not "looked
+motionless," its own transponder said so every single time, matching the
+reserve-fleet-laid-up-in-SF status the registry gave it. SCORPIO measured
+**24.7-27.2 kt, averaging 26.1 kt** across the capture - genuinely fast, but
+worth being precise about: that's higher than the 18.4 kt average the
+registry quotes, most likely because that figure is a lifetime average
+across idle time and port approaches, while my 8 hours happened to catch it
+mid-transit. Consistent with "fast vessel," not an exact match - the honest
+version is better than the vague one. Plotting the same tracks over a real
+OpenStreetMap
 (rather than my own abstract lat/lon grid, since a published Artifact's CSP
 blocks map tile requests - this had to be a locally-served page) confirmed
 it geographically too: EVER LOYAL's stationary point sits right on the real
@@ -187,19 +197,46 @@ the antenna was still at 16 inches for AIS, a much bigger mismatch for
 1090 MHz than whatever was on hand for an earlier, cruder ADS-B test that
 worked. Before asking to swap hardware again, I just gave it more time and
 gain: 90 seconds at 49.6 dB (near the dongle's max) got 215 usable messages
-and one aircraft fully tracked - real flight number, real ICAO hex address,
-altitude, speed, squawk. Antenna mismatch turned out to be the smaller
-factor; dwell time and gain closed most of the gap on their own.
+and one aircraft fully tracked. Antenna mismatch turned out to be the
+smaller factor; dwell time and gain closed most of the gap on their own.
+
+Committed to a real ~26-minute run at the same settings: 3819 messages,
+**13 distinct aircraft** by ICAO hex, most with real flight callsigns,
+altitude, and squawk. Same instinct as the ships - don't just trust that a
+callsign looks real, check it against something outside my own capture.
+[ADSBdb](https://api.adsbdb.com/) resolves an ICAO hex to a real
+registration and aircraft type, which is a cleaner check than a flight
+number: airlines reuse flight numbers across different routes and days
+(unlike a ship's MMSI, which is permanent for that vessel's life), so
+searching "SWA2361" mostly finds whatever route that number happens to fly
+on a given day, not necessarily the one I captured. The hex is what's fixed.
+
+| ICAO hex | flight | confirmed as |
+|---:|---|---|
+| A4943F | UAL548 | N39416, Boeing 737-900ER, United Airlines |
+| A4BD24 | SKW3302 | N404SY, Embraer E175, Alaska Airlines (SkyWest-operated) |
+| A32C1E | SKW3956 | N303SY, Embraer E175, Delta Connection (SkyWest-operated) |
+| AA7F05 | UAL234 | N77575, Boeing 737-9, United Airlines |
+| AB9B9D | UAL2097 | N847UA, Airbus A319, United Airlines |
+
+The SkyWest pair is a nice, specific detail rather than a coincidence:
+"SKW" is SkyWest's own callsign prefix, but SkyWest is a regional operator
+that flies routes *for* mainline carriers under their branding - one of
+these came back Alaska, the other Delta Connection, which is exactly how
+SkyWest's business actually works, not something a fabricated dataset would
+bother getting right.
 
 ## the dashboard is a proof of concept, not the architecture
 
 One dongle means one live band at a time, which is a real constraint I
 didn't want to paper over. The dashboard says so directly - a visible banner
 plus a pulsing "live" pill next to whichever capture is actually running,
-versus a plain "last capture" pill on the others. Aircraft is genuinely
-live right now, polling `dump1090`'s JSON output every 3 seconds. Ships and
-weather show their most recent completed runs with real timestamps, not
-faked as simultaneous.
+versus a plain "last capture" pill on the others. It polls whichever
+process is currently live every 3 seconds; while I was writing this section
+that was `dump1090`, by the time I was running the AIS overnight capture it
+was AIS-catcher instead. Whatever isn't running shows its most recent
+completed run with a real timestamp, not faked as simultaneous - which band
+that is changes throughout the night, the honesty about it doesn't.
 
 It's a local page served with `python3 -m http.server`, not a proper
 Postgres-plus-Grafana setup - that's still the plan for later, this is just

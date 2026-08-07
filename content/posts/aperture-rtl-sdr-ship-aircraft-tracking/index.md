@@ -272,6 +272,39 @@ clip with `-E dc` is still the most alive one and is out for a second
 opinion - my ears aren't in this loop, someone else's should settle it
 faster than another round of spectral heuristics.
 
+## overnight: mostly a different crowd
+
+9 hours, 22:53 to 07:53, same antenna, live viewer up the whole time. 750
+messages, 19 distinct vessels - fewer than the 8-hour daytime run's 36, but
+that's not really the comparison worth making. The interesting number is
+the overlap: only **6 of the 19** were also in the daytime top-8 (KINLING,
+EVER LOYAL, NAVE PERSEUS, SANDY BAY, and MMSI 367380880 - plus SCORPIO,
+barely, 2 messages overnight against 128 during the day, which tracks for
+a passenger ferry that mostly doesn't run after dark). **13 are names that
+never showed up at all during the daytime capture**: FAIRCHEM VALOR, JAKE
+SHEARER, FORTUNE JADE, PIS KERINCI, ALEGRIA 1, and eight more without a
+name decoded yet.
+
+![Overnight vessel tracks on the same real map, mostly tight clusters instead of long transits](figs/ais-map-overnight.png)
+
+Same gap-segmentation rule as the daytime map from the start this time, no
+retrofit needed. The shapes tell their own story next to the daytime one:
+where SCORPIO drew a long, repeatedly-crossing transit line all day, the
+overnight top vessels are almost all tight clusters - anchored ships
+riding at anchor overnight, not much net movement. FAIRCHEM VALOR and
+SANDY BAY have the most messages of the night and the smallest footprints
+on the map.
+
+This is also the actual answer to the "why are so many ships missing
+compared to [a commercial tracking site]" question from partway through
+this project: a single receiver at a single point in time was always going
+to undercount, even before antenna height or multi-receiver aggregation
+enter into it. Two different 9-ish-hour windows from the same receiver
+already surface more variety than either one alone would suggest. Haven't
+run the new overnight names through the registry check yet the way the
+daytime top-8 and the aircraft got - that's the natural next pass if this
+keeps going.
+
 ## what's still open
 
 Lower-gain rerun of the 41-167 MHz block to settle the FM-compression
@@ -279,7 +312,5 @@ question. Narrowing down the AM carrier - `-E dc` was the right call, now
 it's a question of exact frequency and maybe still more gain. A full-band
 hopping decode pass across 902-928 MHz to actually test whether the
 scattered activity there is frequency-hopping utility meters, which an
-occupancy scan alone couldn't resolve either way.
-
-Tonight it's an overnight AIS run - live view up while I sleep, full logs
-to go through in the morning and see who else came through the bay.
+occupancy scan alone couldn't resolve either way. And the 13 new overnight
+names, if they're worth the same registry treatment as everything else.

@@ -305,6 +305,68 @@ run the new overnight names through the registry check yet the way the
 daytime top-8 and the aircraft got - that's the natural next pass if this
 keeps going.
 
+## a second daytime run: the regulars have names now
+
+The overnight haul was thin, so I reran the daytime window - another 8
+hours, 09:27 to 17:28, same antenna, same gain, same everything except the
+clock. **2872 messages, 45 distinct vessels, 0 decode failures** - more
+than the first daytime run and the overnight run combined, from an
+identical setup. Whatever's driving that difference, it isn't the
+receiver; Bay traffic on a given day varies more than my hardware does.
+
+Cross-referencing all three runs now possible - day one, overnight, this
+one - turned up something better than any single capture could show:
+**five vessels appear in every window**: NAVE PERSEUS, EVER LOYAL, KINLING,
+SANDY BAY, SCORPIO. That's not a coincidence of who happened to be nearby.
+Their own reported speed explains it:
+
+| vessel | avg speed | zero-speed readings | reads as |
+|---|---:|---:|---|
+| NAVE PERSEUS | 0.1 kt | 78 of 145 | anchored |
+| KINLING | 0.0 kt | 86 of 113 | anchored |
+| SANDY BAY | 0.1 kt | 24 of 98 | anchored |
+| EVER LOYAL | 1.0 kt | 62 of 146 | mostly idle |
+| SCORPIO | 26.5 kt | 0 of 128 | never once still |
+
+Three vessels effectively parked, one mostly idle, and one that has never
+once reported a speed under 25 knots across three separate, differently-
+timed capture windows. That's the same speed-over-ground trick I used on
+CAPE HUDSON and SCORPIO the first time (above), now repeated independently
+three times instead of once - a much harder pattern to hand-wave away as
+coincidence.
+
+Five vessels got decoded names for the first time this run, and got the
+same registry check as everything else before going in this post:
+
+| MMSI | name | confirmed as |
+|---:|---|---|
+| 636023378 | MSC ILARIA | Real container ship, Liberia-flagged, built 2024 |
+| 220415000 | GERD MAERSK | Real Maersk-line container ship, Denmark-flagged, built 2006 |
+| 563982000 | EVER LIVELY | Real Evergreen-family container ship, Singapore-flagged, built 2014, ~13,000 TEU |
+| 303466000 | SARAH AVRICK | Real harbor tug, Alaska-registered |
+| 367380880 | GEMINI | Real WETA "Bay Ferry" passenger catamaran, built 2008 |
+
+GEMINI is the best confirmation I've gotten out of any of these three runs.
+Its MMSI actually turned up unnamed in the overnight capture too - this run
+just finally decoded the name behind it. It's one of WETA's SF Bay Ferry
+catamarans, purpose-built for the Alameda/Oakland-San Francisco route. And
+the track it drew loops through the Oakland/Alameda estuary and back
+toward SF - the real shape of a real public ferry line, not just a name
+and IMO number that happen to check out. Two independent kinds of ground
+truth agreeing at once: a registry lookup, and a track shape that matches
+a published route.
+
+![Day 2 vessel tracks on the same real map, a wider spread than either the first daytime run or the overnight one](figs/ais-map-day2.png)
+
+Checked this one specifically for the same land-crossing bug that showed
+up the first time (see above) before trusting it - zoomed into the two
+spots with the longest lines rather than assuming the wide view was
+enough. Both track the real shipping channel between the Bay Bridge and
+Jack London Square, and the real Oakland/Alameda estuary. No repeat of
+that bug: the gap-segmentation rule was right from the first draft this
+time, not patched in after spotting a bad plot, which is itself a small
+sign the method has settled down.
+
 ## what's still open
 
 Lower-gain rerun of the 41-167 MHz block to settle the FM-compression
@@ -312,5 +374,7 @@ question. Narrowing down the AM carrier - `-E dc` was the right call, now
 it's a question of exact frequency and maybe still more gain. A full-band
 hopping decode pass across 902-928 MHz to actually test whether the
 scattered activity there is frequency-hopping utility meters, which an
-occupancy scan alone couldn't resolve either way. And the 13 new overnight
-names, if they're worth the same registry treatment as everything else.
+occupancy scan alone couldn't resolve either way. And a handful of names
+that have only ever shown up overnight - FAIRCHEM VALOR, FORTUNE JADE, PIS
+KERINCI, ALEGRIA 1 - still haven't gotten the same registry treatment as
+everything else.

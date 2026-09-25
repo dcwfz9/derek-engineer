@@ -1,0 +1,10 @@
+{{- /* {{< audio src="audio/clip.mp3" caption="..." >}}: an HTML5 player for a file in the page bundle.
+       Raw HTML in Markdown is off in hugo.toml, so this is the way to embed one. */ -}}
+{{- $src := .Get "src" -}}
+{{- $res := .Page.Resources.GetMatch $src -}}
+<figure class="audio">
+  <audio controls preload="metadata" src="{{ with $res }}{{ .RelPermalink }}{{ else }}{{ $src }}{{ end }}"></audio>
+  {{- with .Get "caption" }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>

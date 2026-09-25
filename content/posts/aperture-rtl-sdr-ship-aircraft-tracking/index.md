@@ -3,7 +3,7 @@ title: "aperture: tracking real ships and aircraft with a $25 SDR dongle"
 date: 2026-08-06
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python"]
-description: "What started as a 433 MHz weather-sensor census turned into full-spectrum occupancy sweeps, a LoRa mystery, live AIS ship tracking with independently-verified data, and real ADS-B aircraft tracking - on one RTL-SDR dongle."
+description: "What started as a 433 MHz weather-sensor census turned into full-spectrum sweeps, a mystery carrier that was my own dongle, live AIS ship tracking checked against public registries, ADS-B aircraft tracking, and the local AM dial - on one RTL-SDR dongle."
 ---
 
 The [Vornado fan remote project](/posts/vornado-eos-9-rf-remote-reverse-engineering/)
@@ -18,6 +18,13 @@ what I was assuming was there, and I wanted proof I could check against
 something outside my own capture - not just "the software says it decoded a
 ship," but a real MMSI I could look up on a public registry and confirm.
 That distinction ended up mattering a lot.
+
+**Update, September 2026:** I went back and checked every number in this post
+against the logs. Several were wrong: the "different crowd" overnight, the "five
+regulars", a speed claim about SCORPIO, and a count of named ships. One whole
+explanation was wrong too, the mystery carrier at 916 MHz, which turned out to be
+my own dongle. They're corrected in place below, and the AM radio section is
+rewritten because the station I was chasing didn't exist.
 
 ## the antenna math was wrong, and it looked right
 
@@ -54,37 +61,67 @@ period doesn't reset, though - fitting `t = t0 + period*i` across a few
 hours nails each sensor's crystal offset to sub-ppm precision, and the two
 sensors are 15 ppm apart, more than enough separation to use period as the
 real identity key instead of the ID field. That period drifts measurably
-with the sensor's own reported temperature (-0.643 ppm/°C, matching a
-32.768 kHz tuning-fork crystal's known thermal curve to within 6%) - which
+with the sensor's own reported temperature (-0.64 ppm/°C from a fit that
+uses every packet, matching a 32.768 kHz tuning-fork crystal's known thermal
+curve to within about 5%) - which
 means the sensor's own transmit timing is an independent check against its
 payload. A spoofed or corrupted temperature reading would disagree with the
 crystal's actual behavior, and nothing in the payload can fake that, because
 it's a physical property of the transmitter, not a field you can set.
 
-## ruling out LoRa took three tries and a shorter antenna
+## the mystery carrier was my dongle's own DC spike
 
-An occupancy scan of 902-928 MHz turned up a 244 kHz-wide signal at
-916.381 MHz - close enough to a standard LoRa channel width that it was the
-obvious first guess. LoRa's chirp spread spectrum modulation is
-distinguishable from basically everything else in the band: every symbol is
-a linear frequency sweep, so I wrote a small detector that tracks the peak
-FFT bin per time-slice and looks for sustained monotonic runs. Zero
-monotonic ramps, across three separate captures on three different days, at
-two very different antenna tunings (the stock 5.5" dipole and, later, a much
-shorter 2.5" retune aimed closer to 916 MHz). Not LoRa, not Meshtastic, on
-any of the three tries.
+An occupancy scan of 902-928 MHz turned up something at 916.381 MHz, 244 kHz
+wide - close enough to a standard LoRa channel that it was the obvious first
+guess. LoRa's chirp spread spectrum is distinguishable from basically everything
+else in that band, since every symbol is a linear frequency sweep, so I wrote a
+detector that tracks the peak FFT bin per time slice and looks for sustained
+monotonic runs. Zero ramps, three times, on three different days and two antenna
+lengths (the stock 5.5" and a 2.5" retune aimed closer to 916 MHz). Not LoRa,
+not Meshtastic.
 
-What is still unexplained: the "dominant tone" fraction (a crest-factor
-measure, not raw signal strength) dropped from ~40% on the long antenna to
-7% on the short one, even though the short antenna is objectively a better
-match for that frequency. Best guess - the long antenna resonates at
-446.6 MHz, and its second harmonic (893.2 MHz) sits just 2.6% below
-916.381 MHz, close enough that it may have been acting as an inefficient
-wideband receiver there, passing through broader clutter that read as
-"peaky" per time-slice. That 2.6% is a real number, not a vibe check - but
-it's still a plausible mechanism, not a confirmed one. Flagged for later.
+What I couldn't explain was the other number the detector printed. The fraction
+of slices with a "dominant tone" was ~40% on the long antenna and 7% on the
+short one, even though the short one is the better match for that frequency. I
+built a theory: the long antenna's second harmonic sits 2.6% under 916 MHz, so
+it was acting as a sloppy wideband receiver that passed extra clutter. It had a
+real number in it and everything. It was wrong.
 
-## a full-spectrum sweep found the real risk, and it isn't FM
+What broke it was a boring inconsistency. In September I ran the detector a
+fourth time on a third antenna length, about 9" per element, whose third harmonic lands
+about as close to 916 MHz as the kit's shortest setting does. 47% dominant tone.
+The `rtl_power` sweep I'd taken minutes earlier at the same gain showed nothing
+at all at that frequency, and a signal can't fill half the time slices of one
+measurement and be invisible in another. The one thing the IQ capture had going
+for it: I'd centered it on exactly that frequency, and every RTL-SDR has a small
+DC offset that shows up as a spike right at the center bin. My detector never
+subtracted it. 97-99% of the "carrier" slices peaked in the center bin, and with
+the mean subtracted the fraction drops to 0.3-0.4% on all four captures, on
+every antenna. The 7%-versus-47% spread was just how a constant spike compares
+to the noise floor on each antenna. I'd spent three write-ups explaining noise.
+(I also floated time of day, since the 7% capture was the only morning one. Same
+antenna, morning capture: 44%. Not that either, and for the same reason.)
+
+So I went back to the sweep that started all this, and it doesn't show a carrier
+either. The analysis script reports nothing above threshold on that file. The
+only thing at 916.381 MHz is one +16.7 dB spike in one of three 30-second
+sweeps: a burst. The 8-hour sweep and last night's are flat there. There never
+was a carrier. "Not LoRa" is still true, but it was never a strong test -
+Meshtastic nodes beacon rarely, and a 60-second snapshot almost never catches
+one.
+
+What is there is bursts, everywhere. In the 8-hour sweep, bins that spiked 10 dB
+or more above their surroundings are spread almost perfectly evenly across the
+band: 2-6% per MHz, and 246 of 260 possible 100 kHz channels got hit at least
+once. No favorite channels. That's what frequency hopping across the whole band
+looks like, and it fits the utility-meter guess I'd written down before any of
+this. It doesn't confirm it. `rtl_433` knows some meters (Itron ERT at 912.6 MHz,
+Badger ORION water meters at 916.45 MHz, Neptune R900, all on by default), but
+my earlier decode passes never covered 912.6 or 916.45 - a 2.4 MHz window "at
+915" spans 913.8 to 916.2. So I parked on each for half an hour: zero decodes on
+both.
+
+## a full-spectrum sweep, and a question about FM
 
 `rtl_power` swept the dongle's actual full range - 500 kHz to 1.766 GHz,
 confirmed against the R828D tuner's real spec rather than assumed. Three
@@ -99,9 +136,40 @@ budgeting a notch filter for. The actual measurement says otherwise - the
 41-167 MHz region reads as one continuous elevated block with no gaps back
 to the noise floor anywhere in it, which is either genuinely dense VHF
 occupancy or FM bleeding a compressed, elevated floor across everything
-nearby. Haven't run the lower-gain test that would tell them apart yet.
-Either way, it's a bigger and more central risk than the FM-only framing I
-started with.
+nearby. I couldn't tell which from that sweep alone, so I ran the test that
+can. That's the next section.
+
+## FM compresses the front end a little, and nothing else does
+
+That elevated 41-167 MHz block bugged me. A lone lower-gain rerun wouldn't
+settle it, because I'd swapped antennas since the sweep and would be changing two
+things at once, so I ran four gains back to back on the current antenna - 36.4,
+28.0, 22.9 and 16.6 dB, plus 36.4 again at the end as a drift check - with a
+quiet band swept at each gain for reference.
+
+The logic is simple. A signal that arrives through the antenna falls by however
+much I drop the gain. Anything the receiver makes up from strong signals
+(compression, intermodulation) is nonlinear and falls faster: a third-order
+product drops about three dB per dB of gain. So if FM were smearing junk across
+its neighbors, the between-station bins would crater when I turned the gain down.
+
+They didn't. From 36.4 to 28.0 dB the non-FM bins fell a median 7.4 dB (the
+tuner's "8.4 dB" step is really about 7.4), with a spread of half a dB, which is
+about the noise on the repeat run. Not one of 585 bins fell the ~22 dB that
+intermod would. FM itself is the exception: it fell only 3.7 dB, so the strongest
+stations are compressed by about 3.7 dB at 36.4 dB gain. That stops at 28, and it
+doesn't spread into other bands.
+
+![Change in level for every bin from 41 to 167 MHz when the gain drops from 36.4 to 28.0 dB: everything falls the same 7.4 dB except the FM band, which falls 3.7 dB](figs/vhf-gain-ab.png)
+
+So the elevated block is real energy, not an FM artifact, and I don't need the
+FM notch filter I'd been budgeting for. One thing I got wrong on the way: I'd
+planned to express everything as "excess over the noise floor", but the floor
+`rtl_power` reports barely moves with gain (1.4 dB across a 20 dB range - the
+ADC's own quantization noise dominates it), so that normalization was
+meaningless and I had to switch to raw shifts. Also unexplained: the repeat run
+clipped 1% of samples at FM center, twenty minutes after the first run clipped
+0%, while the sweeps themselves repeated fine.
 
 ## AIS: the payoff, and the part I could actually verify
 
@@ -116,10 +184,11 @@ of hand-rolling weather station protocols. Two things worth remembering if
 you do this yourself: `-T` (auto-terminate) caps at 3600 seconds, so an
 8-hour run needs external supervision, not the built-in timer; and it
 defaults to sharing your reception data with a public community network
-over the internet (`-X on`), silently, unless you pass `-X off`.
+over the internet (`-X on`), with just a one-line hint at startup, unless you
+pass `-X off`.
 
 A 2-minute smoke test decoded three ships before I trusted it with 8 hours
-unattended. The real run: 1390 messages, 36 distinct vessels, 20 with names
+unattended. The real run: 1390 messages, 36 distinct vessels, 16 with names
 decoded from Type 5 static data (used [`pyais`](https://github.com/M0r13n/pyais)
 for that - AIS is a real bit-level protocol with multi-sentence messages,
 not something worth getting subtly wrong by hand).
@@ -139,7 +208,7 @@ Two of those aren't just "the MMSI exists somewhere" - they corroborate the
 actual behavior I captured, and I went back to check with actual numbers
 instead of eyeballing the map. AIS messages carry their own speed-over-ground
 field, independent of anything I'd infer from GPS clustering: CAPE HUDSON
-reported exactly **0.0 kt on all 102 of its own messages** - not "looked
+reported exactly **0.0 kt on all 102 of its position reports** - not "looked
 motionless," its own transponder said so every single time, matching the
 reserve-fleet-laid-up-in-SF status the registry gave it. SCORPIO measured
 **24.7-27.2 kt, averaging 26.1 kt** across the capture - genuinely fast, but
@@ -226,6 +295,22 @@ these came back Alaska, the other Delta Connection, which is exactly how
 SkyWest's business actually works, not something a fabricated dataset would
 bother getting right.
 
+**Update, September 2026:** reran it for 45 minutes on the antenna I had at the
+time (~9" elements - still mismatched for 1090 MHz, but by the numbers a
+slightly closer match than the 16" AIS setting the first run used). 10,122
+messages, 26 aircraft, roughly double the first run's rate. Five more verified
+against ADSBdb, all clean: a China Airlines 777 freighter at exactly FL350, a
+private Piper broadcasting its own tail number as its flight ID, and three
+airline flights (Alaska, Japan Airlines, United) matching their callsign
+prefixes. One was worth chasing further - hex 76CDC1, flight SIA12, six
+position fixes walking it straight down the Bay on a 148-degree track at FL370.
+Search says SQ12 is a real Singapore Airlines Tokyo-to-LA route, and a
+southeast track over SF at cruise altitude is exactly what the tail end of
+that flight looks like along the California coast. I haven't checked it
+against a published track, but the position data and the identity check agree
+independently, which is the same kind of two-way confirmation GEMINI got
+above.
+
 ## the dashboard is a proof of concept, not the architecture
 
 One dongle means one live band at a time, which is a real constraint I
@@ -242,68 +327,134 @@ It's a local page served with `python3 -m http.server`, not a proper
 Postgres-plus-Grafana setup - that's still the plan for later, this is just
 enough to see live data today.
 
-## AM radio: still chasing it, and it's closer than it looked
+## AM radio: the station I was chasing didn't exist
 
-True AM broadcast resonance needs on the order of 130+ feet of antenna,
-nowhere close to anything in a handheld kit, so this was always going to be
-a "does a strong local station punch through anyway" test, not a real
-antenna match. First attempt, at 740 kHz (KCBS, an easy guess), got
-near-silence - which turned out to be because 740 kHz barely clears the
-noise floor in the full-spectrum survey I'd already run (+4.9 dB, under the
-project's own 6 dB significance bar). Should have checked that before
-guessing a station. Retried at 1.55 MHz, the actual strongest AM-band point
-in the survey data: still no clean audio, and a spectral check explained
-why - the output was dominated by a DC-offset spike at 0 Hz, not speech
-energy, meaning `rtl_fm` almost certainly needed `-E dc` (its DC blocking
-filter), which I'd run without.
+I chased a 1560 kHz AM station through four attempts, a DC-blocking flag that
+improved things a hundredfold and still left a 10 kHz whistle, and a theory that
+I was tuned "close to a real carrier". Nobody had actually listened to the clip;
+I'd been reasoning from spectral heuristics. In September I listened, and also
+started from the other end with a survey of every channel.
 
-Went back and actually tried it instead of leaving that as a guess. `-E dc`
-knocked the DC spike down by two orders of magnitude (from a spectral
-magnitude in the tens of millions to ~87,000) and the clip's amplitude
-variance jumped from a flat 1.4x to a real 5x - something is genuinely
-modulating now, not just noise. Not clean yet: the dominant tone sits at
-10 kHz instead of in the speech band, which reads like being tuned close to
-but not exactly on a real station's carrier - AM channels sit on a strict
-10 kHz grid, and my target was picked from a ~175 kHz-wide survey bin, not
-a precise frequency. Tried the neighboring grid points (1550, 1570 kHz)
-next; both went quiet instead, and a full minute at 1550 kHz stayed flat
-the whole way through, no sign of a station there at all. The 1560 kHz
-clip with `-E dc` is still the most alive one and is out for a second
-opinion - my ears aren't in this loop, someone else's should settle it
-faster than another round of spectral heuristics.
+The clip was static because there was nothing there. 1560 kHz is an empty
+channel, 0.5 dB over the local noise floor. It was also garbage for a second
+reason, which is the one worth remembering: the front end was clipping. I counted
+the samples pinned at the ADC's rails on the HF path:
 
-## overnight: mostly a different crowd
+| tuner gain | samples clipped | carriers over 6 dB |
+|---:|---:|---:|
+| 19.7 dB | 0% | 15 |
+| 25.4 dB | 0.003% | 22 |
+| 28.0 dB | 18.7% | 37 |
+| 36.4 dB | 26.0% | 54 |
+
+26% of samples clipped at 36.4 dB, my go-to gain for everything else, and every
+earlier AM attempt ran hotter than that. The carrier count keeps climbing past the
+knee because clipping manufactures intermod products that look like stations.
+Even below it, three "carriers" (640, 1340 and 1530 kHz) vanish when I drop from
+25.4 to 19.7 dB, falling 6-20 dB for a 5.7 dB step, which is what a nonlinear
+product does and a real signal doesn't.
+
+Here's the band from two captures at 25.4 dB, centered at different frequencies
+so no channel lands on the DC spike. Blue is a carrier that's still there at 19.7
+dB; gray is one that isn't:
+
+![Carrier strength for each AM channel through a $25 dongle and 9 inch dipole elements, with 1560 kHz empty and three channels marked as intermod](figs/am-dial.png)
+
+That's 18 real carriers. I checked them against [Wikipedia's list of Bay Area AM
+stations](https://en.wikipedia.org/wiki/List_of_radio_stations_in_the_San_Francisco_Bay_Area),
+which has 24: 16 of my 18 are listed stations, and none of the three intermod
+frauds is. The two that aren't listed, 1120 and 1490 kHz, are weak and probably
+skywave, since I ran this after sunset. Going the other way I only caught 16 of
+the 24 listed stations. The 8 misses all sit just under my 6 dB bar or below it,
+and seven of them are outside San Francisco (San Jose, Palo Alto, Vallejo,
+Piedmont). (My first pass at this check used a summarizer that only reported the
+frequencies I asked about, which made it look like 16 for 16. Reading the raw list
+is what showed the misses.) That's still about as clean a check as I've had for
+anything in this project, and it says a $25 dongle with 9" dipole elements pulls
+in most of the local dial.
+
+Then I demodulated the two strongest, 1010 and 1050 kHz, through a filter one
+channel wide, straight from the IQ. Playing them: 1560 is static, 1010 is
+Spanish, 1050 is an ad. The public listings agree. 1010 is
+[KIQI](https://en.wikipedia.org/wiki/KIQI), Spanish-language talk out of San
+Francisco; 1050 is [KTCT](https://en.wikipedia.org/wiki/KTCT), the sports
+station branded KNBR 1050. Twelve seconds of the ad:
+
+{{< audio src="audio/am-1050-khz.mp3" caption="1050 kHz, 12 seconds, demodulated from raw IQ with a one-channel filter." >}}
+
+And the whistle. `rtl_fm`'s `-s` is the width of its channel filter as well as
+its sample rate, and I don't have the old command line any more, but that
+constant "Tuned to +300 kHz" only comes out of a 1.2 MHz capture rate, which
+means a wide `-s`. Twenty adjacent AM channels in one passband beat against each
+other in the envelope detector. I can reproduce it from my clean IQ of the empty
+channel: through a 20 kHz-wide filter the strongest tone is at 9,996 Hz, and one
+channel wide it's gone. The +300 kHz itself is `rtl_fm` shifting its capture by a
+quarter of its capture rate to dodge its own DC spike (`-s 200k` gives +300 kHz,
+`-s 12k` gives +252 kHz; I checked both). Nothing to do with the V4.
+
+## overnight: mostly the same crowd
 
 9 hours, 22:53 to 07:53, same antenna, live viewer up the whole time. 750
-messages, 19 distinct vessels - fewer than the 8-hour daytime run's 36, but
-that's not really the comparison worth making. The interesting number is
-the overlap: only **6 of the 19** were also in the daytime top-8 (KINLING,
-EVER LOYAL, NAVE PERSEUS, SANDY BAY, and MMSI 367380880 - plus SCORPIO,
-barely, 2 messages overnight against 128 during the day, which tracks for
-a passenger ferry that mostly doesn't run after dark). **13 are names that
-never showed up at all during the daytime capture**: FAIRCHEM VALOR, JAKE
-SHEARER, FORTUNE JADE, PIS KERINCI, ALEGRIA 1, and eight more without a
-name decoded yet.
+messages, 19 distinct vessels.
+
+I first wrote this section as "mostly a different crowd": only 6 of the 19
+overlapped with the daytime top 8, so 13 were "new". That was wrong, and I
+caught it when I rebuilt these tables from the logs for the repo. The top 8 by
+message count isn't everything I'd seen in the daytime, it's the loudest eight.
+Checked against every vessel from both daytime runs, 16 of the 19 overnight ships
+also show up by day and only 3 are overnight-only. Of the five names I'd called
+new, one is: FORTUNE JADE. FAIRCHEM VALOR had 39 daytime messages, JAKE SHEARER
+43, and the other two showed up a handful of times.
+
+What does change overnight is who talks. The ferries and tugs go quiet - SCORPIO
+sent 129 messages in each daytime run and 2 overnight, SARAH AVRICK 332 in the
+second daytime run and 10 overnight, GEMINI 168 and 23 - while ships at rest keep
+the same cadence all night. SANDY BAY (170 messages) and FAIRCHEM VALOR (156) were
+the two loudest of the night.
 
 ![Overnight vessel tracks on the same real map, mostly tight clusters instead of long transits](figs/ais-map-overnight.png)
 
 Same gap-segmentation rule as the daytime map from the start this time, no
-retrofit needed. The shapes tell their own story next to the daytime one:
-where SCORPIO drew a long, repeatedly-crossing transit line all day, the
-overnight top vessels are almost all tight clusters - anchored ships
-riding at anchor overnight, not much net movement. FAIRCHEM VALOR and
-SANDY BAY have the most messages of the night and the smallest footprints
-on the map.
+retrofit needed. Where SCORPIO drew a long, repeatedly-crossing line all day, the
+overnight top vessels are almost all tight clusters, ships riding at anchor.
+FAIRCHEM VALOR and SANDY BAY have the most messages of the night and the smallest
+footprints on the map.
 
-This is also the actual answer to the "why are so many ships missing
-compared to [a commercial tracking site]" question from partway through
-this project: a single receiver at a single point in time was always going
-to undercount, even before antenna height or multi-receiver aggregation
-enter into it. Two different 9-ish-hour windows from the same receiver
-already surface more variety than either one alone would suggest. Haven't
-run the new overnight names through the registry check yet the way the
-daytime top-8 and the aircraft got - that's the natural next pass if this
-keeps going.
+The new names finally got a registry check, and this time I used something harder
+than a name. Every ship broadcasts its IMO number, callsign and hull dimensions in
+its own Type 5 message, so I compared those against the public listings instead of
+asking whether a name sounded real:
+
+| vessel | the ship broadcasts | public listing |
+|---|---|---|
+| FAIRCHEM VALOR | IMO 9791195, 9V5055, 149 x 24 m, bound for SF | Singapore chemical tanker, built 2019, same size and callsign |
+| [FORTUNE JADE](https://magicport.ai/vessels/bulk-carrier/fortune-jade-mmsi-538011826) | IMO 1065904, V7A3532, 200 x 32 m, bound for Stockton | Marshall Islands bulk carrier, **built 2026**, same size and callsign |
+| PIS KERINCI | IMO 9838242, V7A6060, 250 x 44 m, bound for Martinez | Aframax tanker built 2019, same size; the "PIS" prefix looks like Pertamina International Shipping |
+| YM WIDTH | IMO 9708447, 9VMZ4, 368 x 51 m, bound for Oakland | ~14,000 TEU container ship on charter to Yang Ming (the "YM"), same callsign |
+| JAKE SHEARER | IMO 9792773, WDI8655, 153 x 23 m | US tug built 2015; IMO and callsign match, size doesn't (see below) |
+| [ALEGRIA 1](https://magicport.ai/vessels/tanker/alegria-1-mmsi-373090000) | IMO 9543536, **V7B3551**, 228 x 42 m, bound for Richmond | same IMO and hull; older listings show a Panama **MMSI and callsign**, the current one shows the MMSI the ship broadcasts |
+
+Four match on IMO, callsign and dimensions, and the declared destinations are all
+real Bay ports - Stockton, Martinez, Richmond, Oakland - which is where a bulk
+carrier, refinery-bound tankers and a container ship would be going.
+FORTUNE JADE, the one ship I only heard overnight, is a bulk carrier built this
+year (its IMO number is in the newest range) headed for Stockton, so presumably it
+just came through in the dark.
+
+Two don't line up cleanly. JAKE SHEARER broadcasts 153 x 23 m and a tanker type
+code, and a 4,070 hp tug isn't that big, so my guess is an articulated tug-barge
+reporting its combined dimensions. ALEGRIA 1 broadcasts a Marshall Islands MMSI and
+callsign where several listings show Panamanian ones, for a ship with the same IMO
+number and the same hull. The IMO number follows the hull and the other two get
+reissued when a ship changes flags, and the current record on at least one listing
+does show the MMSI the ship broadcasts, so it changed flags. I'm inferring the new
+flag and callsign from the broadcast; I didn't find a registry page stating them.
+
+This is also the actual answer to the "why are so many ships missing compared to
+[a commercial tracking site]" question from partway through this project. One
+receiver at one point in time was always going to undercount, and the runs make
+it concrete: three windows from the same receiver saw 61 distinct vessels, and 34
+of them turned up in only one window.
 
 ## a second daytime run: the regulars have names now
 
@@ -314,26 +465,35 @@ than the first daytime run and the overnight run combined, from an
 identical setup. Whatever's driving that difference, it isn't the
 receiver; Bay traffic on a given day varies more than my hardware does.
 
-Cross-referencing all three runs now possible - day one, overnight, this
-one - turned up something better than any single capture could show:
-**five vessels appear in every window**: NAVE PERSEUS, EVER LOYAL, KINLING,
-SANDY BAY, SCORPIO. That's not a coincidence of who happened to be nearby.
-Their own reported speed explains it:
+Cross-referencing all three runs - day one, overnight, this one - turned up
+something no single capture could show: **12 vessels appear in every window**.
+I first wrote "five", because five were the loud ones I'd been looking at (the
+same top-N mistake as the overnight overlap above). Their own reported speed
+explains why each of the twelve keeps showing up:
 
-| vessel | avg speed | zero-speed readings | reads as |
+| vessel | messages: day 1 / night / day 2 | avg speed | reads as |
 |---|---:|---:|---|
-| NAVE PERSEUS | 0.1 kt | 78 of 145 | anchored |
-| KINLING | 0.0 kt | 86 of 113 | anchored |
-| SANDY BAY | 0.1 kt | 24 of 98 | anchored |
-| EVER LOYAL | 1.0 kt | 62 of 146 | mostly idle |
-| SCORPIO | 26.5 kt | 0 of 128 | never once still |
+| NAVE PERSEUS | 146 / 112 / 216 | 0.1 kt | anchored |
+| KINLING | 137 / 81 / 163 | 0.0 kt | anchored |
+| SANDY BAY | 92 / 170 / 139 | 0.1 kt | anchored |
+| PIS KERINCI | 5 / 11 / 1 | 0.0 kt | anchored |
+| ALEGRIA 1 | 1 / 4 / 8 | 0.2 kt | anchored |
+| EVER LOYAL | 144 / 44 / 183 | 0.5 kt | mostly idle |
+| SARAH AVRICK | 1 / 10 / 332 | 1.2 kt | tug, worked all of day 2 |
+| EMMA C | 8 / 6 / 1 | 5.5 kt | tug |
+| SCORPIO | 129 / 2 / 129 | 26.3 kt | ferry |
+| GEMINI | 79 / 23 / 168 | 26.0 kt | ferry |
+| (no name) 368248520 | 13 / 1 / 22 | 33.9 kt | fast, unnamed |
+| (no name) 368341690 | 7 / 4 / 8 | 31.6 kt | fast, unnamed |
 
-Three vessels effectively parked, one mostly idle, and one that has never
-once reported a speed under 25 knots across three separate, differently-
-timed capture windows. That's the same speed-over-ground trick I used on
-CAPE HUDSON and SCORPIO the first time (above), now repeated independently
-three times instead of once - a much harder pattern to hand-wave away as
-coincidence.
+
+Six parked, two tugs, four at ferry speed. That's the same speed-over-ground
+trick I used on CAPE HUDSON and SCORPIO the first time (above), now repeated
+across three differently-timed windows instead of one, which is a much harder
+pattern to hand-wave away. (Speeds are averaged over all three runs. I'd also
+written that SCORPIO "never once reported a speed under 25 knots", and that was
+wrong: nine day-one readings were under 25, the lowest 24.7. What's true is that
+it was never stationary, 24.7 to 27.4 kt in every run.)
 
 Five vessels got decoded names for the first time this run, and got the
 same registry check as everything else before going in this post:
@@ -369,12 +529,18 @@ sign the method has settled down.
 
 ## what's still open
 
-Lower-gain rerun of the 41-167 MHz block to settle the FM-compression
-question. Narrowing down the AM carrier - `-E dc` was the right call, now
-it's a question of exact frequency and maybe still more gain. A full-band
-hopping decode pass across 902-928 MHz to actually test whether the
-scattered activity there is frequency-hopping utility meters, which an
-occupancy scan alone couldn't resolve either way. And a handful of names
-that have only ever shown up overnight - FAIRCHEM VALOR, FORTUNE JADE, PIS
-KERINCI, ALEGRIA 1 - still haven't gotten the same registry treatment as
-everything else.
+I ran the full-band hopping decode across all of 902-928 MHz that this section
+used to call for: two hours, thirteen overlapping windows, every default
+protocol rtl_433 ships. Zero decodes, same as the two targeted windows above.
+That's a real result, not a non-result - it rules out every meter and sensor
+protocol rtl_433 knows about - but it doesn't identify what the scattered
+bursts actually are. Whatever it is, rtl_433 has no decoder for it. Settling
+that needs either a custom bit-sync at the ~146 kbaud the bursts measured at,
+or accepting that as the wall this approach hits.
+
+Smaller ones: two vessels heard once, with no static data, that I couldn't
+identify from the MMSI alone. ALEGRIA 1's flag change (above) - I can see that
+its MMSI and callsign changed from a current listing, but I didn't find a
+registry page stating the new flag outright. And the AM survey ran after
+sunset; a midday rerun would say whether the two weak, unlisted carriers
+(1120 and 1490 kHz) are skywave or something else.

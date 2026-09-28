@@ -19,6 +19,25 @@ something outside my own capture - not just "the software says it decoded a
 ship," but a real MMSI I could look up on a public registry and confirm.
 That distinction ended up mattering a lot.
 
+![What one $25 RTL-SDR dongle heard in a few months of evenings: 61 ships, 39 aircraft, 3 weather sensors, 18 AM stations, and one solved mystery](figs/hero-stats.svg)
+
+The whole rig is dumb simple - one radio, one antenna, one laptop, pointed at
+whatever happens to be on the air:
+
+```mermaid
+flowchart LR
+    A["📡 antenna"] --> B["📻 RTL-SDR dongle\n$25"]
+    B --> C["💻 laptop\nfree software"]
+    C --> D["🚢 ships"]
+    C --> E["✈️ aircraft"]
+    C --> F["🌡️ weather sensors"]
+    C --> G["📻 AM radio"]
+```
+
+The antenna is the only part that changes from one target to the next, and
+getting its length right - or thinking I had, when I hadn't - is where this
+starts.
+
 ## the antenna math was wrong, and it looked right
 
 First real mistake: I calculated the dipole's resonant length with the bare
@@ -34,10 +53,16 @@ based on a formula that skipped two real physical corrections that happened
 to cancel out into a confident-sounding wrong answer.
 
 The formula, once actually correct, turned out useful for the rest of the
-project: extension in inches = `2808/f_MHz - 0.79`. I used it three more
-times this week for three different bands, and the RTL-SDR Blog V4 dipole
-kit's stock elements only go down to 2.5 inches - short of what the formula
-wants for anything much above 900 MHz, which mattered later.
+project: extension in inches = `2808/f_MHz - 0.79`. Shorter antenna, higher
+frequency; longer antenna, lower frequency - the same rule a trombone or a
+guitar string follows, just for radio waves instead of sound waves. I used
+the formula three more times this week for three different bands, and the
+RTL-SDR Blog V4 dipole kit's stock elements only go down to 2.5 inches -
+short of what the formula wants for anything much above 900 MHz, which
+mattered later. By the end of the project the same antenna had worn four
+different lengths for four completely different jobs:
+
+![Four antenna lengths used on this project, from 2.5 inches per element for 915 MHz to 16 inches for marine AIS, with longer elements tuned to lower frequencies](figs/antenna-length.svg)
 
 ## auto-gain was quietly lying to me
 
@@ -48,9 +73,12 @@ seconds each, and tracked both RSSI and SNR:
 
 ![RSSI and SNR vs tuner gain for the strongest 433 MHz sensor: SNR peaks around 40 dB then falls, even though RSSI keeps climbing](figs/gainsweep.png)
 
-Below about 20 dB, nothing decodes. Above that, SNR climbs cleanly to a peak
-near 40 dB, then *falls* - even though RSSI keeps climbing. That's the
-receiver clipping: rtl_433 reports `snr = rssi - noise` whenever its level
+Below about 20 dB, nothing decodes - too quiet to hear at all. Above that,
+SNR (a measure of how cleanly a packet came through, separate from how loud
+it was) climbs to a peak near 40 dB, then *falls* - even though raw signal
+strength keeps climbing. That's the receiver clipping, the same way cranking
+a speaker past its limit makes it louder but worse, not better: rtl_433
+reports `snr = rssi - noise` whenever its level
 estimate is valid, and when the ADC saturates that estimate rails at full
 scale, silently breaking the identity. The packet still decodes, it just
 can't be trusted to say how strong it was - which is exactly the `snr ==
@@ -86,6 +114,11 @@ means the sensor's own transmit timing is an independent check against its
 payload. A spoofed or corrupted temperature reading would disagree with the
 crystal's actual behavior, and nothing in the payload can fake that, because
 it's a physical property of the transmitter, not a field you can set.
+
+Every quartz crystal does this to some degree - it's the same reason a cheap
+watch quietly gains or loses a few seconds on a hot day - and this sensor's
+is precise enough that its drift alone tracks the weather outside, no
+thermometer required:
 
 ![The sensor's transmit-clock drift plotted against its own reported temperature, with the measured slope close to a tuning-fork crystal's known thermal curve](figs/thermometer.png)
 
@@ -131,10 +164,11 @@ was a carrier. "Not LoRa" is still true, but it was never a strong test -
 Meshtastic nodes beacon rarely, and a 60-second snapshot almost never catches
 one.
 
-What is there is bursts, everywhere. In the 8-hour sweep, bins that spiked 10 dB
-or more above their surroundings are spread almost perfectly evenly across the
-band: 2-6% per MHz, and 246 of 260 possible 100 kHz channels got hit at least
-once. No favorite channels:
+What is there is bursts, everywhere - like trying to eavesdrop on a
+conversation that keeps hopping to a new phone line every few seconds. In the
+8-hour sweep, bins that spiked 10 dB or more above their surroundings are
+spread almost perfectly evenly across the band: 2-6% per MHz, and 246 of 260
+possible 100 kHz channels got hit at least once. No favorite channel:
 
 ![Count of >=10 dB spikes per 1 MHz across 902-928 MHz over an 8-hour sweep, roughly even with no dominant channel](figs/bursts915.png)
 
@@ -155,6 +189,10 @@ dominate everything else in the city. FM specifically (88-108 MHz) is the
 single strongest signal anywhere in the whole 1.77 GHz span, by 13 dB over
 the next-loudest thing.
 
+Imagine scanning a car radio from one end of the dial to the other, except
+the dial keeps going well past where FM ends - through TV channels, police
+and fire radios, even cell towers - all plotted on one chart, all at once:
+
 ![The full 500 kHz to 1.77 GHz sweep on a log frequency axis, with FM broadcast towering over every UHF TV, LTE and public-safety peak](figs/fullspectrum.png)
 
 That matters for a reason that isn't obvious until you look at the data: I'd
@@ -174,11 +212,14 @@ things at once, so I ran four gains back to back on the current antenna - 36.4,
 28.0, 22.9 and 16.6 dB, plus 36.4 again at the end as a drift check - with a
 quiet band swept at each gain for reference.
 
-The logic is simple. A signal that arrives through the antenna falls by however
-much I drop the gain. Anything the receiver makes up from strong signals
-(compression, intermodulation) is nonlinear and falls faster: a third-order
-product drops about three dB per dB of gain. So if FM were smearing junk across
-its neighbors, the between-station bins would crater when I turned the gain down.
+The logic is the radio version of turning a car stereo down and checking
+whether the station gets quieter along with the road noise, or stays
+weirdly loud: a signal that arrives through the antenna falls by however
+much I drop the gain. Anything the receiver makes up on its own from strong
+signals (compression, intermodulation) is nonlinear and falls faster: a
+third-order product drops about three dB per dB of gain. So if FM were
+smearing junk across its neighbors, the between-station bins would crater
+when I turned the gain down.
 
 They didn't. From 36.4 to 28.0 dB the non-FM bins fell a median 7.4 dB (the
 tuner's "8.4 dB" step is really about 7.4), with a spread of half a dB, which is
@@ -385,9 +426,13 @@ Even below it, three "carriers" (640, 1340 and 1530 kHz) vanish when I drop from
 25.4 to 19.7 dB, falling 6-20 dB for a 5.7 dB step, which is what a nonlinear
 product does and a real signal doesn't.
 
-Here's the band from two captures at 25.4 dB, centered at different frequencies
-so no channel lands on the DC spike. Blue is a carrier that's still there at 19.7
-dB; gray is one that isn't:
+Every AM station broadcasts a steady tone right at its assigned spot on the
+dial whether or not anyone's actually talking at that instant - so counting
+those tones is how you find every station without knowing a single call
+sign going in. Here's the band from two captures at 25.4 dB, centered at
+different frequencies so no channel lands on the DC spike. Blue is a
+carrier that's still there at 19.7 dB, a real station; gray is one that
+isn't, an illusion the receiver invented:
 
 ![Carrier strength for each AM channel through a $25 dongle and 9 inch dipole elements, with 1560 kHz empty and three channels marked as intermod](figs/am-dial.png)
 

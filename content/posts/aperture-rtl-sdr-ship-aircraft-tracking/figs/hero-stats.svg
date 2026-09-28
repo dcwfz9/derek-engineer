@@ -1,0 +1,90 @@
+<svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect x="0" y="0" width="1200" height="640" rx="16" fill="#fcfcfb" stroke="#e6e5e1" stroke-width="1.5"/>
+  <text x="40" y="58" font-size="30" font-weight="800" fill="#0b0b0b">One $25 dongle, one antenna, a few months of evenings</text>
+  <text x="40" y="86" font-size="16" fill="#52514e">everything below is a real, independently-checked count - not a demo</text>
+  
+  <g>
+    <rect x="40.0" y="150" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="171.0" y="208" font-size="40" text-anchor="middle">🚢</text>
+    <text x="171.0" y="258" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">61</text>
+    <text x="171.0" y="286" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">ships tracked</text>
+    <foreignObject x="50.0" y="296" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">IMO numbers checked against public registries</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="326.0" y="150" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="457.0" y="208" font-size="40" text-anchor="middle">✈️</text>
+    <text x="457.0" y="258" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">39</text>
+    <text x="457.0" y="286" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">aircraft tracked</text>
+    <foreignObject x="336.0" y="296" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">verified by tail number and registered owner</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="612.0" y="150" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="743.0" y="208" font-size="40" text-anchor="middle">🌡️</text>
+    <text x="743.0" y="258" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">3</text>
+    <text x="743.0" y="286" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">weather sensors</text>
+    <foreignObject x="622.0" y="296" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">next door, decoded from their own radio bursts</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="898.0" y="150" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="1029.0" y="208" font-size="40" text-anchor="middle">📻</text>
+    <text x="1029.0" y="258" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">18</text>
+    <text x="1029.0" y="286" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">AM stations found</text>
+    <foreignObject x="908.0" y="296" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">just by listening for their carriers</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="183.0" y="390" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="314.0" y="448" font-size="40" text-anchor="middle">🔍</text>
+    <text x="314.0" y="498" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">1</text>
+    <text x="314.0" y="526" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">mystery solved</text>
+    <foreignObject x="193.0" y="536" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">a “signal” that turned out to be the dongle itself</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="469.0" y="390" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="600.0" y="448" font-size="40" text-anchor="middle">⏱️</text>
+    <text x="600.0" y="498" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">40+</text>
+    <text x="600.0" y="526" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">hours listening</text>
+    <foreignObject x="479.0" y="536" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">spread across a couple of months, one band at a time</div>
+    </foreignObject>
+  </g>
+  <g>
+    <rect x="755.0" y="390" width="262.0" height="210" rx="14"
+          fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+    <text x="886.0" y="448" font-size="40" text-anchor="middle">💵</text>
+    <text x="886.0" y="498" font-size="46" font-weight="800" fill="#2a78d6"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">$25</text>
+    <text x="886.0" y="526" font-size="18" font-weight="700" fill="#0b0b0b"
+          text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">cost of the dongle</text>
+    <foreignObject x="765.0" y="536" width="242.0" height="56">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font: 13px system-ui, -apple-system, sans-serif; color:#52514e; text-align:center; line-height:1.35;">secondhand, off Craigslist</div>
+    </foreignObject>
+  </g>
+</svg>

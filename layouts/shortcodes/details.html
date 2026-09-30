@@ -1,0 +1,10 @@
+{{- /* {{< details summary="Command and settings" >}} ...markdown... {{< /details >}}
+       A collapsed-by-default block for setup detail (exact commands, run tables).
+       Raw HTML in Markdown is off in hugo.toml, so this is the way to get <details>.
+       The inner text is rendered as Markdown, so tables and code fences work. */ -}}
+<details class="collapsible">
+  <summary>{{ .Get "summary" | default "Details" }}</summary>
+  <div class="collapsible-body">
+{{ .Inner | markdownify }}
+  </div>
+</details>

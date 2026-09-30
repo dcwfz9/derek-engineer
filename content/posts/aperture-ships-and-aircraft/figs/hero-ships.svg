@@ -1,0 +1,24 @@
+<svg viewBox="0 0 1200 348" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="346" rx="16" fill="#fcfcfb" stroke="#e6e5e1" stroke-width="1.5"/>
+<text x="40" y="60" font-size="32" font-weight="800" fill="#0b0b0b">Ships and aircraft, Aug 6-7, 2026</text>
+<text x="40" y="92" font-size="19" fill="#52514e">Counts from my own captures in San Francisco</text>
+<rect x="40.0" y="118" width="263.5" height="196" rx="14" fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+<text x="171.8" y="184" font-size="54" font-weight="800" fill="#2a78d6" text-anchor="middle">61</text>
+<text x="171.8" y="222" font-size="23" font-weight="700" fill="#0b0b0b" text-anchor="middle">AIS IDs heard</text>
+<text x="171.8" y="258" font-size="20" fill="#52514e" text-anchor="middle">53 ships, 1 base station,</text>
+<text x="171.8" y="284" font-size="20" fill="#52514e" text-anchor="middle">7 navigation aids</text>
+<rect x="325.5" y="118" width="263.5" height="196" rx="14" fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+<text x="457.2" y="184" font-size="54" font-weight="800" fill="#2a78d6" text-anchor="middle">16</text>
+<text x="457.2" y="222" font-size="23" font-weight="700" fill="#0b0b0b" text-anchor="middle">vessels looked up</text>
+<text x="457.2" y="258" font-size="20" fill="#52514e" text-anchor="middle">on vessel-tracking sites</text>
+<rect x="611.0" y="118" width="263.5" height="196" rx="14" fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+<text x="742.8" y="184" font-size="54" font-weight="800" fill="#2a78d6" text-anchor="middle">13</text>
+<text x="742.8" y="222" font-size="23" font-weight="700" fill="#0b0b0b" text-anchor="middle">aircraft heard</text>
+<text x="742.8" y="258" font-size="20" fill="#52514e" text-anchor="middle">ADS-B run on Aug 6,</text>
+<text x="742.8" y="284" font-size="20" fill="#52514e" text-anchor="middle">about 26 minutes</text>
+<rect x="896.5" y="118" width="263.5" height="196" rx="14" fill="#ffffff" stroke="#e6e5e1" stroke-width="1.5"/>
+<text x="1028.2" y="184" font-size="54" font-weight="800" fill="#2a78d6" text-anchor="middle">5</text>
+<text x="1028.2" y="222" font-size="23" font-weight="700" fill="#0b0b0b" text-anchor="middle">aircraft looked up</text>
+<text x="1028.2" y="258" font-size="20" fill="#52514e" text-anchor="middle">in ADSBdb by ICAO</text>
+<text x="1028.2" y="284" font-size="20" fill="#52514e" text-anchor="middle">address</text>
+</svg>

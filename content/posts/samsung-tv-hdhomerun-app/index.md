@@ -183,7 +183,7 @@ $ hdhomerun_config 10914695 set /tuner1/channel 8vsb:557000000
 ERROR: resource locked by 10.0.4.77
 ```
 
-My RF signal logger retunes tuner 1 every five minutes and didn't catch that. Under launchd it crashed and restarted every 30 seconds: 23,052 times, each a missed sample. It now skips the sweep when someone's watching.
+My [RF signal logger](/posts/ota-antenna-rain-gauge/) retunes tuner 1 every five minutes and didn't catch that. Under launchd it crashed and restarted every 30 seconds: 23,052 times, each a missed sample. It now skips the sweep when someone's watching.
 
 **Stop the stream when the app hides.** Home and standby fire `visibilitychange` just before the TV freezes the app, and a stream left open keeps the tuner held:
 

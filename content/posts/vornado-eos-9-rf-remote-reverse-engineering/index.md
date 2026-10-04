@@ -673,7 +673,7 @@ takes about ten minutes to find it.
 
 ## Repo
 
-[github.com/dcwfz9/vornado-rf](https://github.com/dcwfz9/vornado-rf)
+The repo is private for now. This is what's in it:
 
 ```
 scripts/    subanalyze.py   pulse-width histogram

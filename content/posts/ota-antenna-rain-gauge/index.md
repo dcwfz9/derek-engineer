@@ -1,7 +1,7 @@
 ---
 title: "Using an OTA TV Antenna as a Rain Gauge (It Didn't Work)"
 date: 2026-09-17
-draft: true
+draft: false
 tags: ["home-lab", "hardware", "rf", "data", "hardware-in-the-loop"]
 description: "I logged an HDHomeRun's signal for two months to detect rain. It rained five times, my logger said it never did, and the signal didn't care."
 ---

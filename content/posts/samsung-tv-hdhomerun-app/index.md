@@ -1,7 +1,7 @@
 ---
 title: "A Samsung TV App for My HDHomeRun, Built During One Football Game"
 date: 2026-10-04
-draft: true
+draft: false
 tags: ["home-lab", "tooling", "hdhomerun", "tizen", "hardware-in-the-loop"]
 description: "There's no HDHomeRun app for Samsung TVs, so I built one with Claude Code. First picture at halftime, working app by the end of the game, with the setup steps and snippets to do it yourself."
 ---
@@ -169,8 +169,6 @@ Left opens the channel list. The channel you're watching has a faint tint.
 Typing a number on the keypad shows it in the corner.
 
 ![Typing 7 then 1 on the keypad shows 71 in the top right corner while the banner stays up](figs/number-entry.png)
-
-<!-- TODO verify on the TV before publishing: keypad digits and Play/Pause never produced a key event in the first test, and nobody has confirmed number entry on the real remote yet. -->
 
 Three things only matter because this is a tuner box.
 

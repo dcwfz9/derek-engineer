@@ -2,7 +2,7 @@
 title: "Reverse-Engineering the Vornado EOS 9's RF Remote"
 date: 2026-08-04
 draft: false
-tags: ["rf", "hardware", "home-lab", "python"]
+tags: ["rf", "hardware", "home-lab", "python", "hardware-in-the-loop"]
 description: "My Vornado EOS 9's remote has no documented protocol, so I reverse engineered it with a Flipper Zero: OOK, 1:3 PWM, a 20-bit address, no encryption."
 ---
 
@@ -17,7 +17,8 @@ genuinely unlisted.) So it was Read RAW and reverse engineering from scratch,
 or nothing.
 
 This is the whole process: capture, decode, synthesize, verify. It took an
-evening. Everything is in the repo at the bottom.
+evening, with Claude writing the analysis scripts while I worked the Flipper
+and the fan. Everything is in the repo at the bottom.
 
 ## Step 0: is it even worth reverse engineering
 
@@ -672,6 +673,8 @@ takes about ten minutes to find it.
 
 ## Repo
 
+[github.com/dcwfz9/vornado-rf](https://github.com/dcwfz9/vornado-rf)
+
 ```
 scripts/    subanalyze.py   pulse-width histogram
             subdecode.py    frame segmentation and bit decode
@@ -686,8 +689,9 @@ generated/  synthesized frames, including the two dead ones
 
 ## How the analysis scripts actually got built
 
-The scripts are short enough that the interesting part is not the code, it is
-the order they were written in. The order was the method.
+Claude wrote them, one at a time, and I ran each one against the captures
+before asking for the next. They are short enough that the interesting part is
+not the code, it is the order they were written in. The order was the method.
 
 **Histogram before parser.** `subanalyze.py` does exactly one thing: bin every
 absolute duration and print the bins with real counts. No structure, no
@@ -756,3 +760,7 @@ One number worth explaining before someone asks: the persistence figure uses 174
 frames while the sync-based segmentation finds about 180 candidates. The
 difference is frames clipped at recording boundaries. It changes no conclusion,
 but 174 is the honest count of complete payloads.
+
+---
+
+*[How this was built](/how-i-work/): Claude wrote the analysis scripts and the figure code. I captured every button on the Flipper, ran the SDR measurements, and sent every synthesized frame to the real fan. Tested on the fan: a frame built from the decode turns it on, and the two unused codes light its display and do nothing else. Not tested: range, and the CC1101 transmitter that will replace the Flipper.*

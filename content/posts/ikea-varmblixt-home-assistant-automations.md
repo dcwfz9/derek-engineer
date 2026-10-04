@@ -2,7 +2,7 @@
 title: "IKEA Varmblixt as a Home Assistant Status Light"
 date: 2026-04-13
 draft: false
-tags: ["home-assistant", "zigbee", "home-lab"]
+tags: ["home-assistant", "zigbee", "home-lab", "hardware-in-the-loop"]
 description: "Turning the IKEA Varmblixt donut lamp into a context-aware status light with weather reactions, cycling alerts, door alerts, and three color scripts."
 ---
 
@@ -310,3 +310,7 @@ Stops all running scripts and kills the lamp at midnight.
 ```
 
 The lamp is listed explicitly alongside `light.all_lights` because it wasn't reliably included in the group before a full HA restart. Turning off `all_lights` alone didn't always catch it.
+
+---
+
+*[How this was built](/how-i-work/): Claude wrote most of the YAML. I paired the lamp (twelve power cycles, easier from a smart plug), chose the colors, and decided what it should tell me at a glance. Everything here runs on the real lamp and door sensor.*

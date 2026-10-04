@@ -1,8 +1,8 @@
 ---
 title: "aperture: the mystery signal at 916 MHz was my own dongle"
 date: 2026-09-28
-draft: false
-tags: ["rf", "sdr", "hardware", "home-lab", "python"]
+draft: true
+tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
 description: "A 916.381 MHz 'carrier' that looked like LoRa turned out to be the RTL-SDR's own DC spike; plus the bursts that are really there, a 2-hour hopping decode of 902-928 MHz, and what PG&E publishes about its meters."
 ---
 
@@ -280,3 +280,7 @@ This is one of four posts from the same RTL-SDR project. The other three:
 - [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4)
 - [aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle](/posts/aperture-ships-and-aircraft/) - three AIS runs and two ADS-B runs, with times and links so they can be checked (Aug 6-7 and Sep 25)
 - [aperture: what's on the air from 500 kHz to 1.77 GHz](/posts/aperture-whats-on-the-air/) - a full-spectrum sweep, whether strong FM stations overload the receiver, and an AM station that was an empty channel (Aug 3 to Sep 24)
+
+---
+
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, started every run, and chose what to check against outside sources. Every number here comes from a run in the table, and what wasn't recorded is listed there too.*

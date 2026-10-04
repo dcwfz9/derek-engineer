@@ -1,8 +1,8 @@
 ---
 title: "aperture: what's on the air from 500 kHz to 1.77 GHz"
 date: 2026-09-26
-draft: false
-tags: ["rf", "sdr", "hardware", "home-lab", "python", "am-radio"]
+draft: true
+tags: ["rf", "sdr", "hardware", "home-lab", "python", "am-radio", "hardware-in-the-loop"]
 description: "A full-spectrum sweep, a test of whether strong FM stations overload the receiver, and an AM station I chased through four attempts that turned out to be an empty channel."
 ---
 
@@ -320,3 +320,7 @@ This is one of four posts from the same RTL-SDR project. The other three:
 - [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4)
 - [aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle](/posts/aperture-ships-and-aircraft/) - three AIS runs and two ADS-B runs, with times and links so they can be checked (Aug 6-7 and Sep 25)
 - [aperture: the mystery signal at 916 MHz was my own dongle](/posts/aperture-mystery-carrier-dc-spike/) - a 916 MHz "carrier" that looked like LoRa and turned out to be the dongle's own DC spike, plus a 2-hour hopping decode (Aug 3 to Sep 25)
+
+---
+
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, started every run, and chose what to check against outside sources. Every number here comes from a run in the table, and what wasn't recorded is listed there too.*

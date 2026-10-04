@@ -2,7 +2,7 @@
 title: "TRMNL X BYOS: Self-Hosting the Server Before the Device Arrives"
 date: 2026-04-23
 draft: false
-tags: ["home-lab", "python", "networking"]
+tags: ["home-lab", "python", "networking", "notes"]
 description: "Setting up a FastAPI BYOS server for the TRMNL X e-ink display, with local DNS and Caddy reverse proxy, before the hardware even ships."
 ---
 
@@ -100,3 +100,7 @@ Device arrives → BYOS setup:
 4. Build a morning briefing plugin: today's calendar events, weather, any emails that need a reply
 
 That last one is the point — same info I get from a Telegram briefing every morning, but always visible on the desk without picking up the phone.
+
+---
+
+*[How this was built](/how-i-work/): the server is [rcarmo's](https://github.com/rcarmo/python-fastapi-trmnl-server). Claude Code set it up on the Mac mini, with the Caddy proxy and the AdGuard rewrite. I picked BYOS over the subscription. Tested: the server runs and renders its plugins. Not tested: anything on the device, which hadn't arrived yet.*

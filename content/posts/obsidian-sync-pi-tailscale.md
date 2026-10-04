@@ -229,3 +229,7 @@ Don't disable iCloud before confirming LiveSync is syncing. If something goes wr
 ## Result
 
 CouchDB as a systemd service on the 3B v1.2, Tailscale handling the networking, LiveSync handling replication. Vault syncs in real time, E2E encrypted, no subscription, no third-party cloud. The two things that caused actual friction: the `nonode@nohost` node name issue in CouchDB 3.x, and the bind address during install — everything else was straightforward.
+
+---
+
+*[How this was built](/how-i-work/): Claude planned this with me and wrote out the commands. I did the Pi side: the firmware update over USB, the PoE HAT, and the install. Tested: sync between the Mac and the Pi over Tailscale. Not tested yet: the iPhone over cellular.*

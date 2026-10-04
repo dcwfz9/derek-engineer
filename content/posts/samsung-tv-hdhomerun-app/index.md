@@ -2,7 +2,7 @@
 title: "A Samsung TV App for My HDHomeRun, Built During One Football Game"
 date: 2026-10-04
 draft: true
-tags: ["home-lab", "tooling", "hdhomerun", "tizen"]
+tags: ["home-lab", "tooling", "hdhomerun", "tizen", "hardware-in-the-loop"]
 description: "There's no HDHomeRun app for Samsung TVs, so I built one with Claude Code. First picture at halftime, working app by the end of the game, with the setup steps and snippets to do it yourself."
 ---
 
@@ -10,7 +10,7 @@ There's no HDHomeRun app in Samsung's store, so I built one with Claude Code dur
 
 The Apple TV app exists, but it lists channels like files in a folder that you click through, and my Apple TV isn't even set up right now. I'd been watching through VLC network streams on my phone or laptop. I wanted the TV itself to behave like a TV: open on a channel, flip with Ch+ and Ch-, see what's on. As far as I could find, that didn't exist. (SiliconDust has a sideload-only test build on their forum that I never tried.)
 
-I started without knowing whether the TV could even play the stream. The first picture came up at 11:41, around halftime, and the whole app was on the TV by the end of the game. Here's how, with the snippets you'd need to do it too.
+I'd never written a TV app or used Tizen, and I started without knowing whether the TV could even play the stream. The first picture came up at 11:41, around halftime, and the whole app was on the TV by the end of the game. Here's how, with the snippets you'd need to do it too.
 
 ![Timeline of Sunday October 4 from 10:56 AM to 1:12 PM with the FOX game slot behind it. Research and plan until 11:12, a test page and Tizen setup until the first picture on the TV at 11:41, measurements until 11:56, specs until 12:16, five sub-agents and a lead agent working in parallel from about 12:20 to 12:46, and the full app on the TV at 12:52, 1 hour 11 minutes after the first picture](figs/timeline.png)
 
@@ -250,3 +250,7 @@ The behavior modules are written as JSON test cases that a Swift port can replay
 ## What's next
 
 Pre-tuning the next channel on the second tuner is first, since four seconds is the one thing that still feels slow. Then a grid guide, an audio track picker and a signal readout. An Apple TV version needs its own decoder: from what I've read tvOS can't decode MPEG-2, but I haven't tested that. The repo is private for now.
+
+---
+
+*[How this was built](/how-i-work/): Claude Code wrote the app, its tests and the figures, and handed five pieces to Sonnet sub-agents for the second half. I set up developer mode, held the remote, and judged everything on the TV. Tested on the TV: playback of both codecs, captions, the tuner being freed on Home and standby, and ten timed channel changes. Not tested yet: number entry and Play/Pause on the real remote.*

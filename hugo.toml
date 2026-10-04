@@ -10,7 +10,7 @@ enableRobotsTXT = true
 
 [params]
   author = "Derek Welty"
-  description = "Technical build notes by Derek Welty: electronics, home automation, local tooling, Raspberry Pi projects, and the debugging details worth keeping."
+  description = "Build notes by Derek Welty, an electrical engineer who builds things at home with an AI coding agent and tests them on the real hardware: RF, TVs, Raspberry Pis and home automation."
   keywords = ["home assistant", "raspberry pi", "electronics", "home lab", "python", "hugo", "embedded", "DIY", "derek welty"]
   defaultTheme = "auto"
   ShowReadingTime = true
@@ -23,7 +23,7 @@ enableRobotsTXT = true
 
   [params.homeInfoParams]
     Title = "Hi, I'm Derek"
-    Content = "Electrical engineer writing down the hardware, home automation, and software projects I build at home. Mostly implementation notes, failure modes, command lines, and the details I know I'll need again."
+    Content = "Electrical engineer. An AI agent writes most of my code, and I put the real hardware in the loop. These are the notes: what I measured, what failed, the command lines, and the details I'll need again."
 
   [[params.socialIcons]]
     name = "github"
@@ -56,3 +56,8 @@ enableRobotsTXT = true
     name = "About"
     url = "/about/"
     weight = 20
+  [[menu.main]]
+    identifier = "how-i-work"
+    name = "How I work"
+    url = "/how-i-work/"
+    weight = 21

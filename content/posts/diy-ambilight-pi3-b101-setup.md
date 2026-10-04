@@ -2,7 +2,7 @@
 title: "Building a DIY Ambilight on a Raspberry Pi 3 with an Auvidea B101"
 date: 2026-05-01
 draft: false
-tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]
+tags: ["raspberry-pi", "home-lab", "led", "hyperion", "hdmi", "hardware-in-the-loop"]
 description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
 ---
 
@@ -501,3 +501,7 @@ v4l2-ctl -d /dev/video0 --set-fmt-video=width=1920,height=1080,pixelformat=UYVY
 ```
 
 To be continued when the splitter arrives and after I'm back from travel. Next focus: cracking the VIDIOC_STREAMON format issue with a real source signal.
+
+---
+
+*[How this was built](/how-i-work/): Claude worked through the commands and read the kernel logs with me. I flashed the card, wired the B101, and ran the loopback and the other source tests on the bench. Tested: capture timings and format negotiation through the Pi's own HDMI loopback. Not tested: a real frame from a real source (that's part 2), and there are no LEDs yet.*

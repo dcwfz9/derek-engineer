@@ -2,7 +2,7 @@
 title: "DIY Ambilight Part 2: Capture Working, LEDs Are Next!"
 date: 2026-05-03
 draft: false
-tags: ["raspberry-pi", "homelab", "led", "hyperion", "hdmi"]
+tags: ["raspberry-pi", "home-lab", "led", "hyperion", "hdmi", "hardware-in-the-loop"]
 description: "HDMI splitter arrived. Got a clean 1080p30 frame out of the B101, Hyperion preview working, and LED layout sketched out. 1080p60 is still broken."
 ---
 
@@ -190,3 +190,7 @@ Still need to actually wire and mount the LEDs — that's the next session. Befo
 | Reliable frame | Capture 10, extract frame 9 |
 
 1080p60 detects fine but fails at STREAMON — CSI lane issue, probably solvable with a DT overlay but haven't tried.
+
+---
+
+*[How this was built](/how-i-work/): Claude worked out the capture commands and the frame math with me. I set up the splitter and the Apple TV's output mode, and checked the frames by eye. Tested: a clean 1080p30 frame and Hyperion's live preview against real Apple TV content. Not tested: 1080p60, which fails at STREAMON. Still no LEDs.*

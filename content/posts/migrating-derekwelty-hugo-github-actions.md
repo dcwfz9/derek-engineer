@@ -2,7 +2,7 @@
 title: "Migrating derekwelty.com to Hugo + GitHub Actions"
 date: 2026-05-02
 draft: false
-tags: ["hugo", "github-actions", "tooling", "web"]
+tags: ["hugo", "github-actions", "tooling", "web", "notes"]
 description: "Replacing a Bootstrap 5 static site with Hugo and the Congo theme, deployed via GitHub Actions to GitHub Pages. Here are the gotchas."
 ---
 
@@ -155,3 +155,7 @@ on:
 ```
 
 Otherwise pushes to main won't trigger a deploy and you'll spend five minutes wondering why the site isn't updating.
+
+---
+
+*[How this was built](/how-i-work/): Claude Code did the migration and wrote the workflow; the gotchas are the ones we hit on the way. I chose the theme and decided when the site looked right.*

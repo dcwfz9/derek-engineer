@@ -2,7 +2,7 @@
 title: "LaTeX Resume with Auto-Build on GitHub"
 date: 2026-07-10
 draft: false
-tags: ["tooling", "latex", "github-actions"]
+tags: ["tooling", "latex", "github-actions", "notes"]
 description: "How I write my resume in LaTeX and let GitHub Actions compile and publish the PDF on every push."
 ---
 
@@ -90,3 +90,7 @@ The CI loop is fast enough that I mostly just push and check the Actions tab.
 ## What I'd do differently
 
 The workflow installs TeX packages fresh on every run, which takes ~2 minutes. Caching the apt layer or using a pre-built LaTeX Docker image would cut that significantly. Fine for now since I'm not updating the resume daily.
+
+---
+
+*[How this was built](/how-i-work/): this one's mine, from before I used an AI agent. The repo dates to 2019 and the workflow to 2023. Since this March, Molty and Claude Code edit the resume's text; the build hasn't changed.*

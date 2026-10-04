@@ -1,18 +1,18 @@
 ---
-title: "Building Molty: A Telegram Assistant with Memory and Scheduled Checks"
+title: "Molty: A Telegram Assistant That Wrote Most of Itself"
 date: 2026-04-08
 draft: false
 tags: ["tooling", "home-lab", "automation"]
-description: "How Molty works: Telegram interface, file-backed memory, scheduled checks, model routing, integrations, and the parts I would rebuild."
+description: "How Molty works: a Telegram interface, file-backed memory, scheduled checks and integrations, nearly all of it written by Molty itself, and the parts I would rebuild."
 ---
 
 ChatGPT worked fine for one-off questions, but it was isolated from the systems I actually use: calendar, email, Strava, GitHub, Obsidian, Spotify, and the half-finished project notes scattered across repos. I wanted a small assistant I could run myself, with persistent memory, scheduled checks, and enough tool access to be useful without turning into a full product.
 
-So I built Molty.
+So I set one up, and it wrote most of itself: 81 of the first 83 commits in its workspace repo are Molty's own, starting with "Initial snapshot - Day 1 with Derek". My part was deciding what it should do and telling it when it got something wrong.
 
 ## Architecture
 
-Molty runs on [OpenClaw](https://openclaw.ai) — an open agent platform that handles the gateway infrastructure: Telegram integration, LLM API routing, and session management. It runs on a Hostinger VPS. I didn't build any of that. What I built is everything layered on top: the memory system, integrations, heartbeat logic, and skills.
+Molty runs on [OpenClaw](https://openclaw.ai) — an open agent platform that handles the gateway infrastructure: Telegram integration, LLM API routing, and session management. It runs on a Hostinger VPS. I didn't build any of that. What got built on top, mostly by Molty from my instructions: the memory system, integrations, heartbeat logic, and skills.
 
 ```mermaid
 flowchart LR
@@ -97,7 +97,7 @@ The pattern works. It keeps the core system simple and lets domain-specific logi
 
 ## SOUL.md
 
-One of the more unusual files in the workspace is `SOUL.md` — a behavior spec for cases where the task instructions do not cover the situation. Less config file, more operating manual.
+One of the more unusual files in the workspace is `SOUL.md` — a behavior spec for cases where the task instructions do not cover the situation. Less config file, more operating manual. Molty wrote it from our conversations, and version 2 folded in a draft I got from ChatGPT.
 
 The identity line at the top:
 
@@ -134,3 +134,7 @@ Session history corruption happened early from malformed thinking blocks in the 
 - WhatsApp support for group chat context
 - Fidelity portfolio drift tracking via monthly CSV export
 - Habit tracking (spec exists, hasn't been built)
+
+---
+
+*[How this was built](/how-i-work/): Molty wrote its own workspace: the memory files, the integrations, the heartbeat and the skills (81 of its first 83 commits). OpenClaw is someone else's platform. I decided what it should do, corrected it, and used it every day. Tested: two weeks of daily use from Telegram. Not tested: a real failure; the restart is still a 5-second setTimeout.*

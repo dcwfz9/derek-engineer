@@ -23,7 +23,7 @@ description: "One line summary shown in post list."
 - `draft: false` = published immediately on push
 - `draft: true` = built locally only, not deployed
 - Use today's date unless told otherwise
-- Tags should be lowercase, specific (e.g. `raspberry-pi`, `hyperion`, `python`, `home-lab`)
+- Tags should be lowercase, specific (e.g. `raspberry-pi`, `hyperion`, `python`, `home-lab`). Add `hardware-in-the-loop` when the device was the test bench, and `notes` for pure setup or web plumbing
 
 ## Publish workflow
 
@@ -45,6 +45,21 @@ Rules:
 - Drafts (`draft: true`) are safe to commit and push — they don't affect the live site but still consume a deploy credit, so batch them too
 - When in doubt, commit locally and wait until there's a logical stopping point before pushing
 
+## Who did what (every post)
+
+Derek is an electrical engineer, not a software engineer. The code in these posts is written by an AI agent (Claude Code; Molty for some older projects) with the real hardware in the loop: the agent writes, Derek runs it on the device, measures, and says what's wrong. Write every post that way. The Dial post (`content/posts/samsung-tv-hdhomerun-app/`) is the reference, and `content/how-i-work.md` states the framework.
+
+- Never write "I built" or "I wrote" for code the agent wrote. Say who wrote it: "Claude Code wrote ...", "I had Claude Code ...".
+- Derek's part is the hardware and the judgment: wiring, antennas, placement, developer modes, what counts as working, what to measure, when a result is wrong. Name it specifically.
+- Every number says how it was measured. Anything not run on the real hardware is called untested.
+- Don't overcorrect into apology. Name both halves.
+- Only say who did what when the session or the git history shows it (`Co-Authored-By` trailers). Otherwise ask Derek.
+- End every post with this block, after a `---`:
+
+  `*[How this was built](/how-i-work/): <what the agent did>. <what Derek did>. Tested: <what ran on the real hardware>. Not tested: <what didn't>.*`
+
+  Drop "Not tested" when nothing was left out.
+
 ## Style
 
 Write the way Derek writes: direct, technical, no fluff. Document what actually happened — what worked, what didn't, and why. Reader is a technical peer, not a beginner.
@@ -62,6 +77,7 @@ Default post shape:
 - The diagnostic clue
 - The fix or workaround
 - Current state, known gaps, and what I'd change next
+- How this was built (the closing block above)
 - Optional: known-good config, command sequence, logs, or table
 
 Writing rules:

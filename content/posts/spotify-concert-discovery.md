@@ -8,7 +8,7 @@ description: "Scraping SF venue calendars, matching artists against my Spotify l
 
 I kept missing shows I would have gone to. The data was public, but checking it required a weird amount of manual attention: venue calendars, Spotify history, ticket prices, neighborhoods, and a final "would I actually leave the apartment for this?" filter.
 
-I built a weekly concert digest into Molty, my Telegram-based assistant. Every Monday morning it checks SF venues, matches artists against my Spotify library, and sends a ranked list of shows.
+So I had Molty, my Telegram assistant, build a weekly concert digest. It wrote all of the code on March 29: the Spotify login, a scraper for each venue, and the scoring. My part was taste: where I go, what I'd pay, how far I'd walk, and telling it when a pick was wrong. Every Monday morning it checks SF venues, matches artists against my Spotify library, and sends a ranked list of shows.
 
 ## Spotify API setup
 
@@ -46,7 +46,7 @@ flowchart TD
     DM --> TG
 ```
 
-**Venue scraping** fetches the calendar pages for 8 SF venues and extracts artist names from the HTML. Each venue has its own parser because they all use different CMSes and markup patterns — The Independent and August Hall use Ticketmaster's `tm-event` links, Bottom of the Hill uses `<big class="band">`, Café Du Nord embeds artist names in title attributes with "Event Name - Artist | Event Date" format, and so on. GAMH and Rickshaw Stop load events via JS so the parsers there might miss things — that's a known gap.
+**Venue scraping** fetches the calendar pages for 8 SF venues and extracts artist names from the HTML. Molty wrote a separate parser for each venue because they all use different CMSes and markup patterns — The Independent and August Hall use Ticketmaster's `tm-event` links, Bottom of the Hill uses `<big class="band">`, Café Du Nord embeds artist names in title attributes with "Event Name - Artist | Event Date" format, and so on. GAMH and Rickshaw Stop load events via JS so the parsers there might miss things — that's a known gap.
 
 **Spotify matching** pulls my top 50 artists (medium-term) and unique artists from my last 500 liked songs, normalizes the names, and cross-references against whatever the venue scraper found. If there's a match, it goes to scoring.
 
@@ -117,3 +117,7 @@ The other thing: venue websites change their markup. A parser that works today m
 - Headless browser fallback for GAMH and Rickshaw Stop
 - Feedback loop — thumbs up/down on suggestions to tune the scoring over time (the stub is already in the code)
 - Price data is missing for a lot of shows; would be nice to fill that in more reliably
+
+---
+
+*[How this was built](/how-i-work/): Molty (Claude, running on OpenClaw) wrote every line of this; all of the project's commits are its own. I told it where I go, what I'd pay and how far I'd walk, and judged the picks. Tested: real Monday digests in Telegram. Not tested: the two venues that load their calendars with JavaScript, GAMH and Rickshaw Stop.*

@@ -2,7 +2,7 @@
 title: "Tracking Indoor vs Outdoor Temperature in an SF Apartment"
 date: 2026-07-29
 draft: false
-tags: ["home-assistant", "zigbee", "home-lab", "data"]
+tags: ["home-assistant", "zigbee", "home-lab", "data", "hardware-in-the-loop"]
 description: "I bought an IKEA temp sensor for $8 while ordering batteries, stuck it in my living room, and ended up with a pretty clear picture of how SF apartments handle heat."
 ---
 
@@ -123,3 +123,5 @@ The screens did more. July 25–28 averaged +2.2°F vs +5.9°F in the baseline, 
 ---
 
 *Data from Jul 19–29, 2026. Sensors: IKEA TIMMERFLOTTE (indoor, living room), Pirate Weather via Home Assistant (outdoor). San Francisco, CA.*
+
+*[How this was built](/how-i-work/): Claude Code wrote the Home Assistant sensors and the automation, and made the charts from HA's history. I placed the sensor, flipped the fans and put in the screens, which turned out to be the experiment. Tested: ten days of real readings. Not tested: a heat wave with the new airflow.*

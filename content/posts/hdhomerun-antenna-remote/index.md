@@ -2,7 +2,7 @@
 title: "Free OTA TV Anywhere, Using a Box I Already Had"
 date: 2026-07-19
 draft: false
-tags: ["home-lab", "networking", "tailscale"]
+tags: ["home-lab", "networking", "tailscale", "hardware-in-the-loop"]
 description: "Moved my antenna to a closet, wired up an HDHomeRun, and now I can stream or record live TV from anywhere over Tailscale."
 ---
 
@@ -96,7 +96,7 @@ Works over Tailscale on cell or WiFi. The stream is raw MPEG-2 from the tuner wi
 
 ## Recording with ffmpeg
 
-I wrote a small Python wrapper around ffmpeg. The HDHomeRun tunes the channel, ffmpeg pulls the HTTP stream and writes an MKV. No subscriptions, no guide data yet.
+Claude Code wrote me a small Python wrapper around ffmpeg. The HDHomeRun tunes the channel, ffmpeg pulls the HTTP stream and writes an MKV. No subscriptions, no guide data yet.
 
 ```bash
 python3 hdhr_record.py 7.1 1h      # record KGO for 1 hour
@@ -145,4 +145,8 @@ The source quality is the same. File I/O is just more reliable than real-time ne
 
 **Scheduled recording.** The script already works with cron. The next step is a wrapper that looks up show times against the guide and schedules the job automatically.
 
-**Signal as a weather sensor.** Separately from the TV use case, I have one tuner logging signal strength every 5 minutes across three frequencies: UHF 557 MHz, UHF 575 MHz, and VHF 207 MHz. RF attenuation from rain is frequency-dependent, so comparing UHF vs. VHF gives a way to separate weather effects from transmitter issues. Same idea as dual-band GPS receivers canceling ionospheric delay by comparing L1 and L2. More on that in a separate post.
+**Signal as a weather sensor.** Separately from the TV use case, I have one tuner logging signal strength every 5 minutes across three frequencies: UHF 557 MHz, UHF 575 MHz, and VHF 207 MHz. RF attenuation from rain is frequency-dependent, so comparing UHF vs. VHF gives a way to separate weather effects from transmitter issues. Same idea as dual-band GPS receivers canceling ionospheric delay by comparing L1 and L2. More on that in [a separate post](/posts/ota-antenna-rain-gauge/).
+
+---
+
+*[How this was built](/how-i-work/): Claude Code wrote the recording script and set up the Tailscale route. I moved the antenna to the closet window, powered the HDHomeRun over PoE, and rescanned. Tested: live TV from an airport lounge and a plane, and recordings played back. Not tested: scheduled recordings.*

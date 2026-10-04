@@ -2,7 +2,7 @@
 title: "How This Blog Is Built and Published"
 date: 2026-06-12
 draft: false
-tags: ["hugo", "netlify", "claude-code", "meta"]
+tags: ["hugo", "netlify", "claude-code", "meta", "notes"]
 description: "Hugo, PaperMod, Netlify, DNS, search, and the local writing workflow behind derek.engineer."
 ---
 
@@ -129,3 +129,7 @@ The fix is simple: batch changes locally and push once per session. Commit as mu
 Netlify's free tier gives 300 credits/month, 15 per deploy — 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
 
 The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It keeps the writing workflow explicit: front matter, file names, publish steps, and voice. Without that, the activation energy to write something up is too high and the blog dies.
+
+---
+
+*[How this was built](/how-i-work/): Claude Code set up the site, the theme and the Netlify deploy. The domain and the DNS changes at Squarespace were mine. Claude Code also drafts the posts from my session notes, and I edit them.*

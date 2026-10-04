@@ -2,7 +2,7 @@
 title: "Using an OTA TV Antenna as a Rain Gauge (It Didn't Work)"
 date: 2026-09-17
 draft: true
-tags: ["home-lab", "hardware", "rf", "data"]
+tags: ["home-lab", "hardware", "rf", "data", "hardware-in-the-loop"]
 description: "I logged an HDHomeRun's signal for two months to detect rain. It rained five times, my logger said it never did, and the signal didn't care."
 ---
 
@@ -68,4 +68,6 @@ The wet season starts in November, so the real test is still ahead and the logge
 
 ---
 
-*Signal logger: [`hdhr_weather.py`](https://github.com/dcwfz9/dex). Weather: NWS observations for KSFO, plus hourly history from the Iowa Environmental Mesonet. Channels: UHF 557 MHz (KPYX), UHF 575 MHz (KTVU), VHF 207 MHz (KGO).*
+*Signal logger: `hdhr_weather.py`, in a private repo. Weather: NWS observations for KSFO, plus hourly history from the Iowa Environmental Mesonet. Channels: UHF 557 MHz (KPYX), UHF 575 MHz (KTVU), VHF 207 MHz (KGO).*
+
+*[How this was built](/how-i-work/): Claude Code wrote the logger, the analysis and both charts. Using a VHF channel as the control was my idea, and the antenna in the closet window is my doing. Tested: two months of logging on the real tuner, against five real rains. Not tested: a real storm.*

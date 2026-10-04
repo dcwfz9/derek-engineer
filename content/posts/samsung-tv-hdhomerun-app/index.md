@@ -247,7 +247,7 @@ The behavior modules are written as JSON test cases that a Swift port can replay
 
 ## What's next
 
-Pre-tuning the next channel on the second tuner is first, since four seconds is the one thing that still feels slow. Then a grid guide, an audio track picker and a signal readout. An Apple TV version needs its own decoder: from what I've read tvOS can't decode MPEG-2, but I haven't tested that. The repo is private for now.
+Pre-tuning the next channel on the second tuner is first, since four seconds is the one thing that still feels slow. Then a grid guide, an audio track picker and a signal readout. After that, game night: host [Ogle](/posts/ogle-daily-word-game/), our daily word game, on the TV the way Netflix runs its party games, with the board on the TV through Dial, everyone playing on their phones, and our own backend keeping score. An Apple TV version needs its own decoder: from what I've read tvOS can't decode MPEG-2, but I haven't tested that. The repo is private for now.
 
 ---
 

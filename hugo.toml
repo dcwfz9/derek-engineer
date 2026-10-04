@@ -23,7 +23,7 @@ enableRobotsTXT = true
 
   [params.homeInfoParams]
     Title = "Hi, I'm Derek"
-    Content = "Electrical engineer. An AI agent writes most of my code, and I put the real hardware in the loop. These are the notes: what I measured, what failed, the command lines, and the details I'll need again."
+    Content = "Electrical engineer. I direct an AI agent that writes most of my code, and I put the real hardware in the loop. These are the notes: what I measured, what failed, the command lines, and the details I'll need again."
 
   [[params.socialIcons]]
     name = "github"

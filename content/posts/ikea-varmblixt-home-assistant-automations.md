@@ -313,4 +313,4 @@ The lamp is listed explicitly alongside `light.all_lights` because it wasn't rel
 
 ---
 
-*[How this was built](/how-i-work/): Claude wrote most of the YAML. I paired the lamp (twelve power cycles, easier from a smart plug), chose the colors, and decided what it should tell me at a glance. Everything here runs on the real lamp and door sensor.*
+*[How this was built](/how-i-work/): Claude Code wrote the YAML. I paired the lamp (twelve power cycles, easier from a smart plug), chose the colors, and decided what it should tell me at a glance. Everything here runs on the real lamp and door sensor.*

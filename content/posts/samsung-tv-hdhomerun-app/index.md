@@ -253,4 +253,4 @@ Pre-tuning the next channel on the second tuner is first, since four seconds is 
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the app, its tests and the figures, and handed five pieces to Sonnet sub-agents for the second half. I set up developer mode, held the remote, and judged everything on the TV. Tested on the TV: playback of both codecs, captions, the tuner being freed on Home and standby, and ten timed channel changes. Not tested yet: number entry and Play/Pause on the real remote.*
+*[How this was built](/how-i-work/): Claude Code wrote the app, its tests and the figures, and handed five pieces to Sonnet sub-agents for the second half. I directed the work, set up developer mode, held the remote, and judged everything on the TV. Tested on the TV: playback of both codecs, captions, the tuner being freed on Home and standby, and ten timed channel changes. Not tested yet: number entry and Play/Pause on the real remote.*

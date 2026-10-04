@@ -504,4 +504,4 @@ To be continued when the splitter arrives and after I'm back from travel. Next f
 
 ---
 
-*[How this was built](/how-i-work/): Claude worked through the commands and read the kernel logs with me. I flashed the card, wired the B101, and ran the loopback and the other source tests on the bench. Tested: capture timings and format negotiation through the Pi's own HDMI loopback. Not tested: a real frame from a real source (that's part 2), and there are no LEDs yet.*
+*[How this was built](/how-i-work/): Claude Code ran the commands over SSH and read the kernel logs. I flashed the card, wired the B101, and set up the loopback and the other source tests on the bench. Tested: capture timings and format negotiation through the Pi's own HDMI loopback. Not tested: a real frame from a real source (that's part 2), and there are no LEDs yet.*

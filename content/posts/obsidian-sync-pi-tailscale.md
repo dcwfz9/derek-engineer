@@ -232,4 +232,4 @@ CouchDB as a systemd service on the 3B v1.2, Tailscale handling the networking, 
 
 ---
 
-*[How this was built](/how-i-work/): Claude planned this with me and wrote out the commands. I did the Pi side: the firmware update over USB, the PoE HAT, and the install. Tested: sync between the Mac and the Pi over Tailscale. Not tested yet: the iPhone over cellular.*
+*[How this was built](/how-i-work/): Claude Code ran the setup over SSH. I handled the hardware, including the PoE HAT and its boot problem. Tested: sync between the Mac and the Pi over Tailscale. Not tested yet: the iPhone over cellular.*

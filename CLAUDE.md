@@ -47,12 +47,12 @@ Rules:
 
 ## Who did what (every post)
 
-Derek is an electrical engineer, not a software engineer. The code in these posts is written by an AI agent (Claude Code; Molty for some older projects) with the real hardware in the loop: the agent writes, Derek runs it on the device, measures, and says what's wrong. Write every post that way. The Dial post (`content/posts/samsung-tv-hdhomerun-app/`) is the reference, and `content/how-i-work.md` states the framework.
+Derek is an electrical engineer who has also done software engineering (test automation frameworks, practical scripts). On these projects an AI agent (Claude Code; Molty for some older ones) types most of the code while Derek directs each move, with the real hardware in the loop: the agent writes, Derek runs it on the device, measures, and says what's wrong. Write every post that way. The Dial post (`content/posts/samsung-tv-hdhomerun-app/`) is the reference, and `content/how-i-work.md` states the framework.
 
 - Never write "I built" or "I wrote" for code the agent wrote. Say who wrote it: "Claude Code wrote ...", "I had Claude Code ...".
-- Derek's part is the hardware and the judgment: wiring, antennas, placement, developer modes, what counts as working, what to measure, when a result is wrong. Name it specifically.
+- Derek's part is the ideas, the direction, design and results review, managing the work, and the hardware: wiring, antennas, placement, developer modes, what counts as working, what to measure, when a result is wrong. Name it specifically.
 - Every number says how it was measured. Anything not run on the real hardware is called untested.
-- Don't overcorrect into apology. Name both halves.
+- Don't undersell Derek. Not typing the code isn't the same as not building it: he directs every change. Name both halves.
 - Only say who did what when the session or the git history shows it (`Co-Authored-By` trailers). Otherwise ask Derek.
 - End every post with this block, after a `---`:
 

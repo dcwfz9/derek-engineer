@@ -17,8 +17,8 @@ genuinely unlisted.) So it was Read RAW and reverse engineering from scratch,
 or nothing.
 
 This is the whole process: capture, decode, synthesize, verify. It took an
-evening, with Claude writing the analysis scripts while I worked the Flipper
-and the fan. Everything is in the repo at the bottom.
+evening, with Claude Code writing the analysis scripts while I worked the
+Flipper and the fan. Everything is in the repo at the bottom.
 
 ## Step 0: is it even worth reverse engineering
 
@@ -689,8 +689,8 @@ generated/  synthesized frames, including the two dead ones
 
 ## How the analysis scripts actually got built
 
-Claude wrote them, one at a time, and I ran each one against the captures
-before asking for the next. They are short enough that the interesting part is
+Claude Code wrote them, one at a time, and each one had to work on the real
+captures before the next one started. They are short enough that the interesting part is
 not the code, it is the order they were written in. The order was the method.
 
 **Histogram before parser.** `subanalyze.py` does exactly one thing: bin every
@@ -763,4 +763,4 @@ but 174 is the honest count of complete payloads.
 
 ---
 
-*[How this was built](/how-i-work/): Claude wrote the analysis scripts and the figure code. I captured every button on the Flipper, ran the SDR measurements, and sent every synthesized frame to the real fan. Tested on the fan: a frame built from the decode turns it on, and the two unused codes light its display and do nothing else. Not tested: range, and the CC1101 transmitter that will replace the Flipper.*
+*[How this was built](/how-i-work/): Claude Code wrote the analysis scripts and the figure code. I captured every button on the Flipper, ran the SDR measurements, and sent every synthesized frame to the real fan. Tested on the fan: a frame built from the decode turns it on, and the two unused codes light its display and do nothing else. Not tested: range, and the CC1101 transmitter that will replace the Flipper.*

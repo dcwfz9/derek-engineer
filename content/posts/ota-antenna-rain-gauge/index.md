@@ -70,4 +70,4 @@ The wet season starts in November, so the real test is still ahead and the logge
 
 *Signal logger: `hdhr_weather.py`, in a private repo. Weather: NWS observations for KSFO, plus hourly history from the Iowa Environmental Mesonet. Channels: UHF 557 MHz (KPYX), UHF 575 MHz (KTVU), VHF 207 MHz (KGO).*
 
-*[How this was built](/how-i-work/): Claude Code wrote the logger, the analysis and both charts. Using a VHF channel as the control was my idea, and the antenna in the closet window is my doing. Tested: two months of logging on the real tuner, against five real rains. Not tested: a real storm.*
+*[How this was built](/how-i-work/): Claude Code wrote the logger, the analysis and both charts. The VHF control channel was an idea we got to together, and the antenna in the closet window was my call. Tested: two months of logging on the real tuner, against five real rains. Not tested: a real storm.*

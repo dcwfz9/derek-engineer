@@ -193,4 +193,4 @@ Still need to actually wire and mount the LEDs — that's the next session. Befo
 
 ---
 
-*[How this was built](/how-i-work/): Claude worked out the capture commands and the frame math with me. I set up the splitter and the Apple TV's output mode, and checked the frames by eye. Tested: a clean 1080p30 frame and Hyperion's live preview against real Apple TV content. Not tested: 1080p60, which fails at STREAMON. Still no LEDs.*
+*[How this was built](/how-i-work/): Claude Code ran the capture commands over SSH and worked out the frame math. I set up the splitter and the Apple TV's output mode, and checked the frames by eye. Tested: a clean 1080p30 frame and Hyperion's live preview against real Apple TV content. Not tested: 1080p60, which fails at STREAMON. Still no LEDs.*

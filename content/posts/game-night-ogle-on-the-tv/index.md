@@ -3,7 +3,7 @@ title: "Game Night: Ogle on My TV, With Our Phones as Controllers"
 date: 2026-10-04T20:30:00-07:00
 draft: true
 tags: ["games", "tizen", "home-lab", "claude-code", "hardware-in-the-loop"]
-description: "The board on the TV, everyone tracing words on their own phone, and a relay on the Mac mini keeping score, the way Netflix runs its party games. Built while I was out, then given music made in code."
+description: "The board on the TV, everyone tracing words on their own phone, and a relay on the Mac mini keeping score, the way Netflix runs its party games. Built while I was out, then given music made in code and three more modes."
 ---
 
 Ogle runs on my TV now: the board on the big screen, everyone tracing words on their own phone, and a small server on the Mac mini keeping score.
@@ -107,10 +107,24 @@ Then I played it. I pressed Right, the code tiles dropped in with the lounge mus
 
 <!-- PHOTO: a short phone video of the TV during the results, confetti and fanfare, with sound. -->
 
+## Three more modes
+
+Classic is one of four modes now. I asked Claude Code for the crowd favorites, with our own spin on each, and told it to hand the work down from Opus to Sonnet. It wrote a one-page contract for the relay's events, the phone screens and the TV screens, then ran four agents in parallel from it: Opus on the relay, Sonnet on the phone page, the TV screens and a fix I'll get to. About 25 minutes later you could pick a mode with Up and Down on the remote:
+
+| Mode | The game | Our spin |
+|---|---|---|
+| Cancel | Same board, but a word two or more people found scores nothing | The results strike out the sniped words and count how often each player got sniped |
+| Letters | Nine letters, 30 seconds, only your longest word counts | The results show the best words our dictionary has in those letters, so the 8 nobody found stings |
+| Race | One secret five-letter word for everyone, six guesses, Wordle colors | The TV shows everyone's color grid live with no letters, so the room sees who's close. Once someone solves it, the rest get 30 more seconds |
+
+The first pass had gaps I'd have hit at a real game night. A TV that reconnected mid-round showed empty Race grids, and Race made everyone wait out the clock even after every guess was used. Sonnet agents fixed both. A script now plays all three modes against a fresh relay with three simulated players, and in Race they guess like people do, narrowing the word list from the colors the relay sends back. The round ended 1.8 s after the last guess.
+
+The other fix was mine to ask for. Pressing Back to leave Game night took about four seconds to get live TV back (4.0 s in my first test, and it felt longer), and I said the stream should already be waiting. It wasn't, because opening the game frees the tuner the way the Home button does. Now the game keeps the channel I left prebuffered on the HDHomeRun's second tuner, the idea from the end of [the Dial post](/posts/samsung-tv-hdhomerun-app/), and refreshes it every 20 seconds so it never goes stale. Back swaps to it. From the app's log: 346 ms from my Back press on the remote to the first frame, and 386 ms when a script pressed it.
+
 ## What's next
 
-A QR code in the lobby, so nobody types an address. A real game night with friends, since so far it's been one real phone plus simulated ones. Android, which one friend uses. Then the house variant from the Ogle post where words two people found cancel out: the relay already marks shared words in the results, it just doesn't score them that way yet.
+A QR code in the lobby, so nobody types an address. A real game night with friends, since so far it's been one real phone plus simulated ones, and the new modes haven't met a real phone at all. Android, which one friend uses. Then the private league from the Ogle post.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the architecture, the music and the motion, and a lead agent with Sonnet sub-agents wrote the relay, the phone page and the TV screen while I was out. I came up with game night, said when it could install on the TV, called the first version a stale static screen and asked for music, and played it on the TV with my phone. Tested on the TV: a round with two simulated phones (scores on screen within about 0.2 s, live TV back in 4.0 s) and a round on my phone with the music and effects. Not tested: several real phones at once, Android, and the animations' frame rate on the TV.*
+*[How this was built](/how-i-work/): Claude Code wrote the architecture, the music and the motion, and a lead agent with Sonnet sub-agents wrote the relay, the phone page and the TV screen while I was out. I came up with game night, said when it could install on the TV, called the first version a stale static screen and asked for music, asked for more modes with our own spin and told it to delegate down from Opus to Sonnet, said Back should take about a second, and played it on the TV with my phone. Tested on the TV: a round with two simulated phones (scores on screen within about 0.2 s), a round on my phone with the music and effects, the mode picker, and Back with the remote (346 ms). Tested on the desktop only: the three newer modes, with simulated players. Not tested: the newer modes with real phones, several real phones at once, Android, and the animations' frame rate on the TV.*

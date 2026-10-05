@@ -85,7 +85,7 @@ export function themeOf(view: GameView): Theme {
 
 Each song is a function of bar and step, written as drum machine lines like `'X...x...X...x...'` plus chord lists, and a scheduler queues the notes a quarter second ahead of the audio clock. Play/Pause on the remote mutes it, and the TV remembers your choice.
 
-![The results screen: three columns for Ana, Ben and Cy, Ana and Ben both on 10 with gold borders, their words listed with points (Ben's RANKLES for 5), the banner "Ana and Ben tie with 10 points", and confetti falling across the screen](figs/reveal.jpg)
+![The results screen: three columns for Ana, Ben and Cy, Ana's lifted with a gold border on 9 points, each listing their words with points (Ana's SPINES for 3), the banner "Ana wins with 9 points", and confetti falling across the screen](figs/reveal.jpg)
 
 ## Ten dB too loud
 

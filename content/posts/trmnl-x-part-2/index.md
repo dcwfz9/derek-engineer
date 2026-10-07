@@ -1,7 +1,7 @@
 ---
 title: "TRMNL X, Part 2: Weather, Bike, Muni and Trash Duty"
 date: 2026-10-06T17:30:00-07:00
-draft: true
+draft: false
 tags: ["home-lab", "python", "e-ink", "home-assistant", "claude-code", "hardware-in-the-loop"]
 description: "A first pass at a daily dashboard on my TRMNL X, running off my own server. What's on it and what keeps it fed."
 ---

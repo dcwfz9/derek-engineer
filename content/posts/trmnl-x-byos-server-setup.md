@@ -6,7 +6,7 @@ tags: ["home-lab", "python", "networking", "notes"]
 description: "Setting up a FastAPI BYOS server for the TRMNL X e-ink display, with local DNS and Caddy reverse proxy, before the hardware even ships."
 ---
 
-*Update, October 2026: the display arrived and is running. Parts of the setup below were wrong. [Part 2](/posts/trmnl-x-readable-from-ten-feet/) has the corrections and what ended up on the screen.*
+*Update, October 2026: the display arrived and is running. My network has changed since I wrote this and a few details below turned out wrong. [Part 2](/posts/trmnl-x-part-2/) has what changed and what ended up on the screen.*
 
 I ordered a [TRMNL X](https://usetrmnl.com/) e-ink display to put on my desk. It's a 7.5" e-paper panel that polls a server for images and refreshes on a schedule. TRMNL has a cloud service, but I'm not paying a subscription for a display I can host myself — and BYOS (Bring Your Own Server) mode is the whole reason I bought the X model over the cheaper ones. The device hasn't arrived yet. The server is already running.
 

@@ -57,8 +57,7 @@ Across the three, UHF TV broadcast, public-safety/SMR (the
 LTE ([band list](https://en.wikipedia.org/wiki/LTE_frequency_bands)) showed up
 as the main peaks above 300 MHz. In the full sweep, FM broadcast (88-108 MHz,
 [47 CFR 73.201](https://www.law.cornell.edu/cfr/text/47/73.201)) is the
-strongest peak anywhere in the 1.77 GHz span: +50.9 dB over the sweep floor at
-104.5 MHz, 13.7 dB above the next-loudest peak, at 561.3 MHz in the UHF TV
+strongest peak: +50.9 dB over the sweep floor at 104.5 MHz, 13.7 dB above the next-loudest peak, at 561.3 MHz in the UHF TV
 band. The 41-167 MHz test below (later, with the longer elements) found the
 strongest FM stations compressed by about 3.7 dB at 36.4 dB gain, so FM's real
 margin is probably a bit larger than the chart shows. I labeled peaks from their
@@ -81,7 +80,12 @@ The other thing in that sweep: the 41-167 MHz region reads as one continuous
 elevated block, with no gap that drops back to the noise floor. That could be
 dense real occupancy (FM and TV stations, aviation bands), or FM overloading
 the receiver and creating junk that raises the apparent floor across its
-neighbors. I couldn't
+neighbors. The V4's
+[datasheet](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)
+takes this seriously: it says very strong broadcast FM can lower the
+signal-to-noise ratio of signals on other frequencies. The V4 splits its input
+into HF, VHF and UHF paths and adds switchable notch filters for broadcast AM,
+FM and DAB that, the datasheet says, "only attenuate by a few dB". I couldn't
 tell which from the sweep alone, so I ran a test that can.
 
 ## the 41-167 MHz block at four gains
@@ -131,13 +135,25 @@ exception: those bins fell only 3.7 dB, so the strongest stations are
 compressed by about 3.7 dB at 36.4 dB gain. That's gone by 28 dB, and as far as
 this test can tell it doesn't spread into other bands.
 
+That fits the hardware. The driver switches the V4's notch filters off only
+while tuned to 2.2 MHz and below, 85-112 MHz or 172-242 MHz
+([librtlsdr 2.0.2 source](https://github.com/osmocom/rtl-sdr/blob/v2.0.2/src/tuner_r82xx.c#L1157)),
+so elsewhere FM is a few dB down. The
+[datasheet's](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)
+own two-tone test needs about -7 dBm at 95 MHz (read off its graph) before a VHF
+signal loses 3 dB.
+
 ![Change in level for every bin from 41 to 167 MHz when the gain drops from 36.4 to 28.0 dB: the non-FM bins fall by a median 7.4 dB, while the FM band falls only about 3.7 dB](figs/vhf-gain-ab.png)
 
 So, as far as this test can tell, the elevated block is energy arriving through
 the antenna, not something FM creates inside the receiver. A test like this
 can't separate outside energy from the receiver's own noise, but a receiver
 limited by its own noise would show the same raised level in the quiet
-reference band, and it didn't. One thing I got wrong on the way: I'd planned to
+reference band, and it didn't. (Per the
+[driver source](https://github.com/osmocom/rtl-sdr/blob/v2.0.2/src/tuner_r82xx.c#L1166),
+the quiet reference band goes through the V4's UHF input and the 41-167 MHz
+block through its VHF input, so the comparison crosses two front ends;
+suggestive, not airtight.) One thing I got wrong on the way: I'd planned to
 express everything as "excess over the noise floor", but the floor `rtl_power`
 reports barely moves with gain (about 1.4 dB across a nearly 20 dB range,
 presumably because the ADC's own quantization noise dominates it), so that
@@ -181,6 +197,12 @@ noise floor, the 18 carriers that stay drop about 3.4 dB, while these three drop
 6 to 20 dB, all the way down to the floor. Falling two to six times as far as
 the real signals is what a nonlinear product does (see the third-order note in
 the 41-167 MHz section above).
+
+The V4's
+[datasheet](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)
+warns about this: HF comes in through a built-in upconverter (a circuit that
+shifts it up in frequency), and it says
+"very strong reception may still require front end attenuation/filtering".
 
 {{< details summary="Commands and settings (runs AM1, AM2)" >}}
 
@@ -315,7 +337,7 @@ antenna's placement, height and cable.
 
 ## more from this project
 
-This is one of four posts from the same RTL-SDR project. The other three:
+This is one of four posts from the same RTL-SDR project. One thread runs through all four: more than once, what I was chasing turned out to be my own tools, from the dongle's DC spike to a clipping front end to a decoder's default threshold. The other three:
 
 - [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4)
 - [aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle](/posts/aperture-ships-and-aircraft/) - three AIS runs and two ADS-B runs, with times and links so they can be checked (Aug 6-7 and Sep 25)
@@ -323,4 +345,4 @@ This is one of four posts from the same RTL-SDR project. The other three:
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, started every run, and chose what to check against outside sources. Every number here comes from a run in the table, and what wasn't recorded is listed there too.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture and analysis scripts, the AM demodulator and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, listened to the AM clips, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table. Not tested: the AM survey at midday, and the cause of the one 1.04% clipping reading.*

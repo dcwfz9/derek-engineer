@@ -456,6 +456,15 @@ Aug 6, from 22:05 PDT; run 2 on Friday morning from 10:34 PDT). I'd guess the
 time of day does more than the antenna to set how many aircraft are overhead,
 but I can't separate the two.
 
+The gain test in [the what's-on-the-air post](/posts/aperture-whats-on-the-air/)
+showed the noise floor in a quiet UHF band (930-958 MHz) moving only
+about 1.4 dB while the gain fell nearly 20 dB. That suggests the floor is set
+after the tuner's gain, probably by the 8-bit analog-to-digital converter. 1090
+MHz takes the same UHF input
+([driver source](https://github.com/osmocom/rtl-sdr/blob/v2.0.2/src/tuner_r82xx.c#L1166)),
+so more gain lifts weak signals above the floor until something clips, which
+may be part of why 49.6 dB beat 40.2 dB in my smoke tests.
+
 ![The ten aircraft with the most position fixes during the 45-minute run on Sep 25, plotted on OpenStreetMap around San Francisco Bay](figs/aircraft-map.png)
 
 The legend counts snapshot points, which repeat a position when no new fix had
@@ -536,7 +545,7 @@ placement, height and cable.
 
 ## more from this project
 
-This is one of four posts from the same RTL-SDR project. The other three:
+This is one of four posts from the same RTL-SDR project. One thread runs through all four: more than once, what I was chasing turned out to be my own tools, from the dongle's DC spike to a clipping front end to a decoder's default threshold. The other three:
 
 - [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4)
 - [aperture: what's on the air from 500 kHz to 1.77 GHz](/posts/aperture-whats-on-the-air/) - a full-spectrum sweep, whether strong FM stations overload the receiver, and an AM station that was an empty channel (Aug 3 to Sep 24)
@@ -544,4 +553,4 @@ This is one of four posts from the same RTL-SDR project. The other three:
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, started every run, and chose what to check against outside sources. Every number here comes from a run in the table, and what wasn't recorded is listed there too.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis, the maps and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, and chose what to check against outside sources. Tested: every count here is from a run on the dongle listed in the table, and the vessels and aircraft were checked against public listings. Not tested: where the ships were at the times I heard them (I found no free history to check against), and who the five ships heard only once were.*

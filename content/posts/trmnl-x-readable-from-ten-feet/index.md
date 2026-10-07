@@ -16,8 +16,6 @@ The rest of the delay was ordinary. I started a new job in June, and the way I r
 
 The display is on my server now and it's useful. Pointing it at that server took an evening. Most of the work after that was finding out what a screen has to look like to be read from across a room, and what is worth putting on it.
 
-<!-- PHOTO: the TRMNL X where it lives, shot from the spot I read it from, about ten feet away. -->
-
 ## What part 1 got wrong
 
 An audit of the server, before the display would talk to it, turned up things I had assumed in April and never checked:
@@ -86,7 +84,7 @@ flowchart LR
 ```
 
 - **Weather and inside temperature.** Outside, today's high and inside (from Home Assistant) as big numbers, then rain, wind, sunset and humidity lines as space allows.
-- **A black banner on top.** Every headline is white on black. I liked how a black band catches the eye, so I made it the default for all of them, and alerts get a warning triangle so they don't look like any other headline. The one alert I have is the litter robot's drawer-full signal, which Home Assistant already reads. It has read "full" at 72 percent and once at 172, so that sensor is the problem, not the display. [Whisker's help pages](https://www.litter-robot.com/support/article/litter-robot-4-inaccurate-waste-drawer-gauge/) list dirty sensors, dark bags and a stretched liner as the usual causes.
+- **A black banner on top.** Every headline is white on black. I liked how a black band catches the eye, so I made it the default for all of them, and alerts get a warning triangle so they don't look like any other headline. The one alert I have is the litter robot's drawer-full signal, which Home Assistant already reads.
 - **Touch to dismiss.** The touch bar's left and right ends only flip through cached images on the device and never reach the server. Only the middle tap wakes it with a request, and the firmware labels that wake reason `EXT0`. My first log watcher printed `?` for it because my pattern only knew lowercase. A tap now dismisses the alert on screen, and it stays hidden until the robot reports the problem cleared.
 - **Bike or not.** On weekday mornings the headline is "Bike today, 10 min" or "Rain at 8 AM, skip the bike", judged from a forecast the server already fetches. It skips the bike for a rain chance of 40 percent or more, gusts of 25 mph or more, 40 °F or colder, 95 °F or hotter, or an air quality index of 101 or more. The 10 minutes is my own figure, not computed. The evening is forecast-only: the display is at home and I'm not, so a live ride-home verdict at 5 PM would be for nobody.
 - **Trash day.** From Thursday at 5 PM the banner says "Trash cans out tonight", and Friday morning "Bring the cans in", through the end of the year. A tap marks it done.
@@ -119,8 +117,6 @@ When a prediction missed, the train came later than predicted. The feed has no a
 ![The same morning screen with the litter alert: the black banner starts with a white warning triangle and reads Litter drawer is full, with the temperatures, a Downtown row and a Bike today line below](figs/alert.png)
 
 *Sample numbers, not live data.*
-
-<!-- PHOTO: the real display with an alert showing, triangle and all, once the litter robot trips it again. -->
 
 ![Two screens side by side: a black banner reading Trash cans out tonight over the temperatures and rain, wind and humidity lines, and a night screen with the banner Bike tomorrow, 10 min, then high 70, low 55, inside 70, no rain and sunrise 7:08 AM](figs/trash-and-night.png)
 

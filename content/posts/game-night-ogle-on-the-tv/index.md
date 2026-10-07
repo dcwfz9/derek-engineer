@@ -10,7 +10,7 @@ Ogle runs on my TV now: the board on the big screen, everyone tracing words on t
 
 That's how Netflix runs its party games, and it's how I wanted to play [Ogle](/posts/ogle-daily-word-game/) with friends in the same room. Ogle already has our dictionary and our rules, and [Dial](/posts/samsung-tv-hdhomerun-app/) already puts my own app on the TV, so game night was the piece in between: our game, on our TV, scored by our own backend.
 
-![The Game night lobby on the TV: OGLE tiles and the title at the top left, the join addresses http://Mac-mini.local:8790 and http://10.0.4.77:8790, the room code FNWP as four big bone-coloured tiles, and three players, Ben, Ana and Cy, as chips with coloured dots](figs/lobby.jpg)
+![The Game night lobby on the TV: OGLE tiles and the title at the top left, the join addresses http://Mac-mini.local:8790 and http://10.0.4.77:8790, the room code DNTB as four big bone-coloured tiles, and four players, Ben, Derek, Sam and Kristin, as chips with coloured dots, above the mode line "Mode: Classic" and its one-line rule](figs/lobby.jpg)
 
 <!-- PHOTO: the living room TV on this lobby screen, with a phone in hand showing the join page. -->
 
@@ -63,7 +63,7 @@ It worked. My note back was that it looked like a stale static screen, and was t
 | Last ten seconds | a red pulse at the edges, the clock beating | faster music, a tick a second, a buzzer at 0:00 |
 | Results | scores counting up row by row, the winner lifting, confetti | a party track, a fanfare under the winner |
 
-![A round in progress: the 4 by 4 board on the left, the clock at 0:17 at the top right over a draining time bar, and the leaderboard with Ben first on 7 points and a +5 beside his name for a 7-letter word, then Ana on 5 and Cy on 3](figs/round.jpg)
+![A round in progress: the 4 by 4 board on the left, the clock at 0:17 at the top right over a draining time bar, and the leaderboard with Ben first on 8 points and a +5 beside his name for a 7-letter word, then Sam on 5, Derek on 4 and Kristin on 3](figs/round.jpg)
 
 Nearly everything that moves is a CSS transform or an opacity change, so the TV's compositor can do the work instead of repainting the page. The music has no audio files. It's synthesised in the app with Web Audio, so there's nothing to license or ship. The same reducer that decides what the screen shows decides what plays:
 
@@ -85,7 +85,7 @@ export function themeOf(view: GameView): Theme {
 
 Each song is a function of bar and step, written as drum machine lines like `'X...x...X...x...'` plus chord lists, and a scheduler queues the notes a quarter second ahead of the audio clock. Play/Pause on the remote mutes it, and the TV remembers your choice.
 
-![The results screen: three columns for Ana, Ben and Cy, Ana's lifted with a gold border on 9 points, each listing their words with points (Ana's SPINES for 3), the banner "Ana wins with 9 points", and confetti falling across the screen](figs/reveal.jpg)
+![The results screen: four columns for Kristin, Sam, Ben and Derek, Kristin's and Sam's lifted with gold borders on 11 points each, every column listing words with points (Ben's SIEVING for 5), words two people found marked with a small circle, the banner "Kristin and Sam tie with 11 points", and confetti falling across the screen](figs/reveal.jpg)
 
 ## Ten dB too loud
 
@@ -103,7 +103,7 @@ Timing needed the same treatment. The screen updated from a 250 ms timer, so eac
 
 Then I played it. I pressed Right, the code tiles dropped in with the lounge music, I joined from my phone, and I found 14 words for 15 points in the two-minute round. The sound started on that first key press with nothing else to tap. The TV's audio engine reports 50 ms from the app to the speakers.
 
-{{< video src="figs/game-night-demo.mp4" poster="figs/demo-poster.jpg" caption="A scripted 30-second round with three simulated players, recorded in desktop Chrome with the app's own audio. Sound on." >}}
+{{< video src="figs/game-night-demo.mp4" poster="figs/demo-poster.jpg" caption="A scripted 30-second round with four simulated players, recorded in desktop Chrome with the app's own audio. Sound on." >}}
 
 <!-- PHOTO: a short phone video of the TV during the results, confetti and fanfare, with sound. -->
 

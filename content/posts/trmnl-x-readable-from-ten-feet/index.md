@@ -6,9 +6,15 @@ tags: ["home-lab", "python", "e-ink", "home-assistant", "claude-code", "hardware
 description: "The TRMNL X is running off my server. What the first post got wrong, how reading it from ten feet rewrote every screen, and the alert, bike, trash and Muni lines that earned a place on it."
 ---
 
-In [the first post](/posts/trmnl-x-byos-server-setup/) the server was running and the display was still in the mail. This is the follow-up, and it's late. I started a new job in June, and the way I run Claude on this project isn't the default terminal setup, so I had to figure parts of it out myself. That's the delay, and it's all I'll say about it.
+In [the first post](/posts/trmnl-x-byos-server-setup/) the server was running and the display was still in the mail. This is the follow-up, and it's late. What stopped my early momentum was that the display wouldn't turn on.
 
-The display is on my server now and it's useful. Getting it to connect took an evening. Most of the work after that was finding out what a screen has to look like to be read from across a room, and what is worth putting on it.
+It arrived in July showing a static "install dock and USB-C" screen that never changed. It didn't react to power, and no TRMNL Wi-Fi network appeared. I re-seated the dock and tried different USB-C cables, a wall adapter and a laptop port. Nothing changed, so I wrote to TRMNL support asking for a replacement.
+
+They suggested a soft reset first, which you do with the dock's magnet. [TRMNL's help page](https://help.trmnl.com/en/articles/12407673-troubleshooting-an-unresponsive-device) says to take the dock off, turn it upside down so the pins face up, and hold it near the bottom-left corner of the back of the display, making small circles. It doesn't need to touch. The unit has magnetic switches inside, and support said it can take a few attempts to trigger them. That reset it and the display came up.
+
+The rest of the delay was ordinary. I started a new job in June, and the way I run Claude on this project isn't the default terminal setup, so I had to figure parts of it out myself.
+
+The display is on my server now and it's useful. Pointing it at that server took an evening. Most of the work after that was finding out what a screen has to look like to be read from across a room, and what is worth putting on it.
 
 <!-- PHOTO: the TRMNL X where it lives, shot from the spot I read it from, about ten feet away. -->
 
@@ -27,7 +33,7 @@ I put the server under launchd so it starts on login and restarts when it exits,
 
 ## First light
 
-The X ships showing TRMNL's own dashboards, so the first job was pointing it at my server. TRMNL's guide says Advanced, then Custom Server, then Yes. I couldn't find it where my instructions said, because the setup page is different on different firmware releases. The page lives on the device, as a gzipped array in a C header in the [firmware source](https://github.com/usetrmnl/trmnl-firmware), so I pulled it out of the release that matches my unit and read the markup. On 1.8.16, which is what my unit runs, it's a Custom Server button at the top of the Advanced page. On 1.8.17, released two days earlier, it's a plain API server box. My first instructions came from the newer page and were wrong for my unit. Reading the page out of the right release fixed that.
+Once it's on Wi-Fi the X shows TRMNL's own dashboards, so the first job was pointing it at my server. TRMNL's guide says Advanced, then Custom Server, then Yes. I couldn't find it where my instructions said, because the setup page is different on different firmware releases. The page lives on the device, as a gzipped array in a C header in the [firmware source](https://github.com/usetrmnl/trmnl-firmware), so I pulled it out of the release that matches my unit and read the markup. On 1.8.16, which is what my unit runs, it's a Custom Server button at the top of the Advanced page. On 1.8.17, released two days earlier, it's a plain API server box. My first instructions came from the newer page and were wrong for my unit. Reading the page out of the right release fixed that.
 
 It checked in at 11:34 PM on a Sunday. The first screen I sent was a proof of the loop: the numbers on it came from the display itself, in the headers of its own request, not from me.
 

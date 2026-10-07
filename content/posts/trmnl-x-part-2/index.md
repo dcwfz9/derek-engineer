@@ -1,9 +1,9 @@
 ---
-title: "TRMNL X, Part 2: Bike, Muni and Trash Duty"
+title: "TRMNL X, Part 2: Weather, Bike, Muni and Trash Duty"
 date: 2026-10-06T17:30:00-07:00
 draft: true
 tags: ["home-lab", "python", "e-ink", "home-assistant", "claude-code", "hardware-in-the-loop"]
-description: "My TRMNL X e-ink display now runs off my own server. What's on it, what keeps it fed, and what I haven't tested yet."
+description: "A first pass at a daily dashboard on my TRMNL X, running off my own server. What's on it and what keeps it fed."
 ---
 
 In [the first post](/posts/trmnl-x-byos-server-setup/) the server was running and the display was still in the mail. It showed up in July and did nothing. The screen sat on a static "install dock and USB-C" image, it didn't react to power, and no TRMNL Wi-Fi network appeared. I tried the dock in different positions, a few USB-C cables, a wall adapter and a laptop port, then wrote to TRMNL support asking for a replacement.
@@ -12,7 +12,7 @@ Their first suggestion was a soft reset, and it takes a magnet. [TRMNL's help pa
 
 The rest of the delay was ordinary. I started a new job in June, and the way I run Claude on this project isn't the default terminal setup, so I had some figuring out to do.
 
-The display runs off my own server now, and it's useful. This post covers what's on it, what keeps it fed, and what I haven't tested yet.
+The display runs off my own server now, and it's useful. This is a first pass: here's what's on it and what keeps it fed.
 
 ## Getting it onto my server
 
@@ -30,15 +30,15 @@ The X is picky about images. The server I started from drew one-bit 800 by 480 p
 
 ## What's on it
 
-Part 1 planned a morning briefing with my calendar and email. I left both off. The display sits where guests can see it, so nothing private goes on it.
+The weather comes first. The biggest numbers are the temperature outside, today's high and the temperature inside, which comes from Home Assistant. Under them are smaller lines for rain, wind, sunset and humidity, as many as fit. Across the top is a black banner with the headline in white. I liked how a black band catches the eye, so every headline gets one.
 
-On weekday mornings the big headline answers the one question I have before I leave: do I bike? It says "Bike today, 10 min" or something like "Rain at 8 AM, skip the bike." The ride is two miles, and the 10 minutes is my own number, not something the server works out. It skips the bike for a rain chance of 40 percent or more, gusts of 25 mph or more, 40 °F or colder, 95 °F or hotter, or an air quality index of 101 or more. Under the headline are the outside, high and inside temperatures (the inside one comes from Home Assistant) and the next trains downtown.
+On weekday mornings that headline answers the one question I have before I leave: do I bike? It says "Bike today, 10 min" or something like "Rain at 8 AM, skip the bike." The ride is two miles, and the 10 minutes is my own number, not something the server works out. It skips the bike for a rain chance of 40 percent or more, gusts of 25 mph or more, 40 °F or colder, 95 °F or hotter, or an air quality index of 101 or more. A row of the next trains downtown sits under the temperatures.
 
 ![A weekday-morning screen: a black banner reading Bike today, 10 min; Outside 60 degrees, High 70, Inside 70; a Downtown row with arrivals at 9:41, 9:49 and 9:58; and Updated 9:36 AM in small print](figs/morning.png)
 
 *Sample numbers, not live data.*
 
-Every headline is white on black. I liked how a black band catches the eye, so it's the default for all of them. Alerts from Home Assistant use the same banner. The only one so far is the litter robot's drawer-full signal. Tapping the middle of the touch bar dismisses an alert until the problem clears. The two ends of the touch bar only flip through images already stored on the display, so only the middle tap reaches the server.
+Alerts from Home Assistant use the same banner. The only one so far is the litter robot's drawer-full signal. Tapping the middle of the touch bar dismisses an alert until the problem clears. The two ends of the touch bar only flip through images already stored on the display, so only the middle tap reaches the server.
 
 ![The same morning screen with the litter alert: the black banner starts with a white warning triangle and reads Litter drawer is full, with the temperatures, a Downtown row and a Bike today line below](figs/alert.png)
 
@@ -52,9 +52,11 @@ At night, from 11 PM to 6 AM, the screen switches to a quiet version that looks 
 
 *Sample numbers, not live data.*
 
+Part 1 planned a morning briefing with my calendar and email. I left both off. The display sits where guests can see it, so nothing private goes on it.
+
 ### Muni
 
-The thing I wanted most was when the next N Judah shows up. TRMNL doesn't do that, but the city's free [511 API](https://511.org/open-data/token) does, so I signed up for a key. The corner I use has one stop per direction with different names, and the inbound one is named for a tunnel portal, so Claude had to work out the right pair. In the morning the screen shows only the downtown direction. I asked for clock times instead of countdowns, plus the time the data was sampled, because the screen is always a few minutes old when I look at it. It says "Updated 8:02 AM," or "Muni as of" once the data is more than 90 seconds old.
+The thing I wanted most was when the next N Judah shows up. TRMNL doesn't do that, but the city's [511 API](https://511.org/open-data/token) does, and it's free with a key. The corner I use has one stop per direction with different names, and the inbound one is named for a tunnel portal, so Claude had to work out the right pair. In the morning the screen shows only the downtown direction. I asked for clock times instead of countdowns, plus the time the data was sampled, because the screen is always a few minutes old when I look at it. It says "Updated 8:02 AM," or "Muni as of" once the data is more than 90 seconds old.
 
 The first morning had a hiccup. A slow DNS lookup made both requests time out, and the client's reaction, going quiet for five minutes, would have blanked the next screen. It now waits 4 seconds instead of 1.5 and keeps showing the last good answer for up to 20 minutes. The key also rides in the request URL, so it could leak into a log. Claude wrote tests that fail if the key ever shows up in one, and the live log has zero matches.
 
@@ -89,7 +91,7 @@ The sizes live in one table in the code, and a test measures real letter heights
 
 ## What keeps it running
 
-Less than you'd think. The server is a small Python app on the Mac mini, run by launchd, which starts it when I log in and restarts it if it ever exits. In April I'd started it by hand, which is why nothing was running when I came back to it.
+Less than you'd think. The server is a small Python app on the Mac mini, run by launchd, which starts it when I log in and restarts it if it ever exits.
 
 The display sets the pace. It wakes on its own timer, or when I tap it, and asks the server what to show. The server draws the screen right then, in about a third of a second, and sends it back with how long to sleep: 15 minutes during the day (5 while the full Muni screen is up) and an hour from 11 PM to 6 AM.
 
@@ -112,14 +114,12 @@ Claude Code did the building and I directed it. A lead Claude session coordinate
 
 It wasn't all smooth. One agent cleaned up its test servers with a command that also matched the live one, and launchd had to restart the real server three times between check-ins. Every brief now says to kill by process ID.
 
-My part was the display: what goes on it, what stays off, and whether I can read it from where I stand.
+My part was deciding what goes on the display and what stays off.
 
-## Not tested yet
+## What's next
 
-Some things I haven't seen on the real display. The skip-the-bike screen has only been rendered with made-up forecasts, because I haven't had a rainy morning. Trash reminders haven't run for real: the first Thursday is October 8. No alert has shown since the latest version went live. And I don't know how the battery does over weeks. It dropped about 7 percent in the first 21 hours, but that included a stretch of one-minute check-ins I used for testing.
-
-It also doesn't know when I'm working from home, so the bike line is wrong on those days. That's next.
+This is a first pass, and there's plenty I could still add. The first fix is that it doesn't know when I'm working from home, so the bike line is wrong on those days. I also don't have enough battery data yet to say how long a charge lasts. It dropped about 7 percent in the first 21 hours, with a lot of testing mixed in.
 
 ---
 
-*[How this was built](/how-i-work/): the server is TRMNL's own `byos_fastapi`, and Claude Code wrote the changes. I decided what goes on the screen and what stays off, and looked at every render. Tested on the real display: the first connection, a touch dismissing an alert, and the weather, inside temperature, bike and Muni lines on a weekday morning. Not tested on it yet: the skip-the-bike screen, trash reminders, a live alert, and anything over weeks.*
+*[How this was built](/how-i-work/): the server is TRMNL's own `byos_fastapi`, and Claude Code wrote the changes. I decided what goes on the screen. Tested on the real display: the first connection and a weekday morning's weather, inside temperature, bike and Muni lines. Battery life and longer-term Muni accuracy are still being measured.*

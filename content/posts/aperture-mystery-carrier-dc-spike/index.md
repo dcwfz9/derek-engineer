@@ -15,7 +15,7 @@ off and no external LNA or filter, on the Mac mini, with Homebrew's librtlsdr
 2.0.2 (the mainline library, not the RTL-SDR Blog fork) and rtl_433 25.12. I
 didn't record where the antenna sat, how high, or which cable it used. The
 elements were 5.5 in for the runs on Aug 3-4, 2.5 in for the Aug 5 runs and
-about 9 in for the Sep 24-25 runs (an estimate, not a measurement); in between,
+9.5 in for the Sep 24-25 runs; in between,
 on Aug 6-7, they were 16 in for the ship and aircraft tracking in
 [the ships and aircraft post](/posts/aperture-ships-and-aircraft/). The
 antenna was in a V shape until 08:45 on Aug 4 (runs M1, M2, D1 and D2) and
@@ -47,9 +47,10 @@ I asked for 50 kHz bins and got 40.6 kHz ones.
 
 LoRa uses chirp spread spectrum, where each symbol is a sweep in frequency
 ([Semtech's overview](https://www.semtech.com/uploads/technology/LoRa/lora-and-lorawan.pdf)),
-so I wrote a detector that tracks the peak FFT bin per time slice and looks for
-sustained monotonic runs. I ran it on 60-second IQ captures from `rtl_sdr`
-centered on 916.381 MHz, five in all (listed in the table below).
+so I had Claude Code write a detector that tracks the peak FFT bin per time
+slice and looks for sustained monotonic runs, and run it on 60-second IQ
+captures from `rtl_sdr` centered on 916.381 MHz, five in all (listed in the
+table below).
 
 Zero ramps in the first three captures, on three different days and two
 antenna lengths (5.5 in, then 2.5 in). So nothing LoRa-like in those three
@@ -79,18 +80,20 @@ multiples, and at twice its resonant frequency its feed impedance is high
 | #1 (M2) | Aug 3 22:30 | 5.5 in | 40.2 dB | 41.9% | file overwritten by #2 |
 | #2 (M3) | Aug 4 18:42 | 5.5 in | not recorded | 37.9% | 0.3% |
 | #3 (M4) | Aug 5 08:21 | 2.5 in | not recorded | 7.1% | 0.3% |
-| #4 (M7) | Sep 24 21:36 | about 9 in | 36.4 dB | 46.8% | 0.3% |
-| #5 (M10) | Sep 25 08:14 | about 9 in | 36.4 dB | 43.7% | 0.4% |
+| #4 (M7) | Sep 24 21:36 | 9.5 in | 36.4 dB | 46.8% | 0.3% |
+| #5 (M10) | Sep 25 08:14 | 9.5 in | 36.4 dB | 43.7% | 0.4% |
 
 ## the DC spike
 
 What broke that explanation was capture #4, in September on a third antenna
-length (about 9 in per element, whose third harmonic lands about as close to
-916 MHz as the shortest setting does): 47% dominant tone. The `rtl_power` sweep
-I'd taken minutes earlier at the same gain (Sep 24, 21:21 to 21:36 PDT, run M6,
-36.4 dB, about 9 in elements) showed nothing at that frequency, and a real
-signal that fills half the time slices of one measurement shouldn't be missing
-from another.
+length, 9.5 in per element. Its nearest resonance to 916 MHz (the third
+multiple, about 819 MHz) is farther off than the other two settings' (893 and
+854 MHz), so if antenna match were driving the number, this capture should have
+had the lowest tone fraction of the three. It had the highest of all five: 47%.
+The `rtl_power` sweep I'd taken minutes earlier at the same gain (Sep 24, 21:21
+to 21:36 PDT, run M6, 36.4 dB, 9.5 in elements) showed nothing at that
+frequency, and a real signal that fills half the time slices of one measurement
+shouldn't be missing from another.
 
 {{< details summary="Command and settings (run M6)" >}}
 
@@ -104,14 +107,14 @@ What differed was that for the IQ capture I'd centered the receiver on exactly
 that frequency, and RTL-SDRs typically have a small DC offset that shows up as
 a spike at the center of the spectrum
 ([PySDR](https://pysdr.org/content/sampling.html) explains it, and notes that
-such a spike doesn't mean there's energy at that frequency). My detector never
+such a spike doesn't mean there's energy at that frequency). The detector never
 subtracted it. 97-99% of the "carrier" slices peaked in the center bin, and
 with the mean subtracted the fraction drops to 0.3-0.4% on all four captures
 still on disk, on every antenna. So the 7%-versus-47% spread was, as far as I
 can tell, just how a constant spike compares with the noise floor at each
 antenna and gain. None of the explanations I'd tried (a carrier, harmonic
 clutter, time of day) was about a real signal. (I'd wondered about time of day
-because the 7% capture was the only morning one at the time; the 9 in
+because the 7% capture was the only morning one at the time; the 9.5 in
 antenna's morning capture gave 44%, so it wasn't that either.)
 
 The AM survey captures in
@@ -188,7 +191,7 @@ didn't print the gain. D3's end time is inferred (start plus 5 minutes).
 {{< /details >}}
 
 So on Sep 24 I parked `rtl_433` on 912.6 MHz and then on 916.45 MHz for half an
-hour each, at 40.2 dB with about 9 in elements: the Itron ERT window from 21:37
+hour each, at 40.2 dB with 9.5 in elements: the Itron ERT window from 21:37
 PDT (run M8) and the Badger ORION window from 22:07 (run M9). Zero decodes on
 both.
 
@@ -204,7 +207,7 @@ rtl_433 -f 916.45M -s 1200k -g 40.2 -M level -M protocol -M time:iso:usec:tz -F 
 {{< /details >}}
 
 Then a hopping decode across all of 902-928 MHz with `rtl_433` (Sep 25, 08:34 to
-10:34 PDT, run M11, 40.2 dB, same 9 in elements; I'd planned three hours and
+10:34 PDT, run M11, 40.2 dB, same 9.5 in elements; I'd planned three hours and
 stopped at two to free the dongle for
 [the second ADS-B run](/posts/aperture-ships-and-aircraft/)): thirteen
 overlapping 2.4 MHz windows, 30 seconds on each in turn, every default protocol
@@ -269,7 +272,7 @@ meters use any protocol rtl_433 has a decoder for.
 
 All times are 2026. PDT is UTC-7, so after 17:00 PDT the UTC date is the next
 day. The IDs are only for cross-reference with the text. Antenna is the exposed
-length per element; the ~9 in figure is an estimate, not a measurement. Times
+length per element; the 9.5 in figure is the length I set, not re-measured for each run. Times
 come from log files and from file creation and modification times, except the
 end of D3 (start plus 5 minutes). Not recorded at all: the gain for IQ captures
 #2 and #3 (M3, M4), and the antenna's placement, height and cable.
@@ -281,12 +284,12 @@ end of D3 (start plus 5 minutes). Not recorded at all: the gain for IQ captures
 | M3 | IQ capture #2 | Aug 4 18:42:05 - 18:43:05 | Aug 5 01:42:05 - 01:43:05 | 5.5 in |
 | M4 | IQ capture #3 | Aug 5 08:21:38 - 08:22:38 | Aug 5 15:21:38 - 15:22:38 | 2.5 in |
 | M5 | 8-hour 902-928 MHz sweep | Aug 5 09:23:13 - 17:23:14 | Aug 5 16:23:13 - Aug 6 00:23:14 | 2.5 in |
-| M6 | 15-minute 902-928 MHz sweep | Sep 24 21:21:07 - 21:36:07 | Sep 25 04:21:07 - 04:36:07 | ~9 in |
-| M7 | IQ capture #4 | Sep 24 21:36:07 - 21:37:07 | Sep 25 04:36:07 - 04:37:07 | ~9 in |
-| M8 | Itron ERT window, 912.6 MHz | Sep 24 21:37:13 - 22:07:13 | Sep 25 04:37:13 - 05:07:13 | ~9 in |
-| M9 | Badger ORION window, 916.45 MHz | Sep 24 22:07:14 - 22:37:14 | Sep 25 05:07:14 - 05:37:14 | ~9 in |
-| M10 | IQ capture #5 | Sep 25 08:14:28 - 08:15:28 | Sep 25 15:14:28 - 15:15:28 | ~9 in |
-| M11 | 2-hour hopping decode, 13 windows | Sep 25 08:34:37 - 10:34:41 | Sep 25 15:34:37 - 17:34:41 | ~9 in |
+| M6 | 15-minute 902-928 MHz sweep | Sep 24 21:21:07 - 21:36:07 | Sep 25 04:21:07 - 04:36:07 | 9.5 in |
+| M7 | IQ capture #4 | Sep 24 21:36:07 - 21:37:07 | Sep 25 04:36:07 - 04:37:07 | 9.5 in |
+| M8 | Itron ERT window, 912.6 MHz | Sep 24 21:37:13 - 22:07:13 | Sep 25 04:37:13 - 05:07:13 | 9.5 in |
+| M9 | Badger ORION window, 916.45 MHz | Sep 24 22:07:14 - 22:37:14 | Sep 25 05:07:14 - 05:37:14 | 9.5 in |
+| M10 | IQ capture #5 | Sep 25 08:14:28 - 08:15:28 | Sep 25 15:14:28 - 15:15:28 | 9.5 in |
+| M11 | 2-hour hopping decode, 13 windows | Sep 25 08:34:37 - 10:34:41 | Sep 25 15:34:37 - 17:34:41 | 9.5 in |
 | D1 | earlier decode pass, 915M at 1.024 MHz wide | Aug 3 22:03:40 - 22:11:40 | Aug 4 05:03:40 - 05:11:40 | 5.5 in |
 | D2 | earlier decode pass, 926.375M at 2.4 MHz wide | Aug 3 22:19:12 - 22:26:12 | Aug 4 05:19:12 - 05:26:12 | 5.5 in |
 | D3 | earlier decode pass, 915M at 2.4 MHz wide, 36.4 dB | Aug 5 17:27:58 - 17:32:58 (end inferred) | Aug 6 00:27:58 - 00:32:58 | 2.5 in |
@@ -303,4 +306,4 @@ This is one of four posts from the same RTL-SDR project. One thread runs through
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the detector, the capture scripts and the figure, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table. Not tested: what the 902-928 MHz bursts are, since I chose not to decode them.*
+*[How this was built](/how-i-work/): Claude Code wrote the detector, the capture scripts and the figure, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table. Not tested: what the 902-928 MHz bursts are, since I chose not to decode them.*

@@ -13,7 +13,7 @@ on the air around me in San Francisco. The V4 covers 500 kHz to 1.766 GHz
 ([datasheet](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)),
 and I began with the rest of the 433 MHz band, where I could hear three
 weather sensors. This post covers Aug 3 and 4, 2026: an antenna-length
-calculation I got wrong, a sweep of the tuner gain, an eight-hour census of
+calculation that turned out wrong, a sweep of the tuner gain, an eight-hour census of
 the band, and a weather sensor whose transmit clock drifts with its own
 temperature reading.
 
@@ -48,15 +48,15 @@ about 18 minutes into the census (C2). Times are PDT (UTC-7) unless they
 say UTC; after 17:00 PDT the UTC date is the next day.
 
 From one target to the next I changed the decoder, the tuner gain and the
-antenna's element length. The antenna length is where I made my first mistake,
+antenna's element length. The antenna length is where the first mistake was,
 so I'll start there.
 
-## antenna length: my first calculation was wrong
+## antenna length: the first calculation was wrong
 
 ![Diagram of the three antenna element lengths used on this project, drawn to scale: 2.5, 5.5 and 16 inches exposed per element, from the 915 MHz band to 162 MHz AIS. The part inside the base is shown in a darker shade, and longer elements resonate at lower frequencies](figs/antenna-length-aug.svg)
 
 The antenna is the [RTL-SDR Blog dipole kit](https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/):
-two telescoping elements on a base. My first calculation of the right length
+two telescoping elements on a base. The first calculation of the right length
 used the bare free-space quarter-wave formula, with no correction for a real
 wire being shorter than the wave, and no allowance for the roughly 2 cm of
 metal already inside the antenna base, which the kit's guide says has to be
@@ -130,7 +130,7 @@ estimate stays at or below full scale; once the estimate goes over full scale,
 RSSI turns positive and the identity stops holding
 ([`calc_rssi_snr`](https://github.com/merbanan/rtl_433/blob/master/src/r_flow.c)).
 The packets still decode, but the RSSI can't be trusted. That `snr == rssi -
-noise` test is what my capture script uses as a `saturated` flag. The highest
+noise` test is what the capture script Claude Code wrote uses as a `saturated` flag. The highest
 gain where the loudest sensor stayed below full scale was 36.4 dB, so that
 became my "clean" setting.
 
@@ -289,7 +289,7 @@ about -29.5 dBFS and 8 dB over the noise. So the lower level is worth about 15
 dB.
 
 No August IQ was saved, so the rest is inference. At 36.4 dB the loud sensor
-read about -1.6 dBFS in August (5.5 in elements) and -6.1 now (about 9 in), 4.5
+read about -1.6 dBFS in August (5.5 in elements) and -6.1 now (9.5 in), 4.5
 dB weaker. Shift 148 by the same amount and it sits about 4 dB under the default
 line at 36.4 dB and right at it at 40.2 dB, which fits what I saw in August. So
 40.2 dB likely worked by pushing the weaker sensors over the decoder's line
@@ -324,8 +324,8 @@ and turn-down test is `python3 detect_level_sweep.py t1.cu8 --id 148 --peak-dbfs
 All times are 2026. PDT is UTC-7, so after 17:00 PDT the UTC date is the next
 day. The IDs are only for cross-reference with the text. Antenna is the exposed
 length per element (the change from a V shape to vertical is in the setup
-paragraph at the top). T1's antenna wasn't re-checked: it was last reported as about 9 in per
-element and vertical in September, and no bias tee flag was passed. Times come
+paragraph at the top). T1's antenna wasn't re-checked: I'd last set it to 9.5 in per element,
+vertical, in September, and no bias tee flag was passed. Times come
 from log files and from file creation and modification times. G2's exact command line was not saved. The
 earlier decode pass of about 40 minutes and the "another run" that gave 14.3 ppm
 are mentioned in the text without run IDs and are not in this table. Not
@@ -338,7 +338,7 @@ recorded at all: the antenna's placement, height and cable.
 | C1 | overnight 433.92 MHz at 36.4 dB | Aug 3 22:55:39 - Aug 4 08:10:00 | Aug 4 05:55:39 - 15:10:00 | 5.5 in |
 | C1b | same run, switched to 40.2 dB | Aug 4 08:11:33 - 08:23:17 | Aug 4 15:11:33 - 15:23:17 | 5.5 in |
 | C2 | 433 MHz census, 7 slices, 40.2 dB | Aug 4 08:27:56 - 16:27:57 | Aug 4 15:27:56 - 23:27:57 | 5.5 in |
-| T1 | 433.92 MHz raw IQ at 36.4 dB, decoded twice (Oct 4 update) | Oct 4 22:46:43 - 22:56:44 | Oct 5 05:46:43 - 05:56:44 | ~9 in, not re-checked |
+| T1 | 433.92 MHz raw IQ at 36.4 dB, decoded twice (Oct 4 update) | Oct 4 22:46:43 - 22:56:44 | Oct 5 05:46:43 - 05:56:44 | 9.5 in, not re-checked |
 
 {{< /details >}}
 
@@ -352,4 +352,4 @@ This is one of four posts from the same RTL-SDR project. One thread runs through
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table, except where the text says otherwise. Not tested: whether the clock fingerprint survives a battery swap, and a 433 MHz census with the lowered detection level.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table, except where the text says otherwise. Not tested: whether the clock fingerprint survives a battery swap, and a 433 MHz census with the lowered detection level.*

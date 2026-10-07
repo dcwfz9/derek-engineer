@@ -25,8 +25,8 @@ The setup is one radio, one antenna and one computer (a Mac mini), with the bias
 tee off and no external LNA or filter. The antenna is the
 [RTL-SDR Blog dipole kit](https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/),
 and I changed its element length between runs: 5.5 inches exposed per element
-for the three August sweeps below and about 9 inches for the September tests
-(my estimate, not a measurement). The antenna stood straight vertical except for
+for the three August sweeps below and 9.5 inches for the September tests. The
+antenna stood straight vertical except for
 the first sweep below (S1), when the elements were in a V.
 [The first post](/posts/aperture-433mhz-weather-sensors/) covers how I chose
 element lengths, and the rest of the setup. Times are PDT (UTC-7).
@@ -71,7 +71,7 @@ each spot is on one chart:
 ![The full 500 kHz to 1.77 GHz sweep on a log frequency axis, with the FM broadcast peak higher than every UHF TV, LTE and public-safety peak](figs/fullspectrum.png)
 
 Caveat on the low end: the AM tests below found the HF path clipping about 26%
-of samples at 36.4 dB with the roughly 9 in elements. S3's shorter 5.5 in
+of samples at 36.4 dB with the 9.5 in elements. S3's shorter 5.5 in
 elements should pick up somewhat less at HF, so it was probably still clipping,
 but I didn't measure it. I'd treat the 0.5-30 MHz end as qualitative, since some
 peaks there may be intermodulation products.
@@ -93,8 +93,8 @@ tell which from the sweep alone, so I ran a test that can.
 The question is whether the strong FM signals overload the receiver badly
 enough to create junk across everything near them. A
 single lower-gain rerun wouldn't settle it, because the antenna had changed
-since the sweep (5.5 in then, about 9 in now), so it would change two things at
-once. Instead, on Sep 24, starting at 20:06 PDT (run V1, about 9 in elements),
+since the sweep (5.5 in then, 9.5 in now), so it would change two things at
+once. Instead, on Sep 24, starting at 20:06 PDT (run V1, 9.5 in elements),
 I ran four gains back to back on the current antenna - 36.4, 28.0, 22.9 and
 16.6 dB, plus 36.4 again at the end as a drift check. At each gain I took a
 2-second `rtl_sdr` capture at 98 MHz (FM center) to count clipped samples, then
@@ -171,7 +171,7 @@ describes as "enable dc blocking filter") cut the DC-bin magnitude by more than
 "close to a real carrier". I hadn't listened to the clip; I'd been going by
 spectral measurements. On Sep 24 I listened, and also started from the other
 end with a survey of every channel. All of the AM tests below were that
-evening, from about 45 minutes after sunset, with the roughly 9 in elements.
+evening, from about 45 minutes after sunset, with the 9.5 in elements.
 
 The clip was static because there was nothing there. 1560 kHz is an empty
 channel, 0.5 dB over the local noise floor. It was also garbage for a second
@@ -238,7 +238,7 @@ Blue is a carrier that's still there at 19.7 dB, which I count as real; gray is
 one that vanished at the lower gain, which I count as an intermodulation
 product:
 
-![Carrier strength for each AM channel through a $25 dongle and roughly 9 inch dipole elements, with 1560 kHz empty and three channels marked as intermod](figs/am-dial.png)
+![Carrier strength for each AM channel through a $25 dongle and 9.5 inch dipole elements, with 1560 kHz empty and three channels marked as intermod](figs/am-dial.png)
 
 This is how intermodulation makes a "station" out of nothing: real carriers
 mix in an overdriven receiver and land on another channel. Each gray one can be
@@ -258,7 +258,7 @@ sunset; I haven't checked. Going the other way I caught 16 of the 24 listed
 stations. The 8 misses all sit just under my 6 dB bar or below it, and seven of
 them are stations outside San Francisco (for example San Jose, Palo Alto,
 Vallejo and Piedmont), which I'd expect to be weaker here. So a $25 dongle with
-roughly 9 in dipole elements picked up two thirds of the listed stations that
+9.5 in dipole elements picked up two thirds of the listed stations that
 evening.
 
 Then I demodulated the empty 1560 kHz channel and the two strongest stations,
@@ -313,8 +313,8 @@ and a few details I didn't record (listed with the run table at the end).
 All times are 2026. PDT is UTC-7, so after 17:00 PDT the UTC date is the next
 day. The IDs are only for cross-reference with the text. Antenna is the exposed
 length per element and the orientation (V shape or vertical); my notes record
-the change from V to straight vertical on Aug 4 at 08:45 PDT, and the ~9 in
-figure is an estimate, not a measurement. Times come from log files and from
+the change from V to straight vertical on Aug 4 at 08:45 PDT, and the 9.5 in
+figure is the length I set, not re-measured for each run. Times come from log files and from
 file creation and modification times, except AM1 and AM2 (from my session
 transcript, so approximate). Not saved as command lines: S3 and the AM tests
 (they come from my session transcript). Software was Homebrew's librtlsdr 2.0.2
@@ -326,11 +326,11 @@ antenna's placement, height and cable.
 | S1 | sweep 300-960 MHz | Aug 3 22:01:08 - 22:03:40 | Aug 4 05:01:08 - 05:03:40 | 5.5 in, V shape |
 | S2 | sweep 300-1000 MHz | Aug 4 18:29:56 - 18:32:35 | Aug 5 01:29:56 - 01:32:35 | 5.5 in, vertical |
 | S3 | full-spectrum sweep 0.5-1766 MHz | Aug 5 07:16:24 - 07:24:41 | Aug 5 14:16:24 - 14:24:41 | 5.5 in, vertical |
-| V1 | 41-167 MHz paired-gain test | Sep 24 20:06:44 - 20:31:59 | Sep 25 03:06:44 - 03:31:59 | ~9 in, vertical |
-| AM1 | AM probe at 36.4 dB (approx.) | Sep 24 19:37:55 - 19:38:01 | Sep 25 02:37:55 - 02:38:01 | ~9 in, vertical |
-| AM2 | AM clipping sweep, 0.9-28.0 dB (approx.) | Sep 24 19:40:19 - 19:40:53 | Sep 25 02:40:19 - 02:40:53 | ~9 in, vertical |
-| AM3 | AM survey captures, 3 x 20 s | Sep 24 19:52:44 - 19:53:45 | Sep 25 02:52:44 - 02:53:45 | ~9 in, vertical |
-| AM4 | rtl_fm reproduction of the old clip, 4 x 10 s | Sep 24 20:00:23 - 20:01:07 | Sep 25 03:00:23 - 03:01:07 | ~9 in, vertical |
+| V1 | 41-167 MHz paired-gain test | Sep 24 20:06:44 - 20:31:59 | Sep 25 03:06:44 - 03:31:59 | 9.5 in, vertical |
+| AM1 | AM probe at 36.4 dB (approx.) | Sep 24 19:37:55 - 19:38:01 | Sep 25 02:37:55 - 02:38:01 | 9.5 in, vertical |
+| AM2 | AM clipping sweep, 0.9-28.0 dB (approx.) | Sep 24 19:40:19 - 19:40:53 | Sep 25 02:40:19 - 02:40:53 | 9.5 in, vertical |
+| AM3 | AM survey captures, 3 x 20 s | Sep 24 19:52:44 - 19:53:45 | Sep 25 02:52:44 - 02:53:45 | 9.5 in, vertical |
+| AM4 | rtl_fm reproduction of the old clip, 4 x 10 s | Sep 24 20:00:23 - 20:01:07 | Sep 25 03:00:23 - 03:01:07 | 9.5 in, vertical |
 | AM5 | AM demodulation to WAV (offline, from AM3) | Sep 24 20:02:25 - 20:02:37 | Sep 25 03:02:25 - 03:02:37 | n/a |
 
 {{< /details >}}
@@ -345,4 +345,4 @@ This is one of four posts from the same RTL-SDR project. One thread runs through
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture and analysis scripts, the AM demodulator and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, listened to the AM clips, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table. Not tested: the AM survey at midday, and the cause of the one 1.04% clipping reading.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture and analysis scripts, the AM demodulator and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, listened to the AM clips, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table. Not tested: the AM survey at midday, and the cause of the one 1.04% clipping reading.*

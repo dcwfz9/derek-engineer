@@ -36,8 +36,8 @@ dipole was vertical, which matches the vertically polarized antenna
 [RTL-SDR Blog's AIS tutorial](https://www.rtl-sdr.com/rtl-sdr-tutorial-cheap-ais-ship-tracking/)
 calls for.
 
-I built [AIS-catcher](https://github.com/jvde-github/AIS-catcher) from source
-rather than write a decoder. A 2-minute smoke test (run A1, Aug 6 from 09:27
+I had Claude Code build [AIS-catcher](https://github.com/jvde-github/AIS-catcher)
+from source rather than write a decoder. A 2-minute smoke test (run A1, Aug 6 from 09:27
 PDT, 40.2 dB, 16 in elements) decoded three ships before I trusted it with 8
 hours unattended. The three long runs in the table used the same settings
 (AIS-catcher, 40.2 dB, 16 in elements); the overnight haul was thin, so I reran
@@ -60,7 +60,7 @@ haven't checked what was in range).
 {{< details summary="Command, settings and decoding (runs A1-A4, reconstructed)" >}}
 I didn't save the original command line. The settings are reconstructed from
 the run logs (gain 40.2 dB, the dongle's own AGC off, community sharing off,
-1.536 MHz sample rate) and from the helper script I wrote afterwards, which
+1.536 MHz sample rate) and from the helper script Claude Code wrote afterwards, which
 stops the run with an external timer (SIGTERM) instead of `-T`. The elements
 were 16 in:
 
@@ -264,17 +264,17 @@ The [Oakland/Alameda weekday timetable](https://www.sfbayferry.com/routes-schedu
 
 ## the tracks on a map
 
-I plotted the tracks over OpenStreetMap tiles with
+Claude Code plotted the tracks over OpenStreetMap tiles with
 [Leaflet](https://leafletjs.com/), on a small local page. EVER LOYAL's
-stationary point sits on the Port of Oakland container terminals, and (once I'd
-dealt with the gaps described below) the moving tracks stay over water. Map
+stationary point sits on the Port of Oakland container terminals, and (once the gaps
+described below were dealt with) the moving tracks stay over water. Map
 tiles and data: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
 
 {{< details summary="A Leaflet quirk: fitBounds in an automated browser" >}}
-In the automated browser I used to take screenshots, calling Leaflet's
-`fitBounds()` asynchronously (I tried `requestAnimationFrame` and a 200 ms
+In the automated browser Claude Code used to take screenshots, calling Leaflet's
+`fitBounds()` asynchronously (it tried `requestAnimationFrame` and a 200 ms
 `setTimeout`) kept landing at street-level zoom instead of the city-wide view,
-though running the same call by hand from the console worked every time. I
+though running the same call by hand from the console worked every time. We
 never found the cause, and it looked specific to that environment. Setting the
 center and zoom directly in the synchronous `L.map().setView()` call avoided it.
 {{< /details >}}
@@ -284,11 +284,11 @@ center and zoom directly in the synchronous `L.map().setView()` call avoided it.
 Putting the tracks on map tiles caught something the abstract plot hid: a
 couple of lines crossed straight over Alameda. They came from gaps in
 reception, one of them 76 minutes long, for MMSI 367380880 (GEMINI), from 10:58
-to 12:14 PDT on Aug 6, and my code was drawing a straight line between the two
+to 12:14 PDT on Aug 6, and the plotting code was drawing a straight line between the two
 points on either side. A straight line across land in a 76-minute gap can't be
-right, so I split every track wherever consecutive messages were more than 15
-minutes apart, rather than bridge it with a segment implying motion nobody
-observed.
+right, so the code now splits every track wherever consecutive messages were
+more than 15 minutes apart, rather than bridging it with a segment implying
+motion nobody observed.
 
 ![The same eight day-1 tracks on plain latitude and longitude axes with no basemap, after splitting at gaps over 15 minutes](figs/ais-tracks-abstract.png)
 
@@ -427,9 +427,8 @@ On Sep 25, with the dongle free again (I'd cut a planned three-hour 902-928 MHz
 decode to two hours, described in
 [the mystery-signal post](/posts/aperture-mystery-carrier-dc-spike/)), I ran
 dump1090 for 45 minutes: run B3, from 10:34 PDT (17:34 UTC) at 49.6 dB, with the
-antenna vertical at about 9 in per element (my estimate, not a measurement),
-the setting from my [AM and VHF tests](/posts/aperture-whats-on-the-air/) the
-day before. Neither this length nor the 16 in one was chosen
+antenna vertical at 9.5 in per element, the setting from my
+[AM and VHF tests](/posts/aperture-whats-on-the-air/) the day before. Neither this length nor the 16 in one was chosen
 for 1090 MHz, and I can't say which matched it better.
 
 {{< details summary="Command, settings and the antenna arithmetic (run B3)" >}}
@@ -437,14 +436,17 @@ for 1090 MHz, and I can't say which matched it better.
 dump1090 --gain 49.6 --write-json <dir> --quiet
 ```
 
-The run ended at 11:19 PDT (18:19 UTC). The 9 in setting resonates near
-287 MHz and the 16 in setting near 167 MHz, so 1090 MHz is about 3.8 times the
-first and about 6.5 times the second, and by that ratio the 9 in setting is
+The run ended at 11:19 PDT (18:19 UTC). The 9.5 in setting resonates near
+273 MHz and the 16 in setting near 167 MHz, so 1090 MHz is about 4.0 times the
+first and about 6.5 times the second, and by that ratio the 9.5 in setting is
 closer. But a dipole is also resonant near odd multiples of that frequency
-([Wikipedia](https://en.wikipedia.org/wiki/Dipole_antenna)): the 16 in setting has its 7th near 1170 MHz, about 7% above 1090,
-while the 9 in setting has its 3rd and 5th near 860 and 1430 MHz. By that
-measure the 16 in setting is arguably closer, which is why I can't call either
-a better match.
+([Wikipedia](https://en.wikipedia.org/wiki/Dipole_antenna)): the 16 in setting
+has its 7th near 1170 MHz, about 7% above 1090, while the 9.5 in setting has its
+3rd and 5th near 820 and 1360 MHz, about 25% either side. That same article says
+a dipole is high-impedance at even multiples, and 1090 MHz lands almost exactly
+on the 9.5 in setting's 4th. By these measures the 16 in setting looks, if
+anything, the closer one, but I didn't measure either, so I can't say which
+matched better.
 {{< /details >}}
 
 It logged 10,145 messages and 26 aircraft in the 30-second snapshots (a 27th,
@@ -525,7 +527,7 @@ loads for about two weeks, so it should stop working around Oct 9.
 {{< details summary="Every run mentioned in this post (times in PDT and UTC)" >}}
 All times are 2026. PDT is UTC-7, so after 17:00 PDT the UTC date is the next
 day. The IDs are only for cross-reference with the text. Antenna is the exposed
-length per element; the ~9 in figure is an estimate, not a measurement. The
+length per element; the 9.5 in figure is the length I set, not re-measured for each run. The
 antenna was vertical for every run here except B0, which was in a V shape. Times
 come from log files and from file creation and modification times. Not saved as
 command lines: the AIS runs (reconstructed, see the AIS section). Not recorded
@@ -540,7 +542,7 @@ placement, height and cable.
 | A4 | AIS day 2 | Aug 7 09:27:47 - 17:27:49 | Aug 7 16:27:47 - Aug 8 00:27:49 | 16 in |
 | B0 | rtl_adsb test, 140 s | Aug 3 22:27:56 - 22:30:16 | Aug 4 05:27:56 - 05:30:16 | 5.5 in |
 | B2 | ADS-B run 1 (dump1090) | Aug 6 22:05:31 - 22:31:17 | Aug 7 05:05:31 - 05:31:17 | 16 in |
-| B3 | ADS-B run 2 (dump1090) | Sep 25 10:34:41 - 11:19:41 | Sep 25 17:34:41 - 18:19:41 | ~9 in |
+| B3 | ADS-B run 2 (dump1090) | Sep 25 10:34:41 - 11:19:41 | Sep 25 17:34:41 - 18:19:41 | 9.5 in |
 {{< /details >}}
 
 ## more from this project
@@ -553,4 +555,4 @@ This is one of four posts from the same RTL-SDR project. One thread runs through
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis, the maps and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed which runs to do, and chose what to check against outside sources. Tested: every count here is from a run on the dongle listed in the table, and the vessels and aircraft were checked against public listings. Not tested: where the ships were at the times I heard them (I found no free history to check against), and who the five ships heard only once were.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis, the maps and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every count here is from a run on the dongle listed in the table, and the vessels and aircraft were checked against public listings. Not tested: where the ships were at the times I heard them (I found no free history to check against), and who the five ships heard only once were.*

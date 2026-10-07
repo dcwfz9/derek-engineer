@@ -1,7 +1,7 @@
 ---
 title: "Game Night: Ogle on My TV, With Our Phones as Controllers"
 date: 2026-10-04T20:30:00-07:00
-draft: true
+draft: false
 tags: ["games", "tizen", "home-lab", "claude-code", "hardware-in-the-loop"]
 description: "The board on the TV, everyone tracing words on their own phone, and a relay on the Mac mini keeping score, the way Netflix runs its party games. Built while I was out, then given music made in code and three more modes."
 ---

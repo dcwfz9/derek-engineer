@@ -3,7 +3,7 @@ title: "aperture: three 433 MHz weather sensors, and a clock that tracks tempera
 date: 2026-08-22
 draft: true
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
-description: "Starting with a $25 RTL-SDR: fixing an antenna-length calculation, sweeping the tuner gain, walking the 433 MHz band for eight hours, and finding that a weather sensor's transmit clock drifts with its own temperature reading. Updated in October with the decoder setting that hid the weaker sensors."
+description: "Starting with a $25 RTL-SDR: fixing an antenna-length calculation, sweeping the tuner gain, walking the 433 MHz band for eight hours, and finding that a weather sensor's transmit clock drifts with its own temperature reading. Updated in October with the decoder setting that hid the weaker sensors, and how little margin they have."
 ---
 
 The [Vornado fan remote project](/posts/vornado-eos-9-rf-remote-reverse-engineering/)
@@ -144,8 +144,8 @@ sensor (id 148) appeared, and the 8-hour census below, at 40.2 dB, heard all
 three. (An earlier decode pass of about 40 minutes with rtl_433's defaults,
 which means automatic gain, had also found all three. The gain it picked wasn't
 recorded.) Runs G2, C1 and C1b all used the 5.5 in elements. The
-cause looks like a decoder default, not the radio; the update at the end has
-the test.
+cause looks like a decoder default plus very little margin; the update at the
+end has the tests.
 
 {{< details summary="Commands and settings (runs G2, C1, C1b)" >}}
 
@@ -167,7 +167,7 @@ PDT. The run table at the end has the exact times.
 Clipping ruins the RSSI measurement without stopping the decode, so for the
 census I ran at 40.2 dB - deliberately saturating the loudest sensor - and the
 `saturated` column quarantines its bad readings instead of costing packets from
-the weaker ones. The update at the end has a likely better fix: a lower
+the weaker ones. The update at the end tests a lower
 detection level.
 
 ## the 433 MHz band: three sensors above the decoder's line
@@ -204,7 +204,7 @@ Every other packet in the census landed while the hopper sat on 433.925. So it
 looks like the sensor was caught mid-hop and stamped with the new slice's
 frequency, not a fourth device. The census confirmed the count instead of
 finding anything new, but it couldn't see a signal whose peak was weaker than
-about -14 dBFS (the update at the end explains).
+about -14 dBFS (the update at the end explains, and reruns the census).
 
 ## a sensor's transmit clock tracks its temperature
 
@@ -260,7 +260,7 @@ r = -0.86), and the dashed line is the nominal tuning-fork curve. The -0.640
 figure above comes from a fit to every packet instead, which doesn't depend on
 where the windows are cut.
 
-## update, Oct 4: the decoder was the limit, not the radio
+## update, Oct 4 to 7: the decoder's cutoff, and how little margin the weak sensors have
 
 Almost every RSSI from a weaker sensor in my August logs is exactly -12.14 dBFS,
 including sensor 148 at 40.2 dB. That's a floor, not a measurement. By default,
@@ -272,14 +272,14 @@ level
 That puts the decoder's line somewhere around 15 dB below full scale: weaker
 pulses are ignored, however clean they are. I measured it below.
 
-I had Claude Code record ten minutes of raw radio samples (IQ) at 36.4 dB, run
-T1, with the antenna not re-checked since September, and decode the file twice
-with rtl_433 25.12. With the default detection level it found only sensor 106;
-with a lower one (`-Y autolevel`) it also found 148 (18 packets). Measured
+On Oct 4 I had Claude Code record ten minutes of raw radio samples (IQ) at 36.4
+dB, run T1, with the antenna not re-checked since September, and decode the file
+twice with rtl_433 25.12. With the default detection level it found only sensor
+106; with a lower one (`-Y autolevel`) it also found 148 (18 packets). Measured
 straight from the samples (`detect_level_ab.py` in the aperture repo), 106 peaks
 near -6.1 dBFS, within 0.4 dB of rtl_433's reading, and 148 at -22.4 dBFS, 15.4
 dB above the noise: easy to decode, just under the default line. LaCrosse 174
-didn't decode in that file with any setting, and I don't know why.
+didn't decode in that file with any setting.
 
 To find the line, I had a script turn that recording up and down digitally and
 decode it again at each step (`detect_level_sweep.py`). The default detector
@@ -288,20 +288,44 @@ with `-Y autolevel` it kept hearing it until it was turned down about 7 dB, to
 about -29.5 dBFS and 8 dB over the noise. So the lower level is worth about 15
 dB.
 
-No August IQ was saved, so the rest is inference. At 36.4 dB the loud sensor
-read about -1.6 dBFS in August (5.5 in elements) and -6.1 now (9.5 in), 4.5
-dB weaker. Shift 148 by the same amount and it sits about 4 dB under the default
-line at 36.4 dB and right at it at 40.2 dB, which fits what I saw in August. So
-40.2 dB likely worked by pushing the weaker sensors over the decoder's line
-while clipping the loud one, and staying at 36.4 dB with `-Y autolevel` would
-likely have heard them without clipping (I only tested 148). It would also fit
-the early 40-minute pass, if its automatic gain was running high; my notes say
-it was saturating the front end. The census couldn't see under that line and
-hasn't been rerun.
+I expected the August census to find more with it, so on Oct 7 I reran the
+census for 8 hours at 36.4 dB with `-Y autolevel`, over the same seven slices
+(run C3). Nothing new turned up: the same three sensors, all on 433.9 MHz. But
+it heard 148 only 35 times against 128 in August, and LaCrosse 174 15 times
+against 45, and both disappeared for hours in the middle of the day while 106's
+level sagged by about 3.6 dB.
 
-{{< details summary="Commands (run T1)" >}}
+To separate the gain from the detector, I then parked on 433.92 MHz for 15
+minutes at each of four settings (run T3). About 29 packets are expected from
+each Oregon sensor in that time:
 
-Capture, 600 s at 250 kS/s:
+| setting | 106 | 148 | 174 |
+|---|---:|---:|---:|
+| 36.4 dB, default detector | 29 | 0 | 0 |
+| 36.4 dB, `-Y autolevel` | 29 | 8 | 0 |
+| 40.2 dB, default detector | 29 | 0 | 0 |
+| 40.2 dB, `-Y autolevel` | 29 | 28 | 0 |
+
+Only the last setting heard 148 reliably. The default detector heard it at
+neither gain, and 174 wasn't heard in any block.
+
+So the detector's cutoff is only part of the story: the weak sensors have very
+little margin. At 36.4 dB, 106 read about -13 dBFS on Oct 7, against -1.6 in
+August (5.5 in elements) and -6.1 on Oct 4. At 40.2 dB it read -8.5 on Oct 7 and
+was over full scale in August, so this setup is at least 9 dB weaker at 433 MHz
+than the August one. The longer elements probably account for some of that (Oct
+4 was 4.5 dB under August). I don't know what accounts for the rest: the dongle
+was disconnected and reconnected between Oct 4 and Oct 7, and I don't know
+whether the antenna moved. August still reads the same way it did: at 36.4 dB the
+weak sensors were under the default line, and at 40.2 dB they were over it, at
+the price of clipping the loud one (that also fits the early 40-minute pass,
+which ran on automatic gain). For the current setup, 40.2 dB with `-Y autolevel`
+was the best of the four; I haven't tried higher gains or a better-matched
+antenna.
+
+{{< details summary="Commands (runs T1, C3, T3)" >}}
+
+T1: capture, 600 s at 250 kS/s:
 
 ```
 rtl_sdr -f 433920000 -s 250000 -g 36.4 -n 150000000 t1.cu8
@@ -317,6 +341,19 @@ rtl_433 -r cu8:t1.cu8 -s 250k -f 433.92M -M level -M time:rel -F json -Y autolev
 `-Y minlevel=-30` in place of `-Y autolevel` gave the same result. The turn-up
 and turn-down test is `python3 detect_level_sweep.py t1.cu8 --id 148 --peak-dbfs -22.4`.
 
+C3: the census script from the aperture repo with two settings changed, which
+runs `rtl_433` with seven `-f` slices, `-H 90` and the extra argument:
+
+```
+GAIN=36.4 EXTRA="-Y autolevel" ./census.sh
+```
+
+T3: four blocks of 900 s in this order (a, b, c, d), each:
+
+```
+rtl_433 -f 433.92M -g <36.4 or 40.2> [-Y autolevel] -M level -M protocol -M time:iso:usec:tz -F json -T 900
+```
+
 {{< /details >}}
 
 {{< details summary="Every run mentioned in this post (times in PDT and UTC)" >}}
@@ -324,10 +361,10 @@ and turn-down test is `python3 detect_level_sweep.py t1.cu8 --id 148 --peak-dbfs
 All times are 2026. PDT is UTC-7, so after 17:00 PDT the UTC date is the next
 day. The IDs are only for cross-reference with the text. Antenna is the exposed
 length per element (the change from a V shape to vertical is in the setup
-paragraph at the top). T1's antenna wasn't re-checked: I'd last set it to 9.5 in per element,
-vertical, in September, and no bias tee flag was passed. Times come
-from log files and from file creation and modification times. G2's exact command line was not saved. The
-earlier decode pass of about 40 minutes and the "another run" that gave 14.3 ppm
+paragraph at the top). The antenna for T1, C3 and T3 wasn't re-checked: I'd last
+set it to 9.5 in per element, vertical, in September, and no bias tee flag was
+passed. Times come from log files and from file creation and modification
+times. G2's exact command line was not saved. The earlier decode pass of about 40 minutes and the "another run" that gave 14.3 ppm
 are mentioned in the text without run IDs and are not in this table. Not
 recorded at all: the antenna's placement, height and cable.
 
@@ -339,6 +376,8 @@ recorded at all: the antenna's placement, height and cable.
 | C1b | same run, switched to 40.2 dB | Aug 4 08:11:33 - 08:23:17 | Aug 4 15:11:33 - 15:23:17 | 5.5 in |
 | C2 | 433 MHz census, 7 slices, 40.2 dB | Aug 4 08:27:56 - 16:27:57 | Aug 4 15:27:56 - 23:27:57 | 5.5 in |
 | T1 | 433.92 MHz raw IQ at 36.4 dB, decoded twice (Oct 4 update) | Oct 4 22:46:43 - 22:56:44 | Oct 5 05:46:43 - 05:56:44 | 9.5 in, not re-checked |
+| C3 | 433 MHz census, 7 slices, 36.4 dB with `-Y autolevel` (Oct 7 update) | Oct 7 09:01:17 - 17:01:18 | Oct 7 16:01:17 - Oct 8 00:01:18 | 9.5 in, not re-checked |
+| T3 | four 15 min blocks on 433.92 MHz: 36.4 and 40.2 dB, each default and `-Y autolevel` (Oct 7 update) | Oct 7 17:03:45 - 18:03:48 | Oct 8 00:03:45 - 01:03:48 | 9.5 in, not re-checked |
 
 {{< /details >}}
 
@@ -352,4 +391,4 @@ This is one of four posts from the same RTL-SDR project. One thread runs through
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table, except where the text says otherwise. Not tested: whether the clock fingerprint survives a battery swap, and a 433 MHz census with the lowered detection level.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle listed in the table, except where the text says otherwise. Not tested: whether the clock fingerprint survives a battery swap, why the weak sensors' levels fell between Oct 4 and Oct 7, and a census at 40.2 dB with the lowered detection level.*

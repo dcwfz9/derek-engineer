@@ -220,6 +220,22 @@ own notes on one hopping Badger meter say it changes channel every 150 seconds
 ([source](https://github.com/merbanan/rtl_433/blob/master/src/devices/badger_orion_endpoint.c)),
 so a 30-second dwell could miss a slow hopper.
 
+It also counts for less than it sounds, for two reasons I learned later. rtl_433
+doesn't filter down to a single channel: it looks for pulses across the whole
+window
+([source](https://github.com/merbanan/rtl_433/blob/25.12/src/rtl_433.c#L474-L532)),
+so in my 1.0 to 2.4 MHz windows a signal in one narrow channel shared several
+times more noise than in a 250 kHz capture (about ten times at 2.4 MHz). And by
+default it ignores pulses weaker than about 14 dB below full scale, however
+clean they are
+([source](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L64),
+[source](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L221)),
+which I checked on the dongle for
+[the 433 MHz post](/posts/aperture-433mhz-weather-sensors/). So zero decodes means
+no meter rtl_433 supports was loud enough, often enough, in those windows, not
+that none is there. I also don't know whether PG&E's meters use any protocol
+rtl_433 has a decoder for.
+
 {{< details summary="Command and settings (run M11)" >}}
 
 ```
@@ -247,26 +263,6 @@ PG&E offers a
 The 902-928 MHz bursts are still unidentified. PG&E's band and burst length are
 consistent with them being meters, but that's all I have, and I'm not going to
 try to decode them (see the PG&E section).
-
-## update, Oct 4: the decode tests say less than I thought
-
-I learned that rtl_433 doesn't filter down to a single channel: it looks for
-pulses across the whole window
-([rtl_433.c](https://github.com/merbanan/rtl_433/blob/25.12/src/rtl_433.c#L474-L532)).
-My decode runs (D1-D3, M8, M9, M11) used windows 1.0 to 2.4 MHz wide, so, by
-width alone, a signal in one narrow channel competed with several times more
-noise than in a 250 kHz capture, about ten times at 2.4 MHz.
-
-By default it also ignores pulses weaker than about -14 dBFS (decibels below
-full scale), however clean they are
-([pulse_detect.c, line 64](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L64)
-and [line 221](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L221)).
-I measured that line on the dongle in
-[the 433 MHz post's update](/posts/aperture-433mhz-weather-sensors/).
-
-So zero decodes means no meter rtl_433 supports was loud enough, often enough,
-in those windows, not that none is there. I also don't know whether PG&E's
-meters use any protocol rtl_433 has a decoder for.
 
 {{< details summary="Every run mentioned in this post (times in PDT and UTC)" >}}
 
@@ -300,7 +296,7 @@ end of D3 (start plus 5 minutes). Not recorded at all: the gain for IQ captures
 
 This is one of four posts from the same RTL-SDR project. One thread runs through all four: more than once, what I was chasing turned out to be my own tools, from the dongle's DC spike to a clipping front end to a decoder's default threshold. The other three:
 
-- [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4, updated Oct 7)
+- [aperture: three 433 MHz weather sensors, and a clock that tracks temperature](/posts/aperture-433mhz-weather-sensors/) - an antenna-length calculation, a gain sweep, an eight-hour 433 MHz census, and a sensor clock that tracks temperature (Aug 3-4)
 - [aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle](/posts/aperture-ships-and-aircraft/) - three AIS runs and two ADS-B runs, with times and links so they can be checked (Aug 6-7 and Sep 25)
 - [aperture: what's on the air from 500 kHz to 1.77 GHz](/posts/aperture-whats-on-the-air/) - a full-spectrum sweep, whether strong FM stations overload the receiver, and an AM station that was an empty channel (Aug 3 to Sep 24)
 

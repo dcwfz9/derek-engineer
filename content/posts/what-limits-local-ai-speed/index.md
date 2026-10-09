@@ -20,11 +20,11 @@ The devices are the demonstration, not the subject. A table near the end says ho
 
 ## The method, in five habits
 
-1. Anchor first: reproduce a published number with the same tool, settings and model file before trusting your own, and
+1. Anchor first: reproduce a published number with the same tool, settings and model file before trusting my own, and
    explain any gap over about 10%.
 2. Log the device's state every second (clock, temperature, throttle flags, load, memory, power where available) and
    give every run a verdict. A run whose state breaks the test's assumption is flagged, never averaged in.
-3. Keep a claims register: one row per number you might repeat, with its status, its raw file and its caveats, and a
+3. Keep a claims register: one row per number I might repeat, with its status, its raw file and its caveats, and a
    script that recomputes every number from the raw files. Retractions stay on record.
 4. Write the prediction before the run, so the result can prove it wrong.
 5. Measure the roofline reference rates (read bandwidth, int8 multiply rate) on the device itself and place every
@@ -32,7 +32,7 @@ The devices are the demonstration, not the subject. A table near the end says ho
 
 Who did what: I defined the method and decided each step of the evaluation (what to measure next, how each run could fail, which hardware, every review). Claude Code wrote the harness, the scripts and the first drafts of the notes, and started sub-agents for some runs and for audits. I cannot review its code line by line, which is why every number cites a raw file, and why other Claude sessions re-read the raw files against the register (they found no register number wrong, and their wording fixes are in). Those are AI audits by the same kind of tool that wrote the code, not human or outside review. Scope: three ARM devices (four Mac configurations), the CPU path through llama.cpp release b11181 (the Apple anchor uses the build its table used) plus the M4's Metal GPU. Energy is measured on the UNO Q (at its 5 V input) and on the Pi (board rails only), not yet on the same meter; accelerators and the Pi on that meter are the next posts.
 
-Every number in this post has a row in that register, with its raw result file, its status and its caveats. The register and the raw result files are not published yet, so for now you cannot follow that trace yourself. That is the biggest gap in this post.
+Every number in this post has a row in that register, with its raw result file, its status and its caveats. The register and the raw result files are not published yet; publishing them, scrubbed and pruned, is on the future work list.
 
 ## The devices
 
@@ -234,30 +234,29 @@ Three labels. Repeated: the same measurement agreed across two or more runs unde
 
 One board of each kind. The M4 numbers are good to about 5 to 10% run to run: a rerun at 8 to 9% background instead of 18 to 20% moved prompt reading by up to 10% and Metal writing by 6.5%, four repeats scattered 11% on prompt reading, and the Mac never reached a strictly quiet state; the M4 VM rows moved more, 7 to 33%. There was no temperature log during the hot ceiling measurement. The Pi's clock step is one chip on one firmware, and its mechanism is inferred from latency and bandwidth, not observed. The UNO Q's energy comes from one meter read by webcam and not checked against a reference instrument, and its idle reading drifted from 0.471 to 0.450 W across the session for a reason I did not find; the Pi's energy is a different measuring point. The ceilings are reference rates, not hardware limits. The A53 explanation is inferred from instruction counts, not performance counters. Quantization: one model each, one text. Human quality: one rater, 24 votes. Apart from the M4's Metal GPU, no GPU or NPU has run a language model here. Not covered: image, video and speech generation, phones, a voice-assistant pipeline, and sending requests from a small board to a bigger machine; small vision and speech models did run on the boards earlier in the project, but they are not part of this post. The register, the raw files and the harness are not published yet.
 
-## What I take from this, and what is next
+## What I take from this
 
-1. Find the limiting resource before you buy for it: the Pi and the M4 write about as fast as their memory reads, and the UNO Q does not.
+1. Find the limiting resource before buying for it: the Pi and the M4 write about as fast as their memory reads, and the UNO Q does not.
 2. Log the clock the chip really delivers: more clock is more speed only if everything between the core and the data scales with it.
 3. Try the runtime settings before the hardware: on one chip, a constrained reply took a smart-home test from 5 of 30 right actions to 28, and a cached prompt cut the first word from 16 seconds to under 2.
 
-Next, in the order I would do them: read the UNO Q's performance counters; put the Pi on the same power meter and check the meter against a reference; repeat the Pi's clock sweep on a second Pi 5 or another firmware; try an accelerator, the M4's Neural Engine first.
+## Future work
 
-## Doing this on your own device
+- Read the UNO Q's performance counters (instructions per cycle, cache misses, stalls) to test the instruction-overhead explanation.
+- Check the Pi's clock step on other devices: a second Pi 5, another firmware. Put the Pi on the same power meter as the UNO Q, and check the meter against a reference instrument.
+- Start the qualitative measurements, and send the blind survey form out for other people to rate; so far the human ratings are one rater and 24 votes.
+- Order the Raspberry Pi AI HAT and try an accelerator, along with the M4's Neural Engine.
+- Benchmark the M4 Mac mini against an M6 Mac mini.
+- Set up a local model for my daily tasks, starting with controlling my home automation server.
+- Publish the register, the raw data and the scripts, once they are scrubbed and pruned.
 
-Adding a device to my harness is meant to be a profile, not a port: a transport profile plus a spec file with a named source for each field. One script installs the same llama.cpp release and Python environment, one pushes the same model files, and one suite script runs the same sequence everywhere, reference rates and kernel check included. A cost script turns bytes and operations per token plus the reference rates into the prediction you write down first; a verify script recomputes every registered number afterwards. What is device-specific today: real clock and throttle flags are read only on a Raspberry Pi; power is read from the Pi's power chip and, on the UNO Q, from an external meter read by webcam; macOS gives no clock or temperature without sudo; the roofline program is ARM NEON only; and no GPU or NPU engine is wired in beyond one Vulkan vision test.
+## Adding another device
 
-If you have a Pi 5, you can check the 2000 MHz step yourself. Start cool (below about 45 C) and, for each of 1900000 and 2000000 kHz, run:
+Adding a device to my harness is meant to be a profile, not a port: a transport profile plus a spec file with a named source for each field. One script installs the same llama.cpp release and Python environment, one pushes the same model files, and one suite script runs the same sequence everywhere, reference rates and kernel check included. A cost script turns bytes and operations per token plus the reference rates into the prediction I write down first; a verify script recomputes every registered number afterwards. What is device-specific today: real clock and throttle flags are read only on a Raspberry Pi; power is read from the Pi's power chip and, on the UNO Q, from an external meter read by webcam; macOS gives no clock or temperature without sudo; the roofline program is ARM NEON only; and no GPU or NPU engine is wired in beyond one Vulkan vision test.
 
-```
-echo 1900000 | sudo tee /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
-llama-bench -m LFM2.5-1.2B-Instruct-Q4_0.gguf -p 0 -n 128 -t 4 -r 5
-```
+When I measure a new board, the first thing to record is not the tokens per second. It is the anchor I reproduced, the state log of the run, and the prediction I wrote down before it.
 
-While it runs, `vcgencmd measure_clock arm` in a second terminal should read the capped clock; if it reads lower, the Pi is throttling and the run does not count. Restore the cap afterwards (2400000). The model is `LiquidAI/LFM2.5-1.2B-Instruct-GGUF` and I used llama.cpp release b11181. I would like to hear whether your board steps too, and on which firmware (`vcgencmd version`).
-
-If you measure your own board, the first thing to publish is not the tokens per second. It is the anchor you reproduced, the state log of the run, and the prediction you wrote down before it.
-
-*Update, 2026-10-09: a review of the published post by Codex, another AI tool, found wording that claimed more than the measurements show. I made the UNO Q explanation an inference with the missing test named, dropped the projected kernel speedup, narrowed the clock-step, quantization, kernel-path and heat claims, labelled what the energy figure includes, and added the summary, the speed formula, the evidence table and the Pi steps above.*
+*Update, 2026-10-09: a review of the published post by Codex, another AI tool, found wording that claimed more than the measurements show. I made the UNO Q explanation an inference with the missing test named, dropped the projected kernel speedup, narrowed the clock-step, quantization, kernel-path and heat claims, labelled what the energy figure includes, and added the summary, the speed formula, the evidence table and a future work list.*
 
 ---
 

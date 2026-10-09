@@ -3,6 +3,11 @@ title: "Free OTA TV Anywhere, Using a Box I Already Had"
 date: 2026-07-19
 draft: false
 tags: ["home-lab", "networking", "tailscale", "hardware-in-the-loop"]
+series: ["OTA TV and HDHomeRun"]
+specs:
+  device: "HDHomeRun FLEX DUO (HDFX-2US) powered over PoE from an eero gateway, with an indoor OTA antenna"
+  os: "A Mac mini on the home network acts as the Tailscale subnet router; an iPhone is the client"
+  tools: "Tailscale subnet routing, ffmpeg, VLC on iOS, the HDHomeRun HTTP API"
 description: "Moved my antenna to a closet, wired up an HDHomeRun, and now I can stream or record live TV from anywhere over Tailscale."
 ---
 
@@ -105,10 +110,10 @@ python3 hdhr_record.py 2.1 2h30m   # record Fox for 2.5 hours
 
 Files land in `~/Movies/TV Recordings/` named by date, time, and channel. The container is MKV, video and audio copied directly, no transcoding.
 
-To serve recordings remotely, a one-liner HTTP server on the Mac handles it:
+To serve recordings remotely, a one-liner HTTP server on the Mac handles it. `--bind` keeps it on the Mac's Tailscale address (the one in the URL below) instead of every interface; without it the server listens everywhere and has no authentication, so anything on the LAN could read the folder:
 
 ```bash
-cd ~/Movies/TV\ Recordings && python3 -m http.server 8765
+cd ~/Movies/TV\ Recordings && python3 -m http.server 8765 --bind 100.87.180.98
 ```
 
 In VLC on iOS: `http://100.87.180.98:8765/[filename].mkv`. That is the Mac's Tailscale IP, so it works from anywhere.
@@ -129,13 +134,13 @@ That is not a problem with the HDHomeRun or the routing. It is the right expecta
 
 The airport experience made this obvious. The recorded MKV plays noticeably cleaner than the same content streamed live, even though the source signal is identical.
 
-The reason is macroblocking. When a live MPEG-2 stream has packet loss, the decoder fills in the missing data with whatever it has, producing the familiar blocky artifact where a 16x16 pixel block freezes or smears. There is no way to recover the lost data after the fact. On airport WiFi this happens constantly.
+What I saw on the live stream was macroblocking: the familiar blocky artifact where a 16x16 pixel block freezes or smears because the decoder doesn't have the data it needs. The data either never arrived or arrived too late to show. The picture alone doesn't tell me which, or where it went missing: airport WiFi, the path back home, or reception at the antenna. On airport WiFi it happened constantly.
 
 ![Fox 2 live stream over airport WiFi — macroblocking on every frame](macroblocking.jpg)
 
-A recording is different: the stream is already on disk. The player buffers ahead with no network dependency during playback, and missing packets cannot happen because there are no packets, only file reads. Even a stream that would produce macroblocking at 5 Mbps live plays cleanly as a file.
+A recording is different, but not because there are no packets. A file served over HTTP still crosses the network in packets, and it was the same bad network. The difference is the deadline. A live stream has to keep up with the broadcast and show each frame now, so late or lost data becomes a visible glitch. A recorded file can be buffered ahead, lost data can be retransmitted, and a slow stretch gets absorbed by the buffer, so it costs a pause instead of a smeared frame. A recording can also already contain errors from reception or from the recording itself; it doesn't repair anything.
 
-The source quality is the same. File I/O is just more reliable than real-time network delivery over a stressed connection. On a stable home network, live streaming is fine. On a plane, record first.
+The source quality is the same. Buffered playback is just more forgiving than real-time delivery over a stressed connection. On a stable home network, live streaming is fine. On a plane, record first.
 
 ---
 
@@ -146,6 +151,8 @@ The source quality is the same. File I/O is just more reliable than real-time ne
 **Scheduled recording.** The script already works with cron. The next step is a wrapper that looks up show times against the guide and schedules the job automatically.
 
 **Signal as a weather sensor.** Separately from the TV use case, I have one tuner logging signal strength every 5 minutes across three frequencies: UHF 557 MHz, UHF 575 MHz, and VHF 207 MHz. RF attenuation from rain is frequency-dependent, so comparing UHF vs. VHF gives a way to separate weather effects from transmitter issues. Same idea as dual-band GPS receivers canceling ionospheric delay by comparing L1 and L2. More on that in [a separate post](/posts/ota-antenna-rain-gauge/).
+
+*Update: it didn't produce a useful rain gauge. Rain attenuation at these frequencies is far too small for the HDHomeRun's whole-percent signal readings to show. The follow-up has the arithmetic and two months of data.*
 
 ---
 

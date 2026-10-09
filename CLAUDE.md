@@ -25,6 +25,13 @@ description: "One line summary shown in post list."
 - Use today's date unless told otherwise
 - Tags should be lowercase, specific (e.g. `raspberry-pi`, `hyperion`, `python`, `home-lab`). Add `hardware-in-the-loop` when the device was the test bench, and `notes` for pure setup or web plumbing
 
+Optional front matter that the layouts understand (added 2026-10-09):
+- `series: ["aperture"]` puts the post in a series: every post in it gets a "Part of the series" box (oldest first), and `/series/<slug>/` lists them. Give a new series a one-line `content/series/<slug>/_index.md` (title and description).
+- `specs:` with `device`, `os` and `tools` (any may be left out) shows a "Setup at a glance" box under the title: the hardware model, the OS or firmware version, the key software. Only facts the post itself states.
+- Posts with no series still get a "More like this" list of up to three posts that share a specific tag (generic tags such as `home-lab` are ignored: see `layouts/partials/related.html`).
+- Every markdown image is a link to the full-size file, and a script in `layouts/partials/extend_footer.html` opens it in an overlay (Esc or a click outside closes it; on a phone it opens at full size and scrolls). Keep figures at the resolution a reader would need; there is no resizing.
+- The feed is `/index.xml`; it is linked from the menu, the footer and the home page icons.
+
 ## Publish workflow
 
 ```bash
@@ -43,6 +50,7 @@ Rules:
 - Batch all changes in a session into as few pushes as possible — ideally one push per session
 - Never push single small fixes separately
 - Drafts (`draft: true`) are safe to commit and push — they don't affect the live site but still consume a deploy credit, so batch them too
+- Only production deploys (pushes and merges to `main`) cost credits. Per Netlify's credit-based pricing docs (checked 2026-10-09), deploy previews, branch deploys and failed deploys are not metered, so a pull request's previews are free. `netlify.toml` builds previews with their own URL so links stay on the preview.
 - When in doubt, commit locally and wait until there's a logical stopping point before pushing
 
 ## Who did what (every post)
@@ -63,6 +71,8 @@ Derek is an electrical engineer who has also done software engineering (test aut
 ## Style
 
 Write the way Derek writes: direct, technical, no fluff. Document what actually happened — what worked, what didn't, and why. Reader is a technical peer, not a beginner.
+
+This is Derek's notebook (Derek, 2026-10-09: "this is largely for me"). Write it for him to come back to. Never ask the reader to try, check, run, reply or follow anything, no "if you have a ... you can" sections, no second-person advice; plans go in a future work list in his voice. The site's own description says it is his notebook.
 
 Core voice:
 - First-person technical notes from the session, written while the annoying details are still fresh

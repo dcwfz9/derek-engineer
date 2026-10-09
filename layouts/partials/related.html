@@ -1,0 +1,24 @@
+{{- /* "More like this": up to three other posts that share a specific tag with this one and are not in its series. Generic tags are ignored so
+       that "home-lab" does not relate everything to everything; most shared tags first, newest first among equals. */ -}}
+{{- $generic := slice "home-lab" "hardware-in-the-loop" "claude-code" "notes" "tooling" "python" "hardware" "data" -}}
+{{- $mine := complement $generic (.Params.tags | default slice) -}}
+{{- $mySeries := .Params.series | default slice -}}
+{{- $scored := slice -}}
+{{- range where site.RegularPages "Type" "posts" -}}
+  {{- if and (ne .Permalink $.Permalink) (not (intersect (.Params.series | default slice) $mySeries)) -}}
+    {{- $shared := intersect $mine (complement $generic (.Params.tags | default slice)) -}}
+    {{- if $shared -}}
+      {{- $scored = $scored | append (dict "page" . "key" (add (mul (len $shared) 10000000000) .Date.Unix)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $scored }}
+<section class="related" aria-label="More like this">
+  <h2 class="related-title">More like this</h2>
+  <ul>
+    {{- range first 3 (sort $scored "key" "desc") }}
+    <li><a href="{{ .page.Permalink }}">{{ .page.Title }}</a><span class="related-date">{{ .page.Date.Format "Jan 2, 2006" }}</span></li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

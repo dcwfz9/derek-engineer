@@ -3,6 +3,11 @@ title: "aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle"
 date: 2026-09-09
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "ais", "ads-b", "hardware-in-the-loop"]
+series: ["aperture"]
+specs:
+  device: "RTL-SDR Blog V4 with a vertical dipole, 16 in per element, bias tee off, no external LNA or filter, on a Mac mini"
+  os: "Mac mini host; librtlsdr 2.0.2 from Homebrew (the mainline library, not the RTL-SDR Blog fork)"
+  tools: "`dump1090-fa` 11.1 (ADS-B), AIS-catcher v0.70 (ships), Python scripts written with Claude Code"
 description: "Three AIS runs and an ADS-B run from one RTL-SDR in San Francisco, cross-checked against vessel-tracking sites and ADSBdb, with dates and times so anyone can look for themselves. Updated with a second ADS-B run in late September."
 ---
 

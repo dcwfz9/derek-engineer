@@ -118,15 +118,13 @@ ShowToc = true
 
 ## Netlify credit limits
 
-One gotcha worth knowing: Netlify's free tier gives you **300 credits/month**, and each production deploy costs 15 credits. That's 20 deploys per month.
+One gotcha worth knowing: Netlify's free plan gives you **300 credits/month**, and each production deploy costs 15 credits. That's 20 deploys per month. (That's Netlify's credit-based pricing as I checked it on [their docs](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/) in October 2026. Older accounts can be on legacy plans, and the numbers can change. Deploy previews and branch deploys aren't metered, only production deploys.)
 
-Every `git push` to `main` triggers a deploy. If you're iterating — pushing small fixes, tweaks, and content changes separately — you'll burn through credits fast. I hit 180/300 in a single session by pushing every change individually.
+Every `git push` to `main` triggers a production deploy. If you're iterating — pushing small fixes, tweaks, and content changes separately — you'll burn through credits fast. I hit 180/300 in a single session by pushing every change individually.
 
-The fix is simple: batch changes locally and push once per session. Commit as much as you want, just don't push until you're done with a logical chunk of work.
+The fix is simple: batch changes locally and push once per session. Commit as much as you want, just don't push to `main` until you're done with a logical chunk of work.
 
-## The gotcha
-
-Netlify's free tier gives 300 credits/month, 15 per deploy — 20 deploys total. I burned 180 in one session pushing every small fix separately. Now I batch and push once per session. Simple fix, but worth knowing before you hit it.
+## One more thing worth stealing
 
 The `CLAUDE.md` file is the other thing worth stealing for any similar setup. It keeps the writing workflow explicit: front matter, file names, publish steps, and voice. Without that, the activation energy to write something up is too high and the blog dies.
 

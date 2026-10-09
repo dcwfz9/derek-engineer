@@ -3,6 +3,7 @@ title: "Ogle: A Daily Boggle for My Friends, With House Rules"
 date: 2026-09-30
 draft: false
 tags: ["games", "web", "claude-code"]
+series: ["Ogle"]
 description: "We got hooked on Netflix's Boggle in Tahoe, so I had Claude Code build our own: one board a day, our dictionary, our rules, and no server. First commit to live in under three days."
 ---
 
@@ -14,7 +15,7 @@ So I had Claude Code build our own. The point was to set our own rules and dicti
 
 ## One board a day, and no server
 
-Everyone gets the same board each day: two minutes, one attempt, and a new board at midnight Pacific. Practice is unlimited. There's no backend. The board comes from the date:
+Everyone gets the same board each day: two minutes, one attempt, and a new board at midnight Pacific. Practice is unlimited. There's no backend, so the one-attempt rule is enforced locally on each device: a friendly rule among friends, not anti-cheat. The board comes from the date:
 
 ```js
 function generateDaily(key){                 // key is the date, e.g. '2026-09-30'

@@ -3,6 +3,11 @@ title: "aperture: the mystery signal at 916 MHz was my own dongle"
 date: 2026-09-28
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
+series: ["aperture"]
+specs:
+  device: "RTL-SDR Blog V4 with the RTL-SDR Blog dipole kit (elements 2.5, 5.5, 9.5 or 16 in depending on the run), bias tee off, no external LNA or filter, on a Mac mini"
+  os: "Mac mini host; librtlsdr 2.0.2 from Homebrew (the mainline library, not the RTL-SDR Blog fork)"
+  tools: "`rtl_433` 25.12, `rtl_power`, a detector script written with Claude Code"
 description: "A 916.381 MHz 'carrier' that looked like LoRa turned out to be the RTL-SDR's own DC spike; plus the bursts that are really there, a 2-hour hopping decode of 902-928 MHz, and what PG&E publishes about its meters."
 ---
 

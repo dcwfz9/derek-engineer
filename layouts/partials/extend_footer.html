@@ -29,3 +29,56 @@
     { attributeFilter: ['data-theme'] }
   );
 </script>
+
+<script>
+  // Click-to-enlarge for figures (links made by layouts/_default/_markup/render-image.html). No library.
+  // A click opens the full-size file in an overlay: fitted to the screen on a wide window, at full size (scrollable) on a phone;
+  // a click on the picture switches between the two; Esc, the close button or a click outside closes it.
+  (function () {
+    var box, pic, btn, from;
+    function build() {
+      box = document.createElement('div');
+      box.id = 'lightbox';
+      box.hidden = true;
+      box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-modal', 'true');
+      pic = document.createElement('img');
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Close image');
+      btn.textContent = '×';
+      box.appendChild(btn);
+      box.appendChild(pic);
+      document.body.appendChild(box);
+      box.addEventListener('click', function (e) { if (e.target !== pic) close(); });
+      pic.addEventListener('click', function () { box.classList.toggle('actual'); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
+    }
+    function open(link) {
+      if (!box) build();
+      var thumb = link.querySelector('img');
+      pic.src = link.href;
+      pic.alt = thumb ? thumb.alt : '';
+      box.setAttribute('aria-label', pic.alt);
+      box.classList.toggle('actual', window.innerWidth < 900);
+      box.hidden = false;
+      box.scrollTop = 0;
+      box.scrollLeft = 0;
+      document.documentElement.classList.add('lightbox-open');
+      from = document.activeElement;
+      btn.focus();
+    }
+    function close() {
+      box.hidden = true;
+      pic.removeAttribute('src');
+      document.documentElement.classList.remove('lightbox-open');
+      if (from && from.focus) from.focus();
+    }
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest && e.target.closest('a.zoomable');
+      if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(link);
+    });
+  })();
+</script>

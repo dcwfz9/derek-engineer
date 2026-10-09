@@ -4,3 +4,11 @@
 
 [build.environment]
   HUGO_VERSION = "0.161.1"
+
+# Previews and branch deploys build with their own URL. Without this every link on a preview points at derek.engineer
+# (the baseURL in hugo.toml), so a click on an article leaves the preview. Production still builds with plain `hugo`.
+[context.deploy-preview]
+  command = "hugo -b $DEPLOY_PRIME_URL"
+
+[context.branch-deploy]
+  command = "hugo -b $DEPLOY_PRIME_URL"

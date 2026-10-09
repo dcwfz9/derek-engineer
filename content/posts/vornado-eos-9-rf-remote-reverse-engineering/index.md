@@ -3,6 +3,9 @@ title: "Reverse-Engineering the Vornado EOS 9's RF Remote"
 date: 2026-08-04
 draft: false
 tags: ["rf", "hardware", "home-lab", "python", "hardware-in-the-loop"]
+specs:
+  device: "Vornado EOS 9 fan with a 433.9 MHz RF remote; Flipper Zero; RTL-SDR Blog V4"
+  tools: "The Flipper's SubGHz analyzer, RTL-SDR with the vendor's librtlsdr fork (the V4 needs it), Python scripts for the capture analysis"
 description: "My Vornado EOS 9's remote has no documented protocol, so I reverse engineered it with a Flipper Zero: OOK, 1:3 PWM, a 20-bit address, no encryption."
 ---
 
@@ -34,10 +37,13 @@ was the only way to get real control.
 Before doing that work, I copied the power toggle with a Flipper Zero and played
 it back. The fan turned on.
 
-That single test answers the most important question. A replay attack that
-works means there is no rolling code, no counter, no challenge-response. The
-frame is static. Everything after this point is just figuring out the encoding,
-which is a solved problem. If the replay had failed, I would have been looking
+That single test answers the most important question, or most of it. A replay
+that works is a strong hint that there is no rolling code, no counter, no
+challenge-response. One replay alone doesn't rule out every rolling scheme (a
+receiver that never heard the original code can accept it once), but later the
+captured frames come out identical press after press, and the two together are
+what make me call the frame static. Everything after this point is just
+figuring out the encoding, which is a solved problem. If the replay had failed, I would have been looking
 at a KeeLoq-style rolling scheme and this would have been a very different post
 (and a much shorter one, ending in "I bought a second remote").
 
@@ -88,17 +94,21 @@ consistent in an interesting way. Not scattered around a mean, **monotonic**:
 ```
 
 A clean 57.7 Hz drop over 15 seconds, every reading lower than the last. That
-is not measurement noise, noise scatters both directions. That is the SAW
-resonator warming up under repeated transmission and drifting down as it
-heats. You can watch a cheap oscillator's temperature coefficient happen in
-real time if you capture long enough to see it.
+is not measurement noise, noise scatters both directions. What I measured is
+the carrier drifting down relative to the SDR. My explanation is the remote's
+SAW resonator warming up under repeated transmission and drifting as it heats,
+which is how cheap oscillators behave (if that's it, you're watching a cheap
+oscillator's temperature coefficient happen in real time). But I didn't measure
+its temperature, and the SDR's own reference oscillator drifts too. I can't
+separate the two with this capture; a second receiver or a known reference
+signal would.
 
 **Real carrier: 433.937878 to 433.937936 MHz over 15 seconds of normal use**,
 roughly 40 to 41 ppm high depending on the moment you catch it. Call it 41 ppm
 for a single number. Half the offset the Flipper's analyzer originally claimed
 (90 ppm), and still squarely inside a cheap SAW resonator's normal tolerance,
 so the underlying explanation above holds. It's just truer to the data to give
-a range than to pretend a warming component holds still. If you're using a
+a range than to pretend the carrier holds still. If you're using a
 Flipper's frequency analyzer for anything you plan to build a transmitter
 against, treat it as a rough ballpark, not a spec, it was off by roughly 2x
 here even before the drift is accounted for.
@@ -365,7 +375,7 @@ The last 12 are a blur, because that is where they differ. The command field
 locates itself.
 
 The second strip is the control: the same plot for Power alone. Crisp end to
-end, which is the visual form of "there is no rolling code." If a counter were
+end, which is the visual form of "there is no rolling code," and together with the replay working it is why I call the code static. If a counter were
 incrementing, the low bits of that strip would be smeared even within one button.
 
 This is a persistence display, the same idea as leaving a scope in infinite
@@ -409,12 +419,15 @@ amplitude rather than merely less of it.
 **The line coding is PWM**, pulse-width. Every bit occupies a fixed 4T slot and
 the information lives in the mark-to-space ratio inside that slot, 1:3 or 3:1.
 
-Those two are not independent choices, and this is the part I find genuinely
-neat. OOK cannot distinguish "logic zero" from "transmitter is not there." Both
-are silence. So you cannot encode information in presence versus absence, which
-means every single bit has to contain both a mark and a space, with the meaning
-carried by their proportion. The line coding is not sitting on top of the
-modulation as a design decision. It is forced by it.
+Those two are related, but OOK doesn't force PWM. You can send plain NRZ, carrier
+on for a 1 and off for a 0, as long as the receiver knows the bit timing. The
+catch is that a run of zeros is just silence, so the receiver has to keep its
+own clock locked through the gaps, which costs a clock-recovery circuit. PWM is
+the cheap way around that, and this is the part I find genuinely neat: every
+bit contains both a mark and a space, with the meaning carried by their
+proportion, so each bit carries its own timing and a very simple receiver can
+decode it. The line coding sits on top of the modulation as a design decision,
+and a good one for a two-dollar receiver.
 
 ### How much of that did I actually determine?
 

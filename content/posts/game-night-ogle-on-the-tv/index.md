@@ -3,6 +3,10 @@ title: "Game Night: Ogle on My TV, With Our Phones as Controllers"
 date: 2026-10-04T20:30:00-07:00
 draft: false
 tags: ["games", "tizen", "home-lab", "claude-code", "hardware-in-the-loop"]
+series: ["Ogle"]
+specs:
+  device: "A Samsung TV app (Tizen), phones as controllers, a relay server on a Mac mini"
+  tools: "A Node relay (about 600 lines, standard library only) that loads Ogle's own game engine and dictionary"
 description: "The board on the TV, everyone tracing words on their own phone, and a relay on the Mac mini keeping score, the way Netflix runs its party games. Built while I was out, then given music made in code and three more modes."
 ---
 

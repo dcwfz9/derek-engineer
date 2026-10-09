@@ -3,6 +3,11 @@ title: "aperture: what's on the air from 500 kHz to 1.77 GHz"
 date: 2026-09-26
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "am-radio", "hardware-in-the-loop"]
+series: ["aperture"]
+specs:
+  device: "RTL-SDR Blog V4 with the RTL-SDR Blog dipole kit (5.5 in elements in August, 9.5 in in September), bias tee off, no external LNA or filter, on a Mac mini"
+  os: "Mac mini host; librtlsdr 2.0.2 from Homebrew (the mainline library, not the RTL-SDR Blog fork)"
+  tools: "`rtl_power` sweeps, Python analysis and AM-demodulator scripts written with Claude Code"
 description: "A full-spectrum sweep, a test of whether strong FM stations overload the receiver, and an AM station I chased through four attempts that turned out to be an empty channel."
 ---
 

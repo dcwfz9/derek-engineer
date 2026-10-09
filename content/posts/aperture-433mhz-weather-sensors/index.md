@@ -3,6 +3,11 @@ title: "aperture: three 433 MHz weather sensors, and a clock that tracks tempera
 date: 2026-08-22
 draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
+series: ["aperture"]
+specs:
+  device: "RTL-SDR Blog V4 ($25, bought used) with the RTL-SDR Blog dipole kit, bias tee off, no external LNA or filter, on a Mac mini"
+  os: "Mac mini host; librtlsdr 2.0.2 from Homebrew (the mainline library, not the RTL-SDR Blog fork)"
+  tools: "`rtl_433` 25.12; `dump1090-fa` 11.1 and AIS-catcher v0.70 in the later runs; Python analysis scripts written with Claude Code"
 description: "Starting with a $25 RTL-SDR: fixing an antenna-length calculation, sweeping the tuner gain, walking the 433 MHz band for eight hours, and finding that a weather sensor's transmit clock drifts with its own temperature reading."
 ---
 

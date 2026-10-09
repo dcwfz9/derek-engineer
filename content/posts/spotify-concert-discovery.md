@@ -23,7 +23,7 @@ node auth.js
 # ✅ Tokens saved to auth/tokens.json
 ```
 
-Spotify refresh tokens don't expire as long as the app stays active and access is not revoked. In practice this is a one-time OAuth setup, not a recurring auth chore.
+So far this has been a one-time OAuth setup, not a recurring auth chore, but a refresh token isn't guaranteed to last forever: access can be revoked, a refresh can hand back a new token, and an app can be invalidated. The code should save any new refresh token it's given and fall back to the auth step when a refresh fails.
 
 ## How it works
 

@@ -8,8 +8,10 @@ specs:
   device: "Raspberry Pi 3 Model B v1.2 with an Auvidea B101 HDMI-to-CSI capture board (TC358743), an HBAVLINK 1x2 HDMI splitter and an Apple TV 4K as the source"
   os: "Raspberry Pi OS Lite (64-bit), Trixie"
   tools: "Hyperion-NG, `v4l2-ctl`"
-description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
+description: "A working log of getting Hyperion-NG capture going on old hardware. HDMI timing detection works over a loopback, but no frame has been captured yet. Splitter arrives tomorrow, LEDs not yet wired."
 ---
+
+*Correction, October 2026: this post and its summary made the project sound further along than it was. HDMI timing detection worked and the capture device showed up, but `VIDIOC_STREAMON` failed, so no frame was captured here. [Part 2](/posts/diy-ambilight-part-2-capture-and-led-planning/) is where a frame finally came out, at 1080p30. The LEDs are not wired yet either.*
 
 I saw a FancyLEDs sponsorship on YouTube and figured I could build the same thing myself for less, with hardware I already had — including a B101 capture board from a prior project I never finished. Govee makes something similar but it only works with their own app — useless with an Apple TV or anything else plugged into HDMI. I wanted something source-agnostic, fully local, no subscription. This is a working log: capture pipeline is proven, splitter arrives tomorrow, LEDs not yet wired.
 
@@ -40,7 +42,7 @@ What I had on hand:
 
 What I ordered:
 - HBAVLINK 1x2 HDMI Splitter (auto-downscaling, HDCP 2.2/2.3 bypass) — the model that explicitly lists "Apple TV 4K, Elgato HD60s/x/Pro, Retrotink" compatibility on the listing
-- Still need: SK6812 RGBW strip (60 LED/m, 5m), ESP32-WROOM-32, 5V 10A PSU, capacitors/resistor for clean wiring
+- Still need: SK6812 RGBW strip (60 LED/m, 5m), ESP32-WROOM-32, 5V 10A PSU (upgraded to 15A in the order below), capacitors/resistor for clean wiring
 
 The Pi 3 + B101 combo is the reference Hyperion setup. The B101 plugs into the Pi's CSI camera port via ribbon cable, which means capture goes through the GPU/ISP path instead of USB. That offloads enough work from the CPU that a Pi 3 can keep up with 1080p60 capture, which surprised me. I'd written off the Pi 3 initially.
 
@@ -153,7 +155,7 @@ Silent output = success. The B101 now advertises 1080p capability to whatever so
 
 Splitter doesn't arrive until tomorrow, but I wanted to validate the capture pipeline tonight. So I plugged the **Pi's own HDMI output back into the B101's HDMI input.**
 
-This isn't a "real" test (the Pi running headless Lite is just outputting a console framebuffer, no HDCP, no real content) but it does prove the capture path works end to end.
+This isn't a "real" test (the Pi running headless Lite is just outputting a console framebuffer, no HDCP, no real content) but it does show the B101 sees a signal and reports its timings. It doesn't show frames coming out; see below.
 
 ```bash
 v4l2-ctl --query-dv-timings -d /dev/video0
@@ -176,7 +178,7 @@ Vertical sync: 45
 Vertical backporch: 0
 ```
 
-1920x1080p60, 148.5 MHz pixel clock. Standard 1080p60 timing. **B101 capturing successfully.**
+1920x1080p60, 148.5 MHz pixel clock. Standard 1080p60 timing. **B101 detecting the signal and locking its timings.**
 
 Then locked the timings and checked format:
 
@@ -272,11 +274,12 @@ Two distinct error messages map to two distinct problem categories. Worth knowin
 
 - Pi 3 boots, on network, SSH working
 - TC358743 driver loaded and bound
-- `/dev/video0` exists and captures
+- `/dev/video0` exists and reports timings
 - EDID applied correctly via `v4l2-ctl --set-edid=type=hdmi,pad=0`
 - 1080p60 timings detected and locked (via Pi loopback)
-- Capture format is BGR3 (best case for Hyperion)
+- Capture format is advertised as BGR3 (best case for Hyperion), but streaming it fails (below)
 - HDCP confirmed as the blocker for real sources (justifies the splitter purchase retroactively)
+- Not validated: pulling an actual frame. `VIDIOC_STREAMON` fails (below)
 
 ## Trying to capture an actual frame (educational rabbit hole)
 
@@ -375,7 +378,7 @@ Stopping here for the day. The streaming format issue is the next debug target.
 - Pi 3 booted, networked, SSH key-only auth
 - B101 detected, driver bound, EDID applied
 - `/dev/video0` exists and reports correct timings (1080p60)
-- Capture pipeline validated at the protocol level (timings, BT timings lock, format negotiation possible)
+- HDMI timing detection and format negotiation work at the protocol level (timings, BT timings lock); no frame has been captured yet
 - Hyperion installed, running as systemd service, web UI accessible
 - Hyperion auto-discovers the B101 as a capture device
 
@@ -418,7 +421,7 @@ Why these specific choices:
 - **SK6812 RGBW > WS2812B RGB** — true white channel for bias lighting and skin tones, $10 more
 - **60 LED/m > 30 LED/m** — smoother color transitions, no visible gaps at typical TV viewing distance
 - **Natural white (4000K)** — closer to typical TV color temp than warm or cool variants
-- **15A PSU** — 268 LEDs at edge of 10A capacity, 15A gives headroom without forcing brightness caps
+- **15A PSU** — my estimate for 268 LEDs is 5-7A typical with 10-12A spikes, which is the edge of a 10A supply, and 15A gives headroom. Full white on every LED would still be more than that (Hyperion's estimate, in part 2, is 17.7A), so a software current or brightness limit is needed whichever supply I use
 - **Power injection at both ends mandatory** — voltage drop across 5m of strip causes far-end dimming and color shift; this is non-negotiable for >2m runs
 - **ESP32-WROOM-32 > ESP32-S2/S3/C3** — WLED most stable on original ESP32
 
@@ -440,9 +443,9 @@ Why these specific choices:
 
 **v4l2-ctl is your friend, but only up to a point.** When external EDID files don't work, the built-in generators (`type=hdmi`) are reliable. When format negotiation fails, you can force formats. But Hyperion overrides v4l2-ctl settings on its own startup, so manual format setting doesn't persist into the actual capture pipeline.
 
-**The Pi 3 + B101 combo is more capable than expected at the protocol level.** The CSI capture path keeps the CPU free enough to read 1080p60 BGR3 frames via the driver. Whether Hyperion can actually grab those frames is a different question.
+**The Pi 3 + B101 combo is more capable than expected at the protocol level.** The driver reports 1080p60 timings and a BGR3 format (6.2 MB per frame). Whether it can actually deliver those frames, to Hyperion or to anything else, is a different question, and at this point the answer is no.
 
-**Validate piece by piece.** Capture pipeline is proven independently from Hyperion. When the splitter shows up, the only new variable is HDCP handshake and downscaling. Everything else is locked in. Same approach helped diagnose the streaming format issue — it's not the hardware, not the driver, not the EDID, not the timings, it's the format negotiation between Hyperion and the unicam driver.
+**Validate piece by piece.** I checked timing detection independently from Hyperion. When the splitter shows up, the new variables are the HDCP handshake and downscaling, on top of the part that isn't solved: getting any frame out at all. `VIDIOC_STREAMON` fails both with `v4l2-ctl` and inside Hyperion, so I suspect the format negotiation with the unicam driver, but I haven't shown it. (Part 2 got a frame with UYVY at 1080p30; 1080p60 still fails at STREAMON there, which it puts down to the CSI lanes, untested.)
 
 **HDCP enforcement is real and granular.** Different sources fail differently:
 - Chromecast 3rd gen: explicit handshake rejection

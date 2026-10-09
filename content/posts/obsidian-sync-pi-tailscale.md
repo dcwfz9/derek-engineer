@@ -72,7 +72,7 @@ sudo apt update && sudo apt install -y couchdb
 The installer has a few prompts that matter:
 
 - **Standalone** — choose this, not clustered
-- **Bind address: `0.0.0.0`** — not `localhost`. If you bind to localhost, Tailscale can't reach it. This one will bite you silently.
+- **Bind address: `0.0.0.0`** — not `localhost`. If you bind to localhost, Tailscale can't reach it. This one will bite you silently. Know what it means, though: `0.0.0.0` listens on every IPv4 interface the Pi has (Ethernet and Wi-Fi as well as Tailscale), not just the Tailscale one. The firewall rule further down is what keeps CouchDB private.
 - **Admin password** — set one, remember it
 - **Erlang magic cookie** — cryptic prompt, type anything. Irrelevant for standalone mode.
 
@@ -109,7 +109,7 @@ Returns something like:
 
 Use `couchdb@127.0.0.1` (or whatever yours shows) in every config API call below.
 
-**Password gotcha:** if your password has `!` or other special characters, don't embed it in the URL. Bash history expansion triggers on `!` in double quotes. Use the `-u admin:yourpassword` flag instead — cleaner across the board.
+**Password gotcha:** if your password has `!` or other special characters, don't embed it in the URL. Bash history expansion triggers on `!` in double quotes. Use the `-u admin:yourpassword` flag instead — cleaner across the board. (`yourpassword` is a placeholder. `-u admin` on its own makes curl prompt for the password, which also keeps it out of your shell history.)
 
 **Account lockout:** CouchDB rate-limits after several wrong password attempts. If you start getting 401s on credentials you know are right, `sudo systemctl restart couchdb` clears it.
 
@@ -141,6 +141,8 @@ curl -u admin:yourpassword -X PUT \
 
 Each call returns the previous value — an empty string or `"false"` is normal, not an error.
 
+A word on that `"*"` origin: it's permissive, and it's what the plugin needs here, but CORS only tells browsers which web pages may call the server. It isn't a security boundary. Anything that can reach port 5984 and has the credentials can talk to CouchDB with or without CORS, so what actually protects it is the network (below) and the admin password.
+
 Create the database:
 
 ```bash
@@ -169,13 +171,15 @@ You'll get a `100.x.x.x` address. Use IPv4, not the IPv6 `fd7a:...` address — 
 curl http://100.x.x.x:5984
 ```
 
-Should return the same welcome JSON you saw locally on the Pi. If it hangs or refuses, the bind address is wrong (should be `0.0.0.0`, not `localhost`) or Tailscale isn't up on one end. Fix this now — debugging it from inside the LiveSync UI is miserable.
+Should return the same welcome JSON you saw locally on the Pi. If it hangs or refuses, the bind address is wrong (should be `0.0.0.0`, not `localhost`), the firewall rule below is missing, or Tailscale isn't up on one end. Fix this now — debugging it from inside the LiveSync UI is miserable.
 
-**UFW:** if you have `ufw` enabled on the Pi, port 5984 needs to be open:
+**UFW:** because CouchDB is listening on every interface, the firewall decides who can reach it. Don't open 5984 to everyone; allow it only on the Tailscale interface:
 
 ```bash
-sudo ufw allow 5984
+sudo ufw allow in on tailscale0 to any port 5984 proto tcp
 ```
+
+`tailscale0` is Tailscale's default interface name on Linux (`ip link` shows yours). A plain `sudo ufw allow 5984`, which an earlier version of this post suggested, opens the port on every interface, including your LAN. CouchDB shouldn't be exposed to a network you don't trust, so don't forward 5984 on your router either. If `ufw` isn't enabled at all, nothing is filtering and the same applies: turn it on (allow SSH first), or bind CouchDB to the Pi's Tailscale address instead of `0.0.0.0`, which this post doesn't cover.
 
 Both the Pi and every device you want to sync from need to be on the same Tailscale account. iOS Tailscale doesn't stay connected aggressively in the background — if sync isn't firing on mobile, toggle Tailscale on and off.
 

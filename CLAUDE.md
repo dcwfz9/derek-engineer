@@ -50,6 +50,7 @@ Rules:
 - Batch all changes in a session into as few pushes as possible — ideally one push per session
 - Never push single small fixes separately
 - Drafts (`draft: true`) are safe to commit and push — they don't affect the live site but still consume a deploy credit, so batch them too
+- Only production deploys (pushes and merges to `main`) cost credits. Per Netlify's credit-based pricing docs (checked 2026-10-09), deploy previews, branch deploys and failed deploys are not metered, so a pull request's previews are free. `netlify.toml` builds previews with their own URL so links stay on the preview.
 - When in doubt, commit locally and wait until there's a logical stopping point before pushing
 
 ## Who did what (every post)

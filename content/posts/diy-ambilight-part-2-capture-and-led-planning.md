@@ -163,26 +163,31 @@ Rough plan:
 | Right | ~40 |
 | **Total** | **~240** |
 
-With 80 on top and bottom, corner positions work out to:
+With 80 on top and bottom and 40 on each side, the corner boundaries work out to:
 
 ```
 0   = top-left
 80  = top-right
-128 = bottom-right
-208 = bottom-left
+120 = bottom-right
+200 = bottom-left
+240 = back to top-left
 ```
 
-Data input will be at bottom center — position 168 (128 + 40). I'll run the strip starting there, going toward bottom-left first, then up the left side, across the top, down the right side, back to center. Clockwise from the front.
+These are segment boundaries, the index of the first LED on the next edge, not the corner LED itself. LED indices are zero-based, so the top edge is LEDs 0 to 79, 80 is the first LED on the right side, 120 the first on the bottom and 200 the first on the left. (An earlier version of this post had 128 and 208 here, which fits 48 LEDs per side, Hyperion's default, rather than the planned 40. With 40 per side they are 120 and 200.)
+
+Data input will be at bottom center — position 160 (120 + 40), the middle of the 80 bottom LEDs. I'll run the strip starting there, going toward bottom-left first, then up the left side, across the top, down the right side, back to center. Clockwise from the front.
 
 If the physical direction doesn't match Hyperion's layout I'll just flip it in software rather than rewire.
 
 Hyperion estimated max current for the default 268-LED layout at 17.7A (~88W at 5V), which made it obvious the strip needs its own power supply. That part wasn't a surprise.
 
+That is the worst case, every LED at full white. At the same current per LED, 240 LEDs would be about 15.9A, more than the 10A supply in part 1's first plan and more than the 15A one I ordered. Real video sits far below full white, but the supply and the wiring have to survive the worst case, so I need either a software current or brightness limit (WLED has a maximum-current setting, and Hyperion can limit brightness) or a bigger supply. The wiring needs the same care: wire gauge sized for the current on each run, power injected at both ends of the strip, the supply, strip and ESP32 sharing a common ground, and a fuse on the supply side. None of this is built or tested yet, and the strip isn't mounted.
+
 ![LED visualization with live video — 268 LEDs, file controller, /dev/null output path](/images/ambilight-part2/led-visualization.png)
 
 ## Next
 
-Still need to actually wire and mount the LEDs — that's the next session. Before then, set the Hyperion layout to match the planned counts, input position 168, and figure out exactly how many LEDs fit on the left and right sides once I'm measuring against the physical TV.
+Still need to actually wire and mount the LEDs — that's the next session. Before then, set the Hyperion layout to match the planned counts, input position 160, and figure out exactly how many LEDs fit on the left and right sides once I'm measuring against the physical TV.
 
 ## Known-good capture config
 

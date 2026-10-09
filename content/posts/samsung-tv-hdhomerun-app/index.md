@@ -254,6 +254,8 @@ The behavior modules are written as JSON test cases that a Swift port can replay
 
 Pre-tuning the next channel on the second tuner is first, since four seconds is the one thing that still feels slow. Then a grid guide, an audio track picker and a signal readout. After that, game night: host [Ogle](/posts/ogle-daily-word-game/), our daily word game, on the TV the way Netflix runs its party games, with the board on the TV through Dial, everyone playing on their phones, and our own backend keeping score. An Apple TV version needs its own decoder: from what I've read tvOS can't decode MPEG-2, but I haven't tested that. The repo is private for now.
 
+*Update: game night happened, in [Game Night: Ogle on My TV, With Our Phones as Controllers](/posts/game-night-ogle-on-the-tv/). It also used the second tuner for the pre-tuning idea above, but for the way back from the game rather than for zapping: the game keeps the channel I left prebuffered, and Back got live TV in 346 ms (386 ms from a script) instead of about four seconds. The four seconds measured above is the ordinary channel change.*
+
 ---
 
 *[How this was built](/how-i-work/): Claude Code wrote the app, its tests and the figures, and handed five pieces to Sonnet sub-agents for the second half. I directed the work, set up developer mode, held the remote, and judged everything on the TV. Tested on the TV: playback of both codecs, captions, the tuner being freed on Home and standby, ten timed channel changes, and on the real remote, number entry and pausing live TV for minutes.*

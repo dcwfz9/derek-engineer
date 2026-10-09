@@ -55,6 +55,8 @@ jobs:
   deploy:
     needs: [paper]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # not in my actual file, see below
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -70,13 +72,21 @@ jobs:
           force_orphan: true
 ```
 
+The workflow is adapted from Davide Gerosa's 2021 template (a comment at the top of the real file says so; I trimmed that and the step names from the snippet). One difference from the real file is the `permissions` block. Pushing to the `build` branch needs write access for the workflow's token. My repo's Actions setting (Settings → Actions → General → Workflow permissions) is already set to read and write, which is why the real file works without the block. A repo set to read-only needs the block, or the setting changed, or the deploy step can't push to `build`.
+
 The orphan `build` branch keeps compiled output completely separate from source. The latest PDF is always at:
 
 ```
 https://github.com/dcwfz9/resume/blob/build/resume.pdf
 ```
 
-That's a permanent link I can put anywhere — job applications, portfolio, whatever. It's always current.
+That one opens GitHub's PDF viewer in the browser, which is the right link for a person to look at. For a direct download, or for something that fetches the file, use the raw URL:
+
+```
+https://github.com/dcwfz9/resume/raw/build/resume.pdf
+```
+
+Either is a permanent link I can put anywhere — job applications, portfolio, whatever. They're always current.
 
 ## Building locally
 
@@ -93,4 +103,4 @@ The workflow installs TeX packages fresh on every run, which takes ~2 minutes. C
 
 ---
 
-*[How this was built](/how-i-work/): this one's mine, from before I used an AI agent. The repo dates to 2019 and the workflow to 2023. Since this March, Molty and Claude Code edit the resume's text; the build hasn't changed.*
+*[How this was built](/how-i-work/): this one's mine, from before I used an AI agent. The repo dates to 2019 and the workflow to 2023, adapted from Davide Gerosa's 2021 template. Since this March, Molty and Claude Code edit the resume's text; the build hasn't changed.*

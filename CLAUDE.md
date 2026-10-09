@@ -74,6 +74,8 @@ Write the way Derek writes: direct, technical, no fluff. Document what actually 
 
 This is Derek's notebook (Derek, 2026-10-09: "this is largely for me"). Write it for him to come back to. Never ask the reader to try, check, run, reply or follow anything, no "if you have a ... you can" sections, no second-person advice; plans go in a future work list in his voice. The site's own description says it is his notebook.
 
+Also (Derek, 2026-10-09): open a post with the question or the setup, never with one headline result (it reads as over-indexing; the result belongs in the summary and its own section). Don't name the tool or person that reviewed a post. Say "real data", not "every number tied to a raw file".
+
 Core voice:
 - First-person technical notes from the session, written while the annoying details are still fresh
 - Casual but not cute; opinionated but not performative

@@ -1,7 +1,7 @@
 ---
 title: "aperture: three 433 MHz weather sensors, and a clock that tracks temperature"
 date: 2026-08-22
-draft: true
+draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
 description: "Starting with a $25 RTL-SDR: fixing an antenna-length calculation, sweeping the tuner gain, walking the 433 MHz band for eight hours, and finding that a weather sensor's transmit clock drifts with its own temperature reading."
 ---
@@ -13,7 +13,7 @@ on the air around me in San Francisco. The V4 covers 500 kHz to 1.766 GHz
 ([datasheet](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)),
 and I began with the rest of the 433 MHz band, where I could hear three
 weather sensors. This post covers Aug 3 and 4, 2026: an antenna-length
-calculation I got wrong, a sweep of the tuner gain, an eight-hour census of
+calculation that turned out wrong, a sweep of the tuner gain, an eight-hour census of
 the band, and a weather sensor whose transmit clock drifts with its own
 temperature reading.
 
@@ -48,15 +48,15 @@ about 18 minutes into the census (C2). Times are PDT (UTC-7) unless they
 say UTC; after 17:00 PDT the UTC date is the next day.
 
 From one target to the next I changed the decoder, the tuner gain and the
-antenna's element length. The antenna length is where I made my first mistake,
+antenna's element length. The antenna length is where the first mistake was,
 so I'll start there.
 
-## antenna length: my first calculation was wrong
+## antenna length: the first calculation was wrong
 
 ![Diagram of the three antenna element lengths used on this project, drawn to scale: 2.5, 5.5 and 16 inches exposed per element, from the 915 MHz band to 162 MHz AIS. The part inside the base is shown in a darker shade, and longer elements resonate at lower frequencies](figs/antenna-length-aug.svg)
 
 The antenna is the [RTL-SDR Blog dipole kit](https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/):
-two telescoping elements on a base. My first calculation of the right length
+two telescoping elements on a base. The first calculation of the right length
 used the bare free-space quarter-wave formula, with no correction for a real
 wire being shorter than the wave, and no allowance for the roughly 2 cm of
 metal already inside the antenna base, which the kit's guide says has to be
@@ -113,21 +113,23 @@ Those gains are steps in the tuner's own gain table
 ([librtlsdr source](https://github.com/osmocom/rtl-sdr/blob/0204c9cfb1c5ff7bd64f466ce5b8fe53b40a636a/src/librtlsdr.c#L966-L969)).
 The loudest sensor was an Oregon-THGR810 (id 106):
 
-![RSSI and SNR vs tuner gain for the strongest 433 MHz sensor: SNR peaks at a gain of 40.2 dB then falls, even though RSSI keeps climbing](figs/gainsweep.png)
+![RSSI vs tuner gain for the strongest 433 MHz sensor: rtl_433's floor value at 22.9 and 25.4 dB, a rise of about 1 dB per dB up to 36.4 dB, then over full scale at 40.2 and 44.5 dB](figs/gainsweep.png)
 
-Nothing decoded at 16.6 or 19.7 dB. From there SNR (a measure of how cleanly a
-packet came through, separate from how loud it was) climbs to a peak at a gain
-of 40.2 dB and then falls, even though the raw signal strength keeps climbing.
-As I read it, that's the receiver clipping, roughly what an overdriven
-amplifier does: louder, but distorted. The dongle's ADC is only 8 bits
+Nothing decoded at 16.6 or 19.7 dB. RSSI (signal level) is in dBFS: decibels
+relative to full scale, the loudest signal the dongle can record. At 22.9 and
+25.4 dB the RSSI read exactly -12.14 both times, which I later found is
+rtl_433's floor value rather than a measurement (more on that below). From 28.0 to 36.4 dB it rose about 1 dB per dB of gain. At 40.2 and
+44.5 dB it went over full scale. As I read it, that's the receiver clipping,
+roughly what an overdriven amplifier does: louder, but distorted. The dongle's
+ADC is only 8 bits
 ([datasheet](https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf)),
 so as I understand it there isn't much room between too quiet and too loud.
-rtl_433 reports `snr = rssi - noise` while its level estimate stays at or
-below full scale; once the estimate goes over full scale, RSSI turns positive
-(it did at 40.2 and 44.5 dB) and the identity stops holding
+rtl_433 reports `snr = rssi - noise` (signal-to-noise ratio) while its level
+estimate stays at or below full scale; once the estimate goes over full scale,
+RSSI turns positive and the identity stops holding
 ([`calc_rssi_snr`](https://github.com/merbanan/rtl_433/blob/master/src/r_flow.c)).
 The packets still decode, but the RSSI can't be trusted. That `snr == rssi -
-noise` test is what my capture script uses as a `saturated` flag. The highest
+noise` test is what the capture script Claude Code wrote uses as a `saturated` flag. The highest
 gain where the loudest sensor stayed below full scale was 36.4 dB, so that
 became my "clean" setting.
 
@@ -138,8 +140,11 @@ overnight rtl_433 run at 36.4 dB (Aug 3, 22:55 to Aug 4, 08:10 PDT, run C1)
 heard only that one too, 1,073 packets. Three seconds after the overnight
 script's second phase started at 40.2 dB (08:11, run C1b), the second Oregon
 sensor (id 148) appeared, and the 8-hour census below, at 40.2 dB, heard all
-three. (An earlier decode pass of about 40 minutes with rtl_433's defaults had
-also found all three.) Runs G2, C1 and C1b all used the 5.5 in elements.
+three. (An earlier decode pass of about 40 minutes with rtl_433's defaults,
+which means automatic gain, had also found all three. The gain it picked wasn't
+recorded.) Runs G2, C1 and C1b all used the 5.5 in elements. The
+cause turned out to be a decoder default I didn't know about; the explanation
+is below.
 
 {{< details summary="Commands and settings (runs G2, C1, C1b)" >}}
 
@@ -158,12 +163,58 @@ PDT. The run table at the end has the exact times.
 
 {{< /details >}}
 
-Clipping ruins the RSSI measurement without stopping the decode, so for the
-census I ran at 40.2 dB - deliberately saturating the loudest sensor - and the
-`saturated` column quarantines its bad readings instead of costing packets from
-the weaker ones.
+By default rtl_433 holds its estimate of a signal's high level at no less than
+-12.14 dBFS
+([source](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L64))
+and sets its detection threshold halfway between its noise estimate and that
+level
+([source](https://github.com/merbanan/rtl_433/blob/25.12/src/pulse_detect.c#L221)),
+so it ignores any pulse weaker than about 14 dB below full scale, however clean
+it is. That's why the weaker sensors' RSSI in my logs sits at exactly -12.14, a
+floor value and not a measurement, and it fits their only appearing once more
+gain pushed them over the line.
 
-## the 433 MHz band: three sensors, nothing else
+To double-check, I had Claude Code record ten minutes of raw radio samples (IQ)
+at 36.4 dB and decode the same file twice. With the default detection level it
+found only sensor 106; with a lower one (`-Y autolevel`) it also found 148,
+which sat about 15 dB above the noise, just under the default line. Turning the
+recording up and down digitally put the default line at a peak near -14 dBFS and
+the lower one near -29.5 dBFS, a difference of about 15 dB.
+
+{{< details summary="Commands and settings (the double check)" >}}
+
+Capture, 600 s at 250 kS/s, then the same file decoded with rtl_433's defaults
+and with `-Y autolevel`:
+
+```
+rtl_sdr -f 433920000 -s 250000 -g 36.4 -n 150000000 t1.cu8
+rtl_433 -r cu8:t1.cu8 -s 250k -f 433.92M -M level -M time:rel -F json
+rtl_433 -r cu8:t1.cu8 -s 250k -f 433.92M -M level -M time:rel -F json -Y autolevel
+```
+
+`-Y minlevel=-30` in place of `-Y autolevel` gave the same result. Each packet's
+peak level was measured straight from the samples (`detect_level_ab.py` in the
+aperture repo), and the turn-up and turn-down test is `detect_level_sweep.py`.
+The antenna wasn't re-checked for this: it was last set to 9.5 in per element,
+vertical, and I don't know whether it moved in between.
+
+The census rerun mentioned below used the same census script with the gain and
+detection level changed, for 8 hours over the same seven slices:
+
+```
+GAIN=36.4 EXTRA="-Y autolevel" ./census.sh
+```
+
+{{< /details >}}
+
+Clipping ruins the RSSI measurement without stopping the decode, so at the time
+I read it as a reason to run the census at 40.2 dB - deliberately saturating the
+loudest sensor - and the `saturated` column quarantines its bad readings instead
+of costing packets from the weaker ones. Given the above, that worked because
+the extra gain pushed the weaker sensors over the decoder's line; a lower
+detection level is the other way to hear them.
+
+## the 433 MHz band: three sensors above the decoder's line
 
 For the census (Aug 4, 08:27 to 16:27 PDT, run C2, 5.5 in elements, 40.2 dB) I
 stepped `rtl_433` through seven 250 kHz slices covering 433.05-434.80 MHz, 90
@@ -195,8 +246,10 @@ from 08:27:56, a hop from the 433.925 slice to 434.175 was due at 14:20:26, and
 the packet arrived at 14:20:27, right on that sensor's usual 31-second beat.
 Every other packet in the census landed while the hopper sat on 433.925. So it
 looks like the sensor was caught mid-hop and stamped with the new slice's
-frequency, not a fourth device, and the census confirmed the count instead of
-finding anything new.
+frequency, not a fourth device. The census confirmed the count instead of
+finding anything new, though like every decode here it couldn't see a signal
+whose peak was weaker than about 14 dB below full scale. I reran it later with a
+lower detection level, and it found the same three sensors and nothing else.
 
 ## a sensor's transmit clock tracks its temperature
 
@@ -214,22 +267,27 @@ and to 0.006 ppm from 4 hours. The two Oregon sensors came out about 13 to 15
 ppm apart in three datasets (15 ppm in the 22-minute gain sweep, 12.9 ppm in
 the census, 14.3 ppm in another run), which is plenty of separation to key on
 at similar temperatures. Across seasons I'd expect to need a tolerance band, or
-a correction using each sensor's reported temperature.
+a correction using each sensor's reported temperature. One
+[datasheet](http://www.raltron.com/webproducts/specs/CRYSTAL/RSM200S-32.768-6-TR_RevC.pdf)
+for a 32.768 kHz tuning-fork crystal allows a frequency tolerance of ±20 ppm at
+25 °C, a likely reason two sensors sit 13 to 15 ppm apart, and a reason two
+could land close together.
 
 The period also drifts with the temperature the sensor reports. Fitting every
 packet of the overnight run (run C1, Aug 3-4, 14.3 to 16.7 °C) gives
--0.640 ± 0.006 ppm per °C: as it warms, the period gets about 0.64 ppm shorter
-per degree. At that slope, a temperature difference of roughly 20 °C between
-two sensors could erase a 13 to 15 ppm separation. One
-[datasheet](http://www.raltron.com/webproducts/specs/CRYSTAL/RSM200S-32.768-6-TR_RevC.pdf)
-for a 32.768 kHz tuning-fork crystal gives a parabolic curve with a turnover
-near 25 °C and a curvature of about -0.034 ppm/°C², which works out to about
--0.67 ppm/°C at 15 °C. So the fit is within about 5% of that nominal curve. The
-same datasheet allows the turnover and curvature to vary from part to part, so
-I'd say it's consistent with a tuning-fork crystal, not that it matches this
-particular one. (The timestamps come from the Mac's clock, and I don't know
-whether it was NTP-synced, so the absolute ppm values are relative to that
-clock; the difference between the two sensors doesn't depend on it.)
+-0.640 ± 0.006 ppm per °C (the ± is only the fit's statistical error over a
+2.4 °C range): as it warms, the period gets about 0.64 ppm shorter per degree.
+At that slope, a temperature difference of roughly 20 °C between two sensors
+could erase a 13 to 15 ppm separation. The same datasheet gives a parabolic
+curve with a turnover near 25 °C and a curvature of about -0.034 ppm/°C², which
+works out to about -0.67 ppm/°C at 15 °C. The fit is within about 5% of that
+nominal curve, but that's partly luck: the datasheet allows part-to-part
+variation, so a crystal within spec could have a slope anywhere from about -0.3
+to -1.2 ppm/°C at 15 °C. I'd say the fit is consistent with a tuning-fork
+crystal, not that it matches this particular one. (The timestamps come from the
+Mac's clock, and I don't know whether it was NTP-synced, so the absolute ppm
+values are relative to that clock; the difference between the two sensors
+doesn't depend on it.)
 
 Every quartz crystal's frequency changes a little with temperature;
 [Wikipedia](https://en.wikipedia.org/wiki/Quartz_clock) calls temperature the
@@ -254,9 +312,10 @@ day. The IDs are only for cross-reference with the text. Antenna is the exposed
 length per element (the change from a V shape to vertical is in the setup
 paragraph at the top). Times come from log files and from file creation and
 modification times. G2's exact command line was not saved. The earlier decode
-pass of about 40 minutes and the "another run" that gave 14.3 ppm are mentioned
-in the text without run IDs and are not in this table. Not recorded at all: the
-antenna's placement, height and cable.
+pass of about 40 minutes, the "another run" that gave 14.3 ppm, the double check
+and the census rerun are mentioned in the text without run IDs and are not in
+this table (the last two are in the aperture repo's FINDINGS, section 38). Not
+recorded at all: the antenna's placement, height and cable.
 
 | ID | run | PDT | UTC | antenna |
 |---|---|---|---|---|
@@ -270,7 +329,7 @@ antenna's placement, height and cable.
 
 ## more from this project
 
-This is one of four posts from the same RTL-SDR project. The other three:
+This is one of four posts from the same RTL-SDR project. One thread runs through all four: more than once, what I was chasing turned out to be my own tools, from the dongle's DC spike to a clipping front end to a decoder's default threshold. The other three:
 
 - [aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle](/posts/aperture-ships-and-aircraft/) - three AIS runs and two ADS-B runs, with times and links so they can be checked (Aug 6-7 and Sep 25)
 - [aperture: what's on the air from 500 kHz to 1.77 GHz](/posts/aperture-whats-on-the-air/) - a full-spectrum sweep, whether strong FM stations overload the receiver, and an AM station that was an empty channel (Aug 3 to Sep 24)
@@ -278,4 +337,4 @@ This is one of four posts from the same RTL-SDR project. The other three:
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, started every run, and chose what to check against outside sources. Every number here comes from a run in the table, and what wasn't recorded is listed there too.*
+*[How this was built](/how-i-work/): Claude Code wrote the capture scripts, the analysis and the figures, and drafted this post from our session logs. I set the antenna lengths, moved the antenna, directed every run, reviewed the results, and chose what to check against outside sources. Tested: every measurement here is from a run on the dongle, listed in the table except where the text says otherwise. Not tested: whether the clock fingerprint survives a battery swap, and how well the weak sensors are heard over a full day at the lower detection level.*

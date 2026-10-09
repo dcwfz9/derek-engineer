@@ -1,0 +1,13 @@
+{{- /* {{< video src="figs/clip.mp4" poster="figs/still.jpg" caption="..." >}}: an HTML5 player for a video in the
+       page bundle, with sound and controls, never autoplaying. Raw HTML in Markdown is off in hugo.toml, so this is
+       the way to embed one (same as audio.html). The theme styles <video>. */ -}}
+{{- $src := .Get "src" -}}
+{{- $res := .Page.Resources.GetMatch $src -}}
+{{- $poster := "" -}}
+{{- with .Get "poster" }}{{ with $.Page.Resources.GetMatch . }}{{ $poster = .RelPermalink }}{{ end }}{{ end -}}
+<figure class="video">
+  <video controls playsinline preload="metadata"{{ with $poster }} poster="{{ . }}"{{ end }} src="{{ with $res }}{{ .RelPermalink }}{{ else }}{{ $src }}{{ end }}"></video>
+  {{- with .Get "caption" }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>

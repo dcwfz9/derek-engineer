@@ -1,7 +1,7 @@
 ---
 title: "aperture: what's on the air from 500 kHz to 1.77 GHz"
 date: 2026-09-26
-draft: true
+draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "am-radio", "hardware-in-the-loop"]
 description: "A full-spectrum sweep, a test of whether strong FM stations overload the receiver, and an AM station I chased through four attempts that turned out to be an empty channel."
 ---

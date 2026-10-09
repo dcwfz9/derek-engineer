@@ -1,7 +1,7 @@
 ---
 title: "aperture: the mystery signal at 916 MHz was my own dongle"
 date: 2026-09-28
-draft: true
+draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
 description: "A 916.381 MHz 'carrier' that looked like LoRa turned out to be the RTL-SDR's own DC spike; plus the bursts that are really there, a 2-hour hopping decode of 902-928 MHz, and what PG&E publishes about its meters."
 ---

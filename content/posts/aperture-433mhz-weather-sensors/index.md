@@ -1,7 +1,7 @@
 ---
 title: "aperture: three 433 MHz weather sensors, and a clock that tracks temperature"
 date: 2026-08-22
-draft: true
+draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "hardware-in-the-loop"]
 description: "Starting with a $25 RTL-SDR: fixing an antenna-length calculation, sweeping the tuner gain, walking the 433 MHz band for eight hours, and finding that a weather sensor's transmit clock drifts with its own temperature reading."
 ---

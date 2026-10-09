@@ -1,7 +1,7 @@
 ---
 title: "aperture: tracking ships and aircraft over SF Bay with a $25 SDR dongle"
 date: 2026-09-09
-draft: true
+draft: false
 tags: ["rf", "sdr", "hardware", "home-lab", "python", "ais", "ads-b", "hardware-in-the-loop"]
 description: "Three AIS runs and an ADS-B run from one RTL-SDR in San Francisco, cross-checked against vessel-tracking sites and ADSBdb, with dates and times so anyone can look for themselves. Updated with a second ADS-B run in late September."
 ---

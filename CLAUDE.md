@@ -25,6 +25,13 @@ description: "One line summary shown in post list."
 - Use today's date unless told otherwise
 - Tags should be lowercase, specific (e.g. `raspberry-pi`, `hyperion`, `python`, `home-lab`). Add `hardware-in-the-loop` when the device was the test bench, and `notes` for pure setup or web plumbing
 
+Optional front matter that the layouts understand (added 2026-10-09):
+- `series: ["aperture"]` puts the post in a series: every post in it gets a "Part of the series" box (oldest first), and `/series/<slug>/` lists them. Give a new series a one-line `content/series/<slug>/_index.md` (title and description).
+- `specs:` with `device`, `os` and `tools` (any may be left out) shows a "Setup at a glance" box under the title: the hardware model, the OS or firmware version, the key software. Only facts the post itself states.
+- Posts with no series still get a "More like this" list of up to three posts that share a specific tag (generic tags such as `home-lab` are ignored: see `layouts/partials/related.html`).
+- Every markdown image is a link to the full-size file, and a script in `layouts/partials/extend_footer.html` opens it in an overlay (Esc or a click outside closes it; on a phone it opens at full size and scrolls). Keep figures at the resolution a reader would need; there is no resizing.
+- The feed is `/index.xml`; it is linked from the menu, the footer and the home page icons.
+
 ## Publish workflow
 
 ```bash

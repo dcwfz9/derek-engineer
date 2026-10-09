@@ -5,6 +5,11 @@ theme = "PaperMod"
 paginate = 10
 enableRobotsTXT = true
 
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  series = "series"
+
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
@@ -28,6 +33,12 @@ enableRobotsTXT = true
   [[params.socialIcons]]
     name = "github"
     url = "https://github.com/dcwfz9"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+
+  [params.footer]
+    text = "[RSS feed](/index.xml)"
 
 [menu]
   [[menu.main]]
@@ -42,6 +53,11 @@ enableRobotsTXT = true
   #   url = "/archive/"
   #   weight = 15
 [[menu.main]]
+    identifier = "series"
+    name = "Series"
+    url = "/series/"
+    weight = 17
+  [[menu.main]]
     identifier = "tags"
     name = "Tags"
     url = "/tags/"
@@ -61,3 +77,8 @@ enableRobotsTXT = true
     name = "How I work"
     url = "/how-i-work/"
     weight = 21
+  [[menu.main]]
+    identifier = "rss"
+    name = "RSS"
+    url = "/index.xml"
+    weight = 22

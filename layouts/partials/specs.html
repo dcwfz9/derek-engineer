@@ -1,0 +1,17 @@
+{{- /* "Setup at a glance": front matter `specs` with device, os and tools (any may be left out). */ -}}
+{{- with .Params.specs -}}
+<aside class="specs" aria-label="Setup at a glance">
+  <div class="specs-head">Setup at a glance</div>
+  <dl>
+    {{- with .device }}
+    <div><dt>Hardware</dt><dd>{{ . | markdownify }}</dd></div>
+    {{- end }}
+    {{- with .os }}
+    <div><dt>OS / firmware</dt><dd>{{ . | markdownify }}</dd></div>
+    {{- end }}
+    {{- with .tools }}
+    <div><dt>Key software</dt><dd>{{ . | markdownify }}</dd></div>
+    {{- end }}
+  </dl>
+</aside>
+{{- end -}}

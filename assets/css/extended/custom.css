@@ -32,3 +32,39 @@ details.collapsible .collapsible-body {
     font-size: 0.92rem;
     overflow-x: auto;
 }
+
+/* Click-to-enlarge figures: layouts/_default/_markup/render-image.html wraps each image in a link, the script in
+   layouts/partials/extend_footer.html shows it in #lightbox. On a phone the overlay starts at full size and scrolls. */
+a.zoomable { display: block; text-decoration: none; cursor: zoom-in; }
+html.lightbox-open { overflow: hidden; }
+#lightbox {
+    position: fixed; inset: 0; z-index: 1000; display: flex; overflow: auto;
+    background: rgba(0, 0, 0, 0.92); overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+}
+#lightbox[hidden] { display: none; }
+#lightbox img { margin: auto; max-width: 100vw; max-height: 100vh; cursor: zoom-in; }
+#lightbox.actual img { max-width: none; max-height: none; cursor: zoom-out; }
+#lightbox button {
+    position: fixed; top: 0.5rem; right: 0.5rem; z-index: 1001; width: 2.75rem; height: 2.75rem;
+    border: 0; border-radius: 50%; font-size: 1.9rem; line-height: 1; color: #fff; background: rgba(0, 0, 0, 0.65); cursor: pointer;
+}
+
+/* Setup block, series box and related posts (partials specs.html, series.html, related.html) */
+.series-box, .specs {
+    margin: 1rem 0 1.5rem; padding: 0.7rem 1rem; font-size: 0.92rem;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--code-bg);
+}
+.series-head, .specs-head { margin-bottom: 0.35rem; font-size: 0.85rem; color: var(--secondary); }
+.series-box ol { margin: 0; padding-left: 1.25rem; }
+.series-box li { margin: 0.15rem 0; }
+.series-box li.current { font-weight: 600; }
+.specs dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 1rem; }
+.specs dl > div { display: contents; }
+.specs dt { color: var(--secondary); }
+.specs dd { margin: 0; }
+.related { margin-top: 2rem; }
+.related-title { margin-bottom: 0.4rem; font-size: 1.1rem; }
+.related ul { margin: 0; padding: 0; list-style: none; }
+.related li { margin: 0.3rem 0; }
+.related-date { margin-left: 0.5rem; font-size: 0.85rem; color: var(--secondary); }
+@media (max-width: 600px) { .specs dl { grid-template-columns: 1fr; gap: 0; } .specs dd { margin-bottom: 0.4rem; } }

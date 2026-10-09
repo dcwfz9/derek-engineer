@@ -1,0 +1,18 @@
+{{- /* Series box: the posts that share this post's `series` front matter, oldest first, with this one marked. */ -}}
+{{- range .GetTerms "series" -}}
+  {{- $posts := .Pages.ByDate -}}
+  {{- if gt (len $posts) 1 }}
+<aside class="series-box" aria-label="Series: {{ .LinkTitle }}">
+  <div class="series-head">Part of the series <a href="{{ .Permalink }}">{{ .LinkTitle }}</a> ({{ len $posts }} posts)</div>
+  <ol>
+    {{- range $posts }}
+      {{- if eq .Permalink $.Permalink }}
+    <li class="current" aria-current="page">{{ .Title }}</li>
+      {{- else }}
+    <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+      {{- end }}
+    {{- end }}
+  </ol>
+</aside>
+  {{- end }}
+{{- end -}}

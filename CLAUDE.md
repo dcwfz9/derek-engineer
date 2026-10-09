@@ -71,6 +71,8 @@ Derek is an electrical engineer who has also done software engineering (test aut
 
 Write the way Derek writes: direct, technical, no fluff. Document what actually happened — what worked, what didn't, and why. Reader is a technical peer, not a beginner.
 
+This is Derek's notebook (Derek, 2026-10-09: "this is largely for me"). Write it for him to come back to. Never ask the reader to try, check, run, reply or follow anything, no "if you have a ... you can" sections, no second-person advice; plans go in a future work list in his voice. The site's own description says it is his notebook.
+
 Core voice:
 - First-person technical notes from the session, written while the annoying details are still fresh
 - Casual but not cute; opinionated but not performative

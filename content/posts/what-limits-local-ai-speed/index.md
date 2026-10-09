@@ -3,12 +3,10 @@ title: "What Limits Local AI Speed on an Arduino, a Raspberry Pi and a Mac Mini"
 date: 2026-10-09
 draft: false
 tags: ["llm", "benchmarking", "raspberry-pi", "arduino", "claude-code", "hardware-in-the-loop"]
-description: "Two weeks of measurements on an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini M4, with every number tied to a raw file. Memory bandwidth sets the writing speed on two of them, not the third, a faster Pi clock can write slower, and the Arduino spends about half a joule per token."
+description: "Two weeks of measurements on an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini M4, backed by real data: what limits how fast a small language model runs, where the usual rules hold and where they break, and what a token costs in energy."
 ---
 
-I raised a Raspberry Pi 5's CPU clock from 1900 to 2000 MHz and its language model got 6% slower. On an Arduino UNO Q, switching from 4-bit to 8-bit weights, which nearly doubles the bytes read for every word, cost 7% of the writing speed; on the Pi it cost 44%. Both cut against the usual explanation of local AI speed, which comes down to two rules: memory capacity decides which model fits, and memory bandwidth decides how fast it writes.
-
-I spent two weeks testing how far those rules go on the three devices I had: an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini with an M4, each writing one answer at a time (single-stream decoding; batching has its own section). Claude Code wrote the harness and ran most of the measurements. I'm a systems electrical engineer, not an ML person, so I wanted a method that ties every number to a raw file.
+I wanted to know what actually limits how fast a small language model runs, and I wanted numbers I could trust. The usual answer is two rules: memory capacity decides which model fits, and memory bandwidth decides how fast it writes. I spent two weeks testing how far that goes on the three devices I had: an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini with an M4, each writing one answer at a time (single-stream decoding; batching has its own section). Claude Code wrote the harness and ran most of the measurements. I'm a systems electrical engineer, not an ML person, so I wanted a method that rests on real data.
 
 What I found, in three parts:
 
@@ -16,7 +14,7 @@ What I found, in three parts:
 2. Operating points can behave in surprising ways. The Pi's 2000 MHz step is in its path to memory, not its cores, and a hot Pi is slow because its firmware lowers the clock; I found no direct effect of temperature at a fixed clock.
 3. Software settings can matter more than hardware. Constraining a small model's reply to a JSON schema took a smart-home test from 5 of 30 right actions to 28 of 30, and one server setting cut the wait for the first word from about 16 seconds to under 2.
 
-The devices are the demonstration, not the subject. A table near the end says how much evidence stands behind each finding.
+The devices are the demonstration, not the subject. I would like to test additional devices in the future, ones more tailored for AI compute. A table near the end says how much evidence stands behind each finding.
 
 ## The method, in five habits
 
@@ -24,15 +22,15 @@ The devices are the demonstration, not the subject. A table near the end says ho
    explain any gap over about 10%.
 2. Log the device's state every second (clock, temperature, throttle flags, load, memory, power where available) and
    give every run a verdict. A run whose state breaks the test's assumption is flagged, never averaged in.
-3. Keep a claims register: one row per number I might repeat, with its status, its raw file and its caveats, and a
-   script that recomputes every number from the raw files. Retractions stay on record.
+3. Keep a claims register: one row per number I might repeat, with its status, the real data behind it and its caveats, and a
+   script that recomputes every number from that data. Retractions stay on record.
 4. Write the prediction before the run, so the result can prove it wrong.
 5. Measure the roofline reference rates (read bandwidth, int8 multiply rate) on the device itself and place every
    workload against them. That turns "it is slow" into "here is what it is short of".
 
-Who did what: I defined the method and decided each step of the evaluation (what to measure next, how each run could fail, which hardware, every review). Claude Code wrote the harness, the scripts and the first drafts of the notes, and started sub-agents for some runs and for audits. I cannot review its code line by line, which is why every number cites a raw file, and why other Claude sessions re-read the raw files against the register (they found no register number wrong, and their wording fixes are in). Those are AI audits by the same kind of tool that wrote the code, not human or outside review. Scope: three ARM devices (four Mac configurations), the CPU path through llama.cpp release b11181 (the Apple anchor uses the build its table used) plus the M4's Metal GPU. Energy is measured on the UNO Q (at its 5 V input) and on the Pi (board rails only), not yet on the same meter; accelerators and the Pi on that meter are the next posts.
+Who did what: I defined the method and decided each step of the evaluation (what to measure next, how each run could fail, which hardware, every review). Claude Code wrote the harness, the scripts and the first drafts of the notes, and started sub-agents for some runs and for audits. I cannot review its code line by line, which is why every number comes from real data I can check, and why other Claude sessions re-read that data against the register (they found no register number wrong, and their wording fixes are in). Those are AI audits by the same kind of tool that wrote the code, not human or outside review. Scope: three ARM devices (four Mac configurations), the CPU path through llama.cpp release b11181 (the Apple anchor uses the build its table used) plus the M4's Metal GPU. Energy is measured on the UNO Q (at its 5 V input) and on the Pi (board rails only), not yet on the same meter; accelerators and the Pi on that meter are the next posts.
 
-Every number in this post has a row in that register, with its raw result file, its status and its caveats. The register and the raw result files are not published yet; publishing them, scrubbed and pruned, is on the future work list.
+Every number in this post has a row in that register, with the real data behind it, its status and its caveats. The register and that data are not published yet; publishing them, scrubbed and pruned, is on the future work list.
 
 ## The devices
 
@@ -232,7 +230,7 @@ Three labels. Repeated: the same measurement agreed across two or more runs unde
 
 ## Limitations
 
-One board of each kind. The M4 numbers are good to about 5 to 10% run to run: a rerun at 8 to 9% background instead of 18 to 20% moved prompt reading by up to 10% and Metal writing by 6.5%, four repeats scattered 11% on prompt reading, and the Mac never reached a strictly quiet state; the M4 VM rows moved more, 7 to 33%. There was no temperature log during the hot ceiling measurement. The Pi's clock step is one chip on one firmware, and its mechanism is inferred from latency and bandwidth, not observed. The UNO Q's energy comes from one meter read by webcam and not checked against a reference instrument, and its idle reading drifted from 0.471 to 0.450 W across the session for a reason I did not find; the Pi's energy is a different measuring point. The ceilings are reference rates, not hardware limits. The A53 explanation is inferred from instruction counts, not performance counters. Quantization: one model each, one text. Human quality: one rater, 24 votes. Apart from the M4's Metal GPU, no GPU or NPU has run a language model here. Not covered: image, video and speech generation, phones, a voice-assistant pipeline, and sending requests from a small board to a bigger machine; small vision and speech models did run on the boards earlier in the project, but they are not part of this post. The register, the raw files and the harness are not published yet.
+One board of each kind. The M4 numbers are good to about 5 to 10% run to run: a rerun at 8 to 9% background instead of 18 to 20% moved prompt reading by up to 10% and Metal writing by 6.5%, four repeats scattered 11% on prompt reading, and the Mac never reached a strictly quiet state; the M4 VM rows moved more, 7 to 33%. There was no temperature log during the hot ceiling measurement. The Pi's clock step is one chip on one firmware, and its mechanism is inferred from latency and bandwidth, not observed. The UNO Q's energy comes from one meter read by webcam and not checked against a reference instrument, and its idle reading drifted from 0.471 to 0.450 W across the session for a reason I did not find; the Pi's energy is a different measuring point. The ceilings are reference rates, not hardware limits. The A53 explanation is inferred from instruction counts, not performance counters. Quantization: one model each, one text. Human quality: one rater, 24 votes. Apart from the M4's Metal GPU, no GPU or NPU has run a language model here. Not covered: image, video and speech generation, phones, a voice-assistant pipeline, and sending requests from a small board to a bigger machine; small vision and speech models did run on the boards earlier in the project, but they are not part of this post. The register, the data and the harness are not published yet.
 
 ## What I take from this
 
@@ -245,7 +243,7 @@ One board of each kind. The M4 numbers are good to about 5 to 10% run to run: a 
 - Read the UNO Q's performance counters (instructions per cycle, cache misses, stalls) to test the instruction-overhead explanation.
 - Check the Pi's clock step on other devices: a second Pi 5, another firmware. Put the Pi on the same power meter as the UNO Q, and check the meter against a reference instrument.
 - Start the qualitative measurements, and send the blind survey form out for other people to rate; so far the human ratings are one rater and 24 votes.
-- Order the Raspberry Pi AI HAT and try an accelerator, along with the M4's Neural Engine.
+- Test additional devices that are more tailored for AI compute: order the Raspberry Pi AI HAT, and try the M4's Neural Engine.
 - Benchmark the M4 Mac mini against an M6 Mac mini.
 - Set up a local model for my daily tasks, starting with controlling my home automation server.
 - Publish the register, the raw data and the scripts, once they are scrubbed and pruned.
@@ -256,8 +254,8 @@ Adding a device to my harness is meant to be a profile, not a port: a transport 
 
 When I measure a new board, the first thing to record is not the tokens per second. It is the anchor I reproduced, the state log of the run, and the prediction I wrote down before it.
 
-*Update, 2026-10-09: a review of the published post by Codex, another AI tool, found wording that claimed more than the measurements show. I made the UNO Q explanation an inference with the missing test named, dropped the projected kernel speedup, narrowed the clock-step, quantization, kernel-path and heat claims, labelled what the energy figure includes, and added the summary, the speed formula, the evidence table and a future work list.*
+*Update, 2026-10-09: I tightened the wording where it claimed more than the measurements show. The UNO Q explanation is now an inference with the missing test named, the projected kernel speedup is gone, the clock-step, quantization, kernel-path and heat claims are narrower, and the energy figure says what it includes. I also added the summary, the speed formula, the evidence table and a future work list.*
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the harness, the analysis scripts, the figures, the program that reads the power meter's display and the first drafts of this post, and started sub-agents for some runs and for audits of the numbers by separate AI reviewers. I defined the method (anchor to a published number first, log the device's state on every run, write the prediction before the run, tie every number to a raw file) and decided how to proceed at each step of the evaluation: what to measure next, what would count as a failure, which result to distrust and rerun, and to read the power meter with a webcam and switch the radios off for every run. I also set up the boards and their cooling, the meter and the camera, cast the blind votes, and reviewed every draft. Tested on the real hardware: every measurement above, on one UNO Q, one Pi 5 and one Mac mini M4 (the email times in the latency chart are computed from those speeds), and the UNO Q's power with one USB meter that a webcam read. Not tested: a second board of each kind, that meter against a reference instrument, the Pi on the same meter, and what inside the Pi's firmware changes at 2000 MHz.*
+*[How this was built](/how-i-work/): Claude Code wrote the harness, the analysis scripts, the figures, the program that reads the power meter's display and the first drafts of this post, and started sub-agents for some runs and for audits of the numbers by separate AI reviewers. I defined the method (anchor to a published number first, log the device's state on every run, write the prediction before the run, back every number with real data) and decided how to proceed at each step of the evaluation: what to measure next, what would count as a failure, which result to distrust and rerun, and to read the power meter with a webcam and switch the radios off for every run. I also set up the boards and their cooling, the meter and the camera, cast the blind votes, and reviewed every draft. Tested on the real hardware: every measurement above, on one UNO Q, one Pi 5 and one Mac mini M4 (the email times in the latency chart are computed from those speeds), and the UNO Q's power with one USB meter that a webcam read. Not tested: a second board of each kind, that meter against a reference instrument, the Pi on the same meter, and what inside the Pi's firmware changes at 2000 MHz.*

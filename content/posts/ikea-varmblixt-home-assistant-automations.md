@@ -3,6 +3,10 @@ title: "IKEA Varmblixt as a Home Assistant Status Light"
 date: 2026-04-13
 draft: false
 tags: ["home-assistant", "zigbee", "home-lab", "hardware-in-the-loop"]
+specs:
+  device: "IKEA VARMBLIXT lamp (Zigbee, $30), paired directly to ZHA with no IKEA hub"
+  os: "Home Assistant (ZHA integration)"
+  tools: "Home Assistant scripts and automations in YAML, PirateWeather for the forecast"
 description: "Turning the IKEA Varmblixt donut lamp into a context-aware status light with weather reactions, cycling alerts, door alerts, and three color scripts."
 ---
 

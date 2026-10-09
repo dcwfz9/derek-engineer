@@ -3,6 +3,10 @@ title: "Self-Hosted Obsidian Sync on a Raspberry Pi with Tailscale"
 date: 2026-06-26
 draft: false
 tags: ["raspberry-pi", "home-lab", "networking", "self-hosted", "obsidian", "tailscale"]
+specs:
+  device: "Raspberry Pi 3B v1.2 (1 GB RAM), headless"
+  os: "Raspberry Pi OS Lite"
+  tools: "CouchDB, the Obsidian Self-hosted LiveSync plugin, Tailscale"
 description: "Setting up CouchDB + Obsidian LiveSync on a Pi 3B with Tailscale for free E2E-encrypted vault sync from anywhere."
 ---
 

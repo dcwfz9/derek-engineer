@@ -3,6 +3,11 @@ title: "Building a DIY Ambilight on a Raspberry Pi 3 with an Auvidea B101"
 date: 2026-05-01
 draft: false
 tags: ["raspberry-pi", "home-lab", "led", "hyperion", "hdmi", "hardware-in-the-loop"]
+series: ["DIY Ambilight"]
+specs:
+  device: "Raspberry Pi 3 Model B v1.2 with an Auvidea B101 HDMI-to-CSI capture board (TC358743), an HBAVLINK 1x2 HDMI splitter and an Apple TV 4K as the source"
+  os: "Raspberry Pi OS Lite (64-bit), Trixie"
+  tools: "Hyperion-NG, `v4l2-ctl`"
 description: "A working log of getting Hyperion-NG capture validated on old hardware. Splitter arrives tomorrow, LEDs not yet wired, but the capture pipeline is fully proven end to end."
 ---
 

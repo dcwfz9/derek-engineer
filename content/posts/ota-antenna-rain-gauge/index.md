@@ -3,6 +3,10 @@ title: "Using an OTA TV Antenna as a Rain Gauge (It Didn't Work)"
 date: 2026-09-17
 draft: false
 tags: ["home-lab", "hardware", "rf", "data", "hardware-in-the-loop"]
+series: ["OTA TV and HDHomeRun"]
+specs:
+  device: "HDHomeRun FLEX DUO (tuner 1 dedicated to logging) with an OTA TV antenna"
+  tools: "A Python logger reading signal strength every 5 minutes on UHF 557 and 575 MHz and VHF 207 MHz"
 description: "I logged an HDHomeRun's signal for two months to detect rain. It rained five times, my logger said it never did, and the signal didn't care."
 ---
 

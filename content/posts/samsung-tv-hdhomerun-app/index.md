@@ -3,6 +3,11 @@ title: "A Samsung TV App for My HDHomeRun, Built During One Football Game"
 date: 2026-10-04
 draft: false
 tags: ["home-lab", "tooling", "hdhomerun", "tizen", "hardware-in-the-loop"]
+series: ["OTA TV and HDHomeRun"]
+specs:
+  device: "2024 Samsung Q80D and an HDHomeRun"
+  os: "Tizen 9"
+  tools: "Tizen Studio (`sdb`), `samsung-tv-cert` for the signing certificate, the AVPlay API, Claude Code"
 description: "There's no HDHomeRun app for Samsung TVs, so I built one with Claude Code. First picture at halftime, working app by the end of the game, with the setup steps and snippets to do it yourself."
 ---
 

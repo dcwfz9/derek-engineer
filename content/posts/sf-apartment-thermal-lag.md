@@ -3,6 +3,10 @@ title: "Tracking Indoor vs Outdoor Temperature in an SF Apartment"
 date: 2026-07-29
 draft: false
 tags: ["home-assistant", "zigbee", "home-lab", "data", "hardware-in-the-loop"]
+specs:
+  device: "IKEA TIMMERFLOTTE Zigbee temperature and humidity sensor ($8) in the living room"
+  os: "Home Assistant"
+  tools: "Pirate Weather (outdoor temperature, through a template sensor), Home Assistant history for the charts"
 description: "I bought an IKEA temp sensor for $8 while ordering batteries, stuck it in my living room, and ended up with a pretty clear picture of how SF apartments handle heat."
 ---
 

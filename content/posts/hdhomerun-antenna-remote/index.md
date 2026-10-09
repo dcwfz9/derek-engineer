@@ -3,6 +3,11 @@ title: "Free OTA TV Anywhere, Using a Box I Already Had"
 date: 2026-07-19
 draft: false
 tags: ["home-lab", "networking", "tailscale", "hardware-in-the-loop"]
+series: ["OTA TV and HDHomeRun"]
+specs:
+  device: "HDHomeRun FLEX DUO (HDFX-2US) powered over PoE from an eero gateway, with an indoor OTA antenna"
+  os: "A Mac mini on the home network acts as the Tailscale subnet router; an iPhone is the client"
+  tools: "Tailscale subnet routing, ffmpeg, VLC on iOS, the HDHomeRun HTTP API"
 description: "Moved my antenna to a closet, wired up an HDHomeRun, and now I can stream or record live TV from anywhere over Tailscale."
 ---
 

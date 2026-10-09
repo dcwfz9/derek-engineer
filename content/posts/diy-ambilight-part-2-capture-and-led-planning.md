@@ -3,6 +3,11 @@ title: "DIY Ambilight Part 2: Capture Working, LEDs Are Next!"
 date: 2026-05-03
 draft: false
 tags: ["raspberry-pi", "home-lab", "led", "hyperion", "hdmi", "hardware-in-the-loop"]
+series: ["DIY Ambilight"]
+specs:
+  device: "The same Pi 3, B101, splitter and Apple TV 4K; the LED strip (SK6812 RGBW with an ESP32) is planned and not yet wired"
+  os: "Raspberry Pi OS Lite (64-bit), Trixie"
+  tools: "Hyperion, `v4l2-ctl`"
 description: "HDMI splitter arrived. Got a clean 1080p30 frame out of the B101, Hyperion preview working, and LED layout sketched out. 1080p60 is still broken."
 ---
 

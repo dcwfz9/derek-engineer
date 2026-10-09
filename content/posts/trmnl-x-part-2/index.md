@@ -3,6 +3,11 @@ title: "TRMNL X, Part 2: Weather, Bike, Muni and Trash Duty"
 date: 2026-10-06T17:30:00-07:00
 draft: false
 tags: ["home-lab", "python", "e-ink", "home-assistant", "claude-code", "hardware-in-the-loop"]
+series: ["TRMNL X"]
+specs:
+  device: "TRMNL X e-paper display (10.3 in, 1872 × 1404, 16 grays); the server runs on a Mac mini"
+  os: "TRMNL firmware 1.8.16"
+  tools: "TRMNL's `byos_fastapi` server (a small Python app run by launchd), Home Assistant, the 511 transit API"
 description: "A first pass at a daily dashboard on my TRMNL X, running off my own server. What's on it and what keeps it fed."
 ---
 

@@ -3,6 +3,7 @@ title: "Ogle: A Daily Boggle for My Friends, With House Rules"
 date: 2026-09-30
 draft: false
 tags: ["games", "web", "claude-code"]
+series: ["Ogle"]
 description: "We got hooked on Netflix's Boggle in Tahoe, so I had Claude Code build our own: one board a day, our dictionary, our rules, and no server. First commit to live in under three days."
 ---
 

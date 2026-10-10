@@ -64,13 +64,16 @@ of its 3 s window). That looked like room for a 60% line. It wasn't.
 
 ## The analyzer on the real remote
 
-I held the fan's remote at the Flipper and ran it three ways. The numbers below
+I held the fan's remote at the Flipper and ran it three ways. The real remote
+also sends a stop mark after the 32 bits (a 1T mark and a 1T gap), which my
+generated frames leave out and the fan does not miss. The numbers below
 are from the saved captures, rescored on the Mac with the app's own formula.
 
 | What I did | What the OOK pass caught | App's score |
 |---|---|---|
 | Held Power for 6 s | 23 identical copies of `0x035ED002` (Power) in 3 s | 62%, "Likely OOK" |
 | Power, plus, minus | 8 Power frames and nothing else | 46%, no verdict |
+| Power, three taps | Not saved; the screen showed 3,790 pulses | 48%, no verdict |
 
 The first capture is perfect and the app barely called it. The score measures
 how much of the 3 s window the remote fills, not whether what it sent is a

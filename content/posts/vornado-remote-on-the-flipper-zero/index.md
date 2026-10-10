@@ -60,7 +60,30 @@ The replacement scores the share of pulses that are at least 120 us long and
 within about 20% of one of the three most common widths. A protocol uses a few
 widths. Noise doesn't. With no remote in the room the app scored 41% for OOK
 (3,149 pulses) and 44% for 2FSK (4,096 pulses, which filled the buffer in 0.7 s
-of its 3 s window), so a 60% line leaves a gap above noise.
+of its 3 s window). That looked like room for a 60% line. It wasn't.
+
+## The analyzer on the real remote
+
+I held the fan's remote at the Flipper and ran it three ways. The numbers below
+are from the saved captures, rescored on the Mac with the app's own formula.
+
+| What I did | What the OOK pass caught | App's score |
+|---|---|---|
+| Held Power for 6 s | 23 identical copies of `0x035ED002` (Power) in 3 s | 62%, "Likely OOK" |
+| Power, plus, minus | 8 Power frames and nothing else | 46%, no verdict |
+
+The first capture is perfect and the app barely called it. The score measures
+how much of the 3 s window the remote fills, not whether what it sent is a
+protocol, so a short tap scores worse than a long hold and a clean signal can
+land under the line. The second run lost plus and minus because the 6 s is two
+windows, and the second one is the 2FSK pass. It decoded zero frames in either
+capture, with the button held, and its buffer was full of noise after 0.75 and
+0.95 s. A 2FSK demodulator has nothing to say about an on-off carrier, and a
+remote that sends once per press can never be in both windows anyway.
+
+What the capture does contain is the thing to look for: the same frame, over
+and over. Twenty-three of 23 identical in the good one, none in noise. That is
+a test with no threshold to tune.
 
 ## Every frame built on the Flipper
 
@@ -147,6 +170,8 @@ question for the ESP32 box, and I would not have seen it from the decode alone.
 
 ## Not done yet
 
+- The analyzer's score. It needs to look for repeated identical frames instead
+  of counting pulses in a window, and the OOK then 2FSK passes should go.
 - Which way the head moves for the oscillation on/off code, and what the three
   other long presses (Fan Speeds, Airflow Modes, Light Settings) do on the real
   fan.
@@ -168,5 +193,6 @@ from the decode), suggested speed on Up and Down and oscillation on Left and
 Right, and ran the app against the real fan, which is what showed the
 oscillation labels were wrong. Tested: the frame builder against the file that
 turned the fan on; Power, Timer, Selection + and -, Lamp Mode and both
-oscillation codes on the fan. Not tested: the three other long presses, and
+oscillation codes on the fan; the analyzer on background noise and on the real
+remote, where its score was wrong. Not tested: the three other long presses, and
 which way the head moves for the on/off code.*

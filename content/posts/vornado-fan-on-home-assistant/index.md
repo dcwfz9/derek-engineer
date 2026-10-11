@@ -20,6 +20,11 @@ automations that use them, and one cable under the desk for data and power.
 The board has an Ethernet jack and takes a PoE module, which is what that last
 part needs.
 
+This is another piece of a longer mission to automate my life, and I
+over-engineer on the way. A fan with a bedtime schedule now sits behind a radio
+decoder, an Ethernet jack and an MQTT broker. I know. There have been a lot of
+posts lately because I've been Claude maxing.
+
 ```mermaid
 flowchart LR
     HA["Home Assistant\n+ Mosquitto"] -- MQTT --> G["ESP32-S3\ngateway"]
@@ -163,8 +168,8 @@ whether it came from the dashboard, an automation or a script, and when the
 gateway hears the real remote's Power (below). Four automations read it:
 
 - **On at bedtime:** 10 PM, if I'm home and the guess says off, and again if I
-  get home later in that night window. I go to bed after 10; the fan starting
-  is the cue to head down.
+  get home later in that night window. I've been trying to go to bed earlier,
+  so the fan starting at 10 is the cue to head down.
 - **Off in the morning:** 7 AM, but only if the guess says on.
 - **Off when I leave:** ten minutes after I leave home (the same delay as my
   other leave-home automation, so a GPS blip doesn't count), it presses Power,

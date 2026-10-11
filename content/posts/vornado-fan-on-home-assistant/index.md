@@ -194,6 +194,12 @@ I was out for all three. For the last one the fan was on when I left and off
 when I got home. The hot rule hasn't fired; the apartment has stayed around
 65 °F.
 
+The 10 PM rule didn't fire that night, because my phone had died while I was
+out, so Home Assistant never learned I was home. When I powered it back on, at
+22:35:02, the arrival rule pressed Power one second later and the gateway
+acknowledged it. A dead phone is invisible to every presence signal I could
+add, so that's a corner I'm leaving alone.
+
 ## One receiver for the remote and the sensors
 
 The guess goes stale the moment someone uses the real remote, so the gateway

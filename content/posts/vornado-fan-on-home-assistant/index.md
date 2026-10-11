@@ -11,9 +11,11 @@ description: "An ESP32-S3 and a CC1101 running OpenMQTTGateway put the Vornado E
 ---
 
 The [first post](/posts/vornado-eos-9-rf-remote-reverse-engineering/) ended
-with a plan: a CC1101 and an ESP32 that put the fan on Home Assistant. The
-[Flipper post](/posts/vornado-remote-on-the-flipper-zero/) showed the decode is
-enough to build every frame from scratch. This one is the box.
+with a plan: a CC1101 and an ESP32 that put the fan on Home Assistant. Before
+building it I wanted to know the decode was enough on its own, so the Flipper
+Zero came first, as a stepping stone: an app that builds every button press
+from the 32-bit word, with no captured file anywhere. The fan obeyed it. This
+one is the box.
 
 What I wanted from it: every button of the remote in Home Assistant,
 automations that use them, and one cable under the desk for data and power.
@@ -139,8 +141,8 @@ string booted from an OTA push in 25 seconds.
 ## Testing with the Flipper
 
 The Flipper did most of the testing, and the reason is that it had already
-proven it could talk to the fan: the app from the last post makes frames the
-fan obeys. That made it a known-good reference in both directions. To test the
+proven it could talk to the fan: its remote app makes frames the fan obeys.
+That made it a known-good reference in both directions. To test the
 gateway's transmitter, a script told the gateway to send over MQTT and had the
 Flipper's stock `subghz rx_raw` capture what went out on the air, then decoded
 the pulses and compared them with the real remote's timing (the table above).
@@ -155,9 +157,10 @@ the fan used the no-action codes, 0x400 and 0x800.
 Each button is an MQTT-discovery entity under one device, named as in
 Vornado's Quick-Start Guide. Two of those names are inferences from the first
 post: Fan Speeds and Airflow Modes are the buttons I captured as `Blade` and
-`Menu`. The two oscillation buttons are named for what the fan did in the
-Flipper post. The buttons grey out when the gateway's last-will says it's
-offline.
+`Menu`. The two oscillation buttons are named for what the fan did when I sent
+them from the Flipper: one toggles an indicator with up and down arrows (my
+guess is the guide's vertical oscillation), the other steps between 90 and
+180. The buttons grey out when the gateway's last-will says it's offline.
 
 ![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns (Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode, Light Settings), then an Automation card with the "Fan is on (assumed)" toggle, the apartment temperature at 65.2 F, a slider set to 77 F, time pickers set to 10:00 PM and 7:00 AM, and toggles for the six fan automations.](figs/fan-dashboard.png)
 

@@ -20,10 +20,9 @@ automations that use them, and one cable under the desk for data and power.
 The board has an Ethernet jack and takes a PoE module, which is what that last
 part needs.
 
-This is another piece of a longer mission to automate my life, and I
-over-engineer on the way. A fan with a bedtime schedule now sits behind a radio
-decoder, an Ethernet jack and an MQTT broker. I know. There have been a lot of
-posts lately because I've been Claude maxing.
+This is another piece of my mission to automate my life, and I over-engineer
+on the way. There have been a lot of posts lately because I've been Claude
+maxxing.
 
 ```mermaid
 flowchart LR

@@ -25,12 +25,12 @@ data and power.
 ## The Flipper first
 
 The [Flipper Zero](https://flipper.net/) already has a sub-GHz radio, so before
-building anything I made it the fan's remote. The question was whether the
-decode was enough on its own: could it make every button press from the 32-bit
-word, with no captured files? I asked for the app on the bike ride home, with
-speed on Up and Down and oscillation on Left and Right. Claude Code planned the
-rest, and at my call a cheaper model wrote it. Its frames matched the file that
-turned the fan on in the first post, value for value, and the fan obeyed.
+building anything I wanted to know if the decode alone was enough: could it
+make every button press from the 32-bit word, with no captured files? I asked
+for the app on the bike ride home, with speed on Up and Down and oscillation on
+Left and Right. Claude planned the rest, and at my call a cheaper model wrote
+it. Its frames matched the file that turned the fan on in the first post, value
+for value, and the fan obeyed.
 
 ![The Flipper screen showing each key's tap and hold: OK is Power and Timer, Up is Speed + and Speeds, Down is Speed - and Airflow, Left is Osc on/off and Lamp, Right is Osc 90/180 and Light.](figs/flipper-legend.png)
 
@@ -66,12 +66,22 @@ flowchart LR
     REM["the fan's remote"] -- OOK --> R
 ```
 
-The PoE module has to stay on the board and covers some of the header pins, so
-the radio got the six it doesn't. Claude Code matched the wire colors to the
-resistor color code, so a wire's color is its CC1101 pin number. The SPI is on
-IO0, IO1, IO2 and IO43, and the data line is on IO44. The first wiring was
-press-fit jumpers, a known risk I took to get it online before I left the
-house. It's soldered now, and a printed case is next.
+I wanted the PoE module to stay on the board, and it covers some of the header
+pins, so the radio got the ones it doesn't:
+
+| CC1101 pin | Signal | Wire | ESP32-S3-ETH |
+|---|---|---|---|
+| 1 | GND | brown | GND |
+| 2 | VCC | red | 3V3 |
+| 3 | GDO0 (data) | orange | IO44 |
+| 4 | CSN | yellow | IO0 |
+| 5 | SCK | green | IO1 |
+| 6 | MOSI | blue | IO2 |
+| 7 | MISO | violet | IO43 |
+| 8 | GDO2 | none | |
+
+The first wiring was press-fit jumpers, a known risk I took to get it online
+before I left the house. It's soldered now, and a printed case is next.
 
 Ethernet came up at 100 Mbps on the first boot, with Wi-Fi configured as the
 fallback. That got a real test when I moved the gateway to a room with no cable
@@ -80,16 +90,32 @@ module isn't back on yet, so PoE power is untested.
 
 ## Sending without the data line
 
-OpenMQTTGateway sends by bit-banging the radio's data pin. My press-fit data
-wire wasn't making contact, so Claude Code had the CC1101 clock the frame out
-of its own FIFO instead, and that stayed. At 2.51 kBaud one symbol is one 398
-us tick, so a frame is just bits: a data 1 is `1110`, a 0 is `1000`, and a
-press is eight frames. Home Assistant sends it like any OpenMQTTGateway code,
-with a protocol number I picked:
+There are two ways to get a signal out of a CC1101, and OpenMQTTGateway uses
+the simple one: bit-banging. The radio sits in a mode where its carrier just
+follows the data pin, GDO0, which is the orange wire: pin high, carrier on; pin
+low, carrier off. The ESP32 flips that pin itself, in software, waiting out
+each pulse width in microseconds (that's the
+[RCSwitch](https://github.com/sui77/rc-switch) library). The radio is a dumb
+modulator, so the signal is only as steady as the ESP32's timing, and with no
+wire on GDO0 nothing goes out.
+
+My orange wire was a press-fit jumper that wasn't making contact, so Claude
+added the other way, and it stayed. The ESP32 writes the whole frame into the
+CC1101's own 64-byte FIFO over SPI and tells it to transmit, and the radio
+shifts the bits out by itself on its crystal's clock. The data pin isn't
+involved, and a Wi-Fi interrupt can't stretch a pulse. At 2.51 kBaud one symbol
+is one 398 us tick, so a frame is just bits: the sync is a 1 and thirty 0s, a
+data 1 is `1110`, a 0 is `1000`, and the stop mark is `10`. That's 161 symbols,
+three frames to a 63-byte FIFO load, eight frames per press. Home Assistant
+sends it like any OpenMQTTGateway code, with its own protocol number:
 
 ```
 home/OMG_VORNADO/commands/MQTTto433   {"value": 56545282, "protocol": 99}
 ```
+
+Receiving still needs that wire: the radio hands the demodulated signal to the
+ESP32 on the same pin. With the jumper loose the gateway could transmit but
+couldn't hear the Flipper, which is how the open wire showed up.
 
 The Flipper made a good witness. Its stock `subghz rx_raw` caught the gateway's
 frames, and measured the same way as the real remote's they came out close:
@@ -132,13 +158,16 @@ Each button is an MQTT-discovery entity under one device, named as in the
 Quick-Start Guide. Fan Speeds and Airflow Modes are inferences: I captured
 those two as `Blade` and `Menu`.
 
-![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns (Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode, Light Settings), then an Automation card with the "Fan is on (assumed)" toggle, the apartment temperature at 65.2 F, a slider set to 77 F, time pickers set to 10:00 PM and 7:00 AM, and toggles for the six fan automations.](figs/fan-dashboard.png)
+![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns, Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode and Light Settings.](figs/fan-buttons.png)
 
 The fan reports nothing, and Power is a toggle, so "turn the fan off" can only
 mean "press Power if it's on." Home Assistant keeps a guess in a "Fan is on
 (assumed)" helper that flips whenever a Power command goes out, or the gateway
-hears the real remote's Power. Four automations check it before they press
-anything:
+hears the real remote's Power.
+
+![The Automation card: the "Fan is on (assumed)" toggle, the apartment temperature at 65.2 F, a slider set to 77 F, time pickers set to 10:00 PM and 7:00 AM, and toggles for the six fan automations.](figs/fan-automations.png)
+
+Four automations check the guess before they press anything:
 
 - **On at bedtime:** 10 PM if I'm home, and again if I get home later that
   night. I've been trying to go to bed earlier, so the fan starting is the cue.
@@ -176,11 +205,11 @@ has to hear it. The receiver was already running
 [rtl_433](https://github.com/merbanan/rtl_433) (the ESP32 port is
 [rtl_433_ESP](https://github.com/NorthernMan54/rtl_433_ESP)) for my neighbors'
 weather sensors, which is the next post. OpenMQTTGateway runs one decoder
-library at a time, so Claude Code said it was the remote or the sensors.
+library at a time, so Claude said it was the remote or the sensors.
 
 I didn't buy that, and I was right. Both are 433.92 MHz on-off keying, so one
 radio hears both, and the limit was software. rtl_433 has no decoder for the
-fan, so Claude Code wrote one and registered it at startup, leaving the library
+fan, so Claude wrote one and registered it at startup, leaving the library
 untouched. A press arrives as one `Vornado-Remote` message, and an automation
 flips the guess when it's Power.
 

@@ -197,8 +197,12 @@ when I got home. The hot rule hasn't fired; the apartment has stayed around
 The 10 PM rule didn't fire that night, because my phone had died while I was
 out, so Home Assistant never learned I was home. When I powered it back on, at
 22:35:02, the arrival rule pressed Power one second later and the gateway
-acknowledged it. A dead phone is invisible to every presence signal I could
-add, so that's a corner I'm leaving alone.
+acknowledged it. A dead phone is invisible to GPS and to its own Wi-Fi, so
+"home" for the arrival rules is now broader: GPS, or the phone on the Wi-Fi as
+eero sees it, or my Apple Watch, which joins the Wi-Fi by itself when its phone
+is away or dead. eero has no official Home Assistant integration; a community
+one installs through HACS and signs in with the account's email and a one-time
+code. The leave rule still uses GPS alone, which has been right every time.
 
 ## One receiver for the remote and the sensors
 
@@ -264,4 +268,5 @@ sensors at once. Tested: Power on and off on the fan, the transmit timing
 against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
 updates over the network, the real remote next to the gateway, and the
 leave-home rule on three real departures, the last one checked against the fan
-itself. Not tested: the bedtime and morning schedule, and PoE power.*
+itself, and the phone showing as home through eero. Not tested: the bedtime and
+morning schedule, the watch as a fallback for a dead phone, and PoE power.*

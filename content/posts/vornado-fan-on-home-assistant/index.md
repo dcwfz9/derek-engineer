@@ -190,9 +190,9 @@ Three departures today, from Home Assistant's logbook:
 | 17:33:24 | off | 17:43 nothing, which is what the guess is for |
 | 21:08:23 | on (set by hand) | 21:18:23 Power pressed, the gateway acknowledged the transmit a second later, guess to off |
 
-I was out for all three, so what I have is the log and the gateway's
-acknowledgement, not the fan. The hot rule hasn't fired; the apartment has
-stayed around 65 °F.
+I was out for all three. For the last one the fan was on when I left and off
+when I got home. The hot rule hasn't fired; the apartment has stayed around
+65 °F.
 
 ## One receiver for the remote and the sensors
 
@@ -225,16 +225,16 @@ Each press came through as one message at -55 to -72 dBm and flipped the guess
 within the same second: off, on, off, on, all four logged under "follow the
 physical remote". From my bedroom, earlier that minute, the presses didn't
 register. The gateway is at the kitchen's west window, a spot I picked for the
-weather sensor, and it doesn't hear the remote from there. That's a real wrinkle:
-a press the gateway misses leaves the guess wrong until the next command it
-does hear, and the rules trust the guess.
+weather sensor, and it doesn't hear the remote from there. I'm fine with that.
+The point of all this is to stop using the remote, I hadn't been using it
+anyway, and the gateway only has to reach the fan to transmit, which it does.
+The gap is that a press from out of its range goes unnoticed, the guess goes
+stale, and the rules trust the guess. That's the one I'm living with.
 
 ## Not done yet
 
 - Rewire it into a printed case, then put the PoE module on so it runs from
   one cable.
-- Hear the remote from the bedroom: a position that suits both the weather
-  sensor and the remote, or the numbers that say they can't share one.
 - A motion sensor in the bedroom, so the fan follows whether I'm there and the
   clock stops standing in for it.
 - The weather sensors: the same receiver hears two of my neighbors' sensors,
@@ -257,7 +257,5 @@ when Claude Code said one radio couldn't follow the remote and the weather
 sensors at once. Tested: Power on and off on the fan, the transmit timing
 against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
 updates over the network, the real remote next to the gateway, and the
-leave-home rule on three real departures (by the log and the gateway's
-acknowledgement). Not tested: the fan itself switching off when I leave, the
-bedtime and morning schedule, hearing the remote from the bedroom, and PoE
-power.*
+leave-home rule on three real departures, the last one checked against the fan
+itself. Not tested: the bedtime and morning schedule, and PoE power.*

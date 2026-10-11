@@ -99,23 +99,37 @@ each pulse width in microseconds (that's the
 modulator, so the signal is only as steady as the ESP32's timing, and with no
 wire on GDO0 nothing goes out.
 
-My orange wire was a press-fit jumper that wasn't making contact, so Claude
-added the other way, and it stayed. The ESP32 writes the whole frame into the
-CC1101's own 64-byte FIFO over SPI and tells it to transmit, and the radio
-shifts the bits out by itself on its crystal's clock. The data pin isn't
-involved, and a Wi-Fi interrupt can't stretch a pulse. At 2.51 kBaud one symbol
-is one 398 us tick, so a frame is just bits: the sync is a 1 and thirty 0s, a
-data 1 is `1110`, a 0 is `1000`, and the stop mark is `10`. That's 161 symbols,
-three frames to a 63-byte FIFO load, eight frames per press. Home Assistant
-sends it like any OpenMQTTGateway code, with its own protocol number:
+The second way came out of that shaky orange jumper. It was press-fit and
+wasn't making contact, and with it open the stock path logged a successful send
+while the Flipper, listening on the air, never heard a frame the fan would
+take. Of all the wires on the board, this was either the best one to have loose
+or the worst. The best, because it's the only one you can work around: lose
+power, ground or an SPI wire and the radio is simply gone. The worst, because
+everything else looked fine. The CC1101 answered over SPI and tuned to 433.92
+MHz, and it took a throwaway probe sketch to show the chip forcing GDO0 low
+while the pin read high. So Claude added the other way, and it stayed.
+
+The ESP32 writes the whole frame into the CC1101's own 64-byte FIFO over SPI
+and tells it to transmit, and the radio shifts the bits out by itself on its
+crystal's clock. The data pin isn't involved, and a Wi-Fi interrupt can't
+stretch a pulse. At 2.51 kBaud one symbol is one 398 us tick, so a frame is
+just bits: the sync is a 1 and thirty 0s, a data 1 is `1110`, a 0 is `1000`,
+and the stop mark is `10`. That's 161 symbols, three frames to a 63-byte FIFO
+load, eight frames per press. Home Assistant sends it like any OpenMQTTGateway
+code, with its own protocol number:
 
 ```
 home/OMG_VORNADO/commands/MQTTto433   {"value": 56545282, "protocol": 99}
 ```
 
 Receiving still needs that wire: the radio hands the demodulated signal to the
-ESP32 on the same pin. With the jumper loose the gateway could transmit but
-couldn't hear the Flipper, which is how the open wire showed up.
+ESP32 on the same pin. That's the other way the loose jumper showed itself: the
+gateway transmitted fine and heard nothing when the Flipper sent.
+
+The wire is soldered now, so I could go back to bit-banging. I never ran the
+old path again once it was in, so I can't say the FIFO one is better. It could
+be the same, or worse. Switching back isn't worth the rewrite, and keeping it
+is a simplification anyway: the orange wire has one job now, receiving.
 
 The Flipper made a good witness. Its stock `subghz rx_raw` caught the gateway's
 frames, and measured the same way as the real remote's they came out close:

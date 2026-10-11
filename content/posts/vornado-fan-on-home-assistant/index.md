@@ -1,12 +1,12 @@
 ---
 title: "The Vornado EOS 9 on Home Assistant"
 date: 2026-10-10
-draft: true
+draft: false
 tags: ["home-assistant", "esp32", "cc1101", "openmqttgateway", "mqtt", "rf", "hardware-in-the-loop"]
 specs:
   device: "Waveshare ESP32-S3-ETH with a 433 MHz CC1101 module; Vornado EOS 9 fan"
   os: "OpenMQTTGateway built from source with local changes; Home Assistant 2026.7"
-  tools: "PlatformIO, Mosquitto, a Flipper Zero as a test receiver, Claude Code"
+  tools: "PlatformIO, Mosquitto, a Flipper Zero as the test bench, Claude Code"
 description: "An ESP32-S3 and a CC1101 running OpenMQTTGateway put the Vornado EOS 9 on Home Assistant: a transmit path with no data line, a logging bug that dropped MQTT every few minutes, and one receiver for the fan's remote and the neighbors' weather sensors."
 ---
 
@@ -182,7 +182,7 @@ running all day. What I want is the fan on while I'm asleep, which a motion
 sensor in the bedroom would know and the clock only approximates, so the
 sensor is on the list.
 
-Three departures today, from Home Assistant's logbook:
+Three departures on October 10, from Home Assistant's logbook:
 
 | I left | The guess was | What happened |
 |---|---|---|
@@ -198,11 +198,16 @@ The 10 PM rule didn't fire that night, because my phone had died while I was
 out, so Home Assistant never learned I was home. When I powered it back on, at
 22:35:02, the arrival rule pressed Power one second later and the gateway
 acknowledged it. A dead phone is invisible to GPS and to its own Wi-Fi, so
-"home" for the arrival rules is now broader: GPS, or the phone on the Wi-Fi as
-eero sees it, or my Apple Watch, which joins the Wi-Fi by itself when its phone
-is away or dead. eero has no official Home Assistant integration; a community
-one installs through HACS and signs in with the account's email and a one-time
-code. The leave rule still uses GPS alone, which has been right every time.
+"home" is now broader. eero has no official Home Assistant integration; a
+community one installs through HACS and signs in with the account's email and a
+one-time code. It sees the phone the moment it joins the Wi-Fi, and I added
+that tracker to my Home Assistant person, so every presence rule, my older lamp
+automations included, counts me home as soon as the phone is on the network.
+My Apple Watch is a second tracker, which the schedule and hot rules use as a
+fallback, since a watch joins the Wi-Fi by itself when its phone is away or
+dead. The cost is on the way out: eero keeps a device home for five minutes
+after it disconnects, so the leave rule can fire a few minutes later than it
+did on GPS alone.
 
 ## One receiver for the remote and the sensors
 
@@ -233,8 +238,8 @@ guess, a repeat inside two seconds doesn't, and other buttons leave it alone.
 Then the real remote. Next to the gateway at 20:51 I pressed Power four times.
 Each press came through as one message at -55 to -72 dBm and flipped the guess
 within the same second: off, on, off, on, all four logged under "follow the
-physical remote". From my bedroom, earlier that minute, the presses didn't
-register. The gateway is at the kitchen's west window, a spot I picked for the
+physical remote". From my bedroom, a couple of minutes earlier, the presses
+didn't register. The gateway is at the kitchen's west window, a spot I picked for the
 weather sensor, and it doesn't hear the remote from there. I'm fine with that.
 The point of all this is to stop using the remote, I hadn't been using it
 anyway, and the gateway only has to reach the fan to transmit, which it does.
@@ -269,4 +274,5 @@ against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
 updates over the network, the real remote next to the gateway, and the
 leave-home rule on three real departures, the last one checked against the fan
 itself, and the phone showing as home through eero. Not tested: the bedtime and
-morning schedule, the watch as a fallback for a dead phone, and PoE power.*
+morning schedule, the leave rule since eero joined my presence, the watch as a
+fallback for a dead phone, and PoE power.*

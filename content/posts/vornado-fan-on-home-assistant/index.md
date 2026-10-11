@@ -71,7 +71,8 @@ with RCSwitch timing. The press-fit data wire wasn't making contact at first,
 so Claude Code added another way, and it stayed: the CC1101 clocks the frame
 out of its own FIFO. At 2.51 kBaud one symbol is one 398 us tick, so a frame is
 just bits: the sync is a 1 and thirty 0s, a data 1 is `1110`, a 0 is `1000`,
-and the stop mark is `10`. That's 161 symbols, three frames to a 63-byte FIFO
+and the stop mark is `10`, which the real remote sends and the Flipper app
+leaves out. That's 161 symbols, three frames to a 63-byte FIFO
 load, eight frames per press. Home Assistant sends it the same way it would any
 OpenMQTTGateway code, with a protocol number I picked for it:
 
@@ -191,23 +192,23 @@ Three departures on October 10, from Home Assistant's logbook:
 | 21:08:23 | on (set by hand) | 21:18:23 Power pressed, the gateway acknowledged the transmit a second later, guess to off |
 
 I was out for all three. For the last one the fan was on when I left and off
-when I got home. The hot rule hasn't fired; the apartment has stayed around
-65 °F.
+when I got home. The hot rule hasn't fired; the apartment has stayed between
+65 and 68 °F.
 
 The 10 PM rule didn't fire that night, because my phone had died while I was
-out, so Home Assistant never learned I was home. When I powered it back on, at
-22:35:02, the arrival rule pressed Power one second later and the gateway
-acknowledged it. A dead phone is invisible to GPS and to its own Wi-Fi, so
-"home" is now broader. eero has no official Home Assistant integration; a
-community one installs through HACS and signs in with the account's email and a
-one-time code. It sees the phone the moment it joins the Wi-Fi, and I added
-that tracker to my Home Assistant person, so every presence rule, my older lamp
-automations included, counts me home as soon as the phone is on the network.
-My Apple Watch is a second tracker, which the schedule and hot rules use as a
-fallback, since a watch joins the Wi-Fi by itself when its phone is away or
-dead. The cost is on the way out: eero keeps a device home for five minutes
-after it disconnects, so the leave rule can fire a few minutes later than it
-did on GPS alone.
+out, so Home Assistant never learned I was home. When I powered it back on, it
+learned at 22:35:02, the arrival rule pressed Power in the same second, and the
+gateway acknowledged the transmit a second later. A dead phone is invisible to
+GPS and to its own Wi-Fi, so "home" is now broader. eero has no official Home
+Assistant integration; a community one installs through HACS and signs in with
+the account's email and a one-time code. It sees the phone the moment it joins
+the Wi-Fi, and I added that tracker to my Home Assistant person, so every
+presence rule, my older lamp automations included, counts me home as soon as
+the phone is on the network. My Apple Watch is a second tracker, which the
+schedule and hot rules use as a fallback, since a watch joins the Wi-Fi by
+itself when its phone is away or dead. The cost is on the way out: eero keeps a
+device home for five minutes after it disconnects, so the leave rule can fire a
+few minutes later than it did on GPS alone.
 
 ## One receiver for the remote and the sensors
 
@@ -273,6 +274,7 @@ sensors at once. Tested: Power on and off on the fan, the transmit timing
 against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
 updates over the network, the real remote next to the gateway, and the
 leave-home rule on three real departures, the last one checked against the fan
-itself, and the phone showing as home through eero. Not tested: the bedtime and
-morning schedule, the leave rule since eero joined my presence, the watch as a
-fallback for a dead phone, and PoE power.*
+itself, the bedtime rule once on a late arrival, and the phone showing as home
+through eero. Not tested: the 10 PM and 7 AM triggers, the hot rule, the leave
+rule since eero joined my presence, the watch as a fallback for a dead phone,
+and PoE power.*

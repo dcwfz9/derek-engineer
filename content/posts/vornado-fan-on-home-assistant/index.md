@@ -131,6 +131,20 @@ when I moved the gateway to a room with no cable, it came back on Wi-Fi by
 itself. Firmware updates go over the network now; a build with a new version
 string booted from an OTA push in 25 seconds.
 
+## Testing with the Flipper
+
+The Flipper did most of the testing, and the reason is that it had already
+proven it could talk to the fan: the app from the last post makes frames the
+fan obeys. That made it a known-good reference in both directions. To test the
+gateway's transmitter, a script told the gateway to send over MQTT and had the
+Flipper's stock `subghz rx_raw` capture what went out on the air, then decoded
+the pulses and compared them with the real remote's timing (the table above).
+To test the receiver, the same script had the Flipper transmit a frame and
+checked what the gateway published. Both ran from the Mac with the Flipper on
+USB, so the whole loop, Home Assistant to MQTT to radio to air and back, could
+be tested without me at the fan or at the keyboard. Anything that could move
+the fan used the no-action codes, 0x400 and 0x800.
+
 ## Home Assistant
 
 Each button is an MQTT-discovery entity under one device, named as in
@@ -140,14 +154,18 @@ post: Fan Speeds and Airflow Modes are the buttons I captured as `Blade` and
 Flipper post. The buttons grey out when the gateway's last-will says it's
 offline.
 
-![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns (Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode, Light Settings), then an Automation card with the "Fan is on (assumed)" toggle, the apartment temperature at 65.1 F, a slider set to 77 F, and toggles for the four fan automations.](figs/fan-dashboard.png)
+![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns (Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode, Light Settings), then an Automation card with the "Fan is on (assumed)" toggle, the apartment temperature at 65.2 F, a slider set to 77 F, time pickers set to 10:00 PM and 7:00 AM, and toggles for the six fan automations.](figs/fan-dashboard.png)
 
 The fan reports nothing, and Power is a toggle. "Turn the fan off" can only
 mean "press Power if it's on," so Home Assistant keeps a guess: a "Fan is on
-(assumed)" helper that flips every time a Power command goes to the gateway.
-It listens on the MQTT command topic, so the dashboard, automations and scripts
-all count. Two automations read it:
+(assumed)" helper that flips every time a Power command goes to the gateway,
+whether it came from the dashboard, an automation or a script, and when the
+gateway hears the real remote's Power (below). Four automations read it:
 
+- **On at bedtime:** 10 PM, if I'm home and the guess says off, and again if I
+  get home later in that night window. I go to bed after 10; the fan starting
+  is the cue to head down.
+- **Off in the morning:** 7 AM, but only if the guess says on.
 - **Off when I leave:** ten minutes after I leave home (the same delay as my
   other leave-home automation, so a GPS blip doesn't count), it presses Power,
   but only if the guess says the fan is on.
@@ -155,10 +173,22 @@ all count. Two automations read it:
   minutes, only while I'm home and the guess says off. The threshold is a
   slider; I said hot is somewhere between 75 and 79 °F.
 
-Day one, on Home Assistant's log: I left at 13:41, and at 13:51 it pressed
-Power and the guess flipped to off. I left again at 17:33 with the fan
-believed off, and at 17:43 it did nothing, which is what the guess is for. The
-hot one hasn't fired; the apartment has stayed around 65 °F.
+Both schedule times are pickers on the dashboard. I used to leave the fan
+running all day. What I want is the fan on while I'm asleep, which a motion
+sensor in the bedroom would know and the clock only approximates, so the
+sensor is on the list.
+
+Three departures today, from Home Assistant's logbook:
+
+| I left | The guess was | What happened |
+|---|---|---|
+| 13:41:55 | on | 13:51:55 Power pressed, guess to off |
+| 17:33:24 | off | 17:43 nothing, which is what the guess is for |
+| 21:08:23 | on (set by hand) | 21:18:23 Power pressed, the gateway acknowledged the transmit a second later, guess to off |
+
+I was out for all three, so what I have is the log and the gateway's
+acknowledgement, not the fan. The hot rule hasn't fired; the apartment has
+stayed around 65 °F.
 
 ## One receiver for the remote and the sensors
 
@@ -183,16 +213,26 @@ guess when the button is Power, ignoring repeats for two seconds.
 
 With the Flipper alternating the fan's no-action code and a generic test
 remote that a stock rtl_433 decoder reads, all four sends decoded on the same
-receiver. Simulated
-presses checked the Home Assistant side: Power flips the guess, a repeat inside
-two seconds doesn't, and other buttons leave it alone. The real remote hasn't
-been pressed at it yet.
+receiver. Simulated presses checked the Home Assistant side: Power flips the
+guess, a repeat inside two seconds doesn't, and other buttons leave it alone.
+
+Then the real remote. Next to the gateway at 20:51 I pressed Power four times.
+Each press came through as one message at -55 to -72 dBm and flipped the guess
+within the same second: off, on, off, on, all four logged under "follow the
+physical remote". From my bedroom, earlier that minute, the presses didn't
+register. The gateway is at the kitchen's west window, a spot I picked for the
+weather sensor, and it doesn't hear the remote from there. That's a real wrinkle:
+a press the gateway misses leaves the guess wrong until the next command it
+does hear, and the rules trust the guess.
 
 ## Not done yet
 
 - Rewire it into a printed case, then put the PoE module on so it runs from
   one cable.
-- Press the real remote's Power and watch the guess follow it.
+- Hear the remote from the bedroom: a position that suits both the weather
+  sensor and the remote, or the numbers that say they can't share one.
+- A motion sensor in the bedroom, so the fan follows whether I'm there and the
+  clock stops standing in for it.
 - The weather sensors: the same receiver hears two of my neighbors' sensors,
   a different one from each kitchen window. That's the next post, after a week
   of comparing one against the forecast.
@@ -204,12 +244,16 @@ been pressed at it yet.
 *[How this was built](/how-i-work/): Claude Code wrote the firmware changes
 (the FIFO transmit, the USB logging fix, the Ethernet build, the Vornado
 decoder), the Home Assistant buttons, helpers, automations and dashboard, and
-the test scripts, including the Flipper check against the real remote and the
+the test scripts, including the Flipper checks against the real remote and the
 broker-log analysis that found the dropouts. I picked the board and the radio,
 set the constraint that the PoE module stays on, which decided the pins, wired
-and soldered it, chose what the automations do, and pushed back when Claude Code
-said one radio couldn't follow the remote and the weather sensors at once.
-Tested: Power on and off on the fan, the transmit timing against the real
-remote, the dropout fix, Ethernet and the Wi-Fi fallback, updates over the
-network, and the leave-home automation on two real departures. Not tested:
-following the real remote with a real press, and PoE power.*
+and soldered it, chose what the automations do and when, chose the Flipper as
+the test vehicle because it was already proven against the fan, and pushed back
+when Claude Code said one radio couldn't follow the remote and the weather
+sensors at once. Tested: Power on and off on the fan, the transmit timing
+against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
+updates over the network, the real remote next to the gateway, and the
+leave-home rule on three real departures (by the log and the gateway's
+acknowledgement). Not tested: the fan itself switching off when I leave, the
+bedtime and morning schedule, hearing the remote from the bedroom, and PoE
+power.*

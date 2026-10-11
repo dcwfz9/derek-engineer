@@ -2,22 +2,20 @@
 title: "The Vornado EOS 9 on Home Assistant"
 date: 2026-10-10
 draft: false
-tags: ["home-assistant", "esp32", "cc1101", "openmqttgateway", "mqtt", "rf", "hardware-in-the-loop"]
+tags: ["home-assistant", "esp32", "cc1101", "openmqttgateway", "mqtt", "rf", "flipper-zero", "hardware-in-the-loop"]
 specs:
   device: "Waveshare ESP32-S3-ETH with a 433 MHz CC1101 module; Vornado EOS 9 fan"
   os: "OpenMQTTGateway built from source with local changes; Home Assistant 2026.7"
-  tools: "PlatformIO, Mosquitto, a Flipper Zero as the test bench, Claude Code"
-description: "An ESP32-S3 and a CC1101 running OpenMQTTGateway put the Vornado EOS 9 on Home Assistant: a transmit path with no data line, a logging bug that dropped MQTT every few minutes, and one receiver for the fan's remote and the neighbors' weather sensors."
+  tools: "PlatformIO, Mosquitto, ufbt and a Flipper Zero (official firmware 1.4.3), Claude Code"
+description: "A Flipper Zero remote built from the decode, then an ESP32-S3 and a CC1101 running OpenMQTTGateway that put the Vornado EOS 9 on Home Assistant: a transmit path with no data line, a logging bug that dropped MQTT every few minutes, and one receiver for the fan's remote and the neighbors' weather sensors."
 ---
 
 The [first post](/posts/vornado-eos-9-rf-remote-reverse-engineering/) ended
 with a plan: a CC1101 and an ESP32 that put the fan on Home Assistant. Before
 building it I wanted to know the decode was enough on its own, so the Flipper
-Zero came first, as a stepping stone: an app that builds every button press
-from the 32-bit word, with no captured file anywhere. The fan obeyed it. This
-one is the box.
+Zero came first, as a stepping stone. Then the box.
 
-What I wanted from it: every button of the remote in Home Assistant,
+What I wanted from the box: every button of the remote in Home Assistant,
 automations that use them, and one cable under the desk for data and power.
 The board has an Ethernet jack and takes a PoE module, which is what that last
 part needs.
@@ -34,6 +32,43 @@ flowchart LR
     R -- OOK --> F["Vornado EOS 9"]
     REM["the fan's remote"] -- OOK --> R
 ```
+
+## The Flipper first
+
+The Flipper Zero already has a sub-GHz radio, so I made it the fan's remote
+before building anything. The question was whether every button press can be
+made from the 32-bit word, with no captured file anywhere. I asked for it on
+the bike ride home, with speed on Up and Down and oscillation on Left and
+Right. Claude Code put the other four functions on long presses and wrote the
+spec, and at my call a cheaper model wrote the app from it.
+
+The app puts the 12-bit command under the 20-bit address and writes out the
+timings, with T = 400 us: a 1T mark and a 30T gap for sync, then 3T on and 1T
+off for a 1, 1T on and 3T off for a 0. A press is eight frames, about half a
+second on air. Before it went on the Flipper, its frames had to match the file
+that turned the fan on in the first post, value for value. They did.
+
+![The Flipper screen with the app's legend: one row per key with its tap and hold. OK is Power and Timer, Up is Speed + and Speeds, Down is Speed - and Airflow, Left is Osc on/off and Lamp, Right is Osc 90/180 and Light. The status line reads Ready.](figs/flipper-legend.png)
+
+On the fan, Power, the 12 hour timer and Selection + and - did what the map
+says, and Lamp Mode toggles. The oscillation codes didn't. The first post named
+0x040 and 0x080 as Vornado's 90 and 180 degree buttons. Sending 0x040 lights an
+indicator with up and down arrows on the front panel, and sending it again
+turns it off. Sending 0x080 goes to 90, and each press after that flips between
+90 and 180. So it's one control that turns an oscillation on and off and one
+that picks the range. I haven't watched which way the head moves for the first
+one; the guide mentions a vertical oscillation control, and that's my guess.
+
+The Flipper also showed the catch for the box: the fan never answers, and most
+of its codes are toggles, so whatever controls it has to keep a guess of its
+state.
+
+The first thing I asked for on the Flipper was an analyzer, for the step I did
+by hand in the first post: capture a button, look at the pulses, guess OOK or
+FSK. It didn't earn its keep. Its score measured how much of the capture window
+a signal filled, not whether it was a protocol, so a perfect capture of the
+remote, 23 identical Power frames, scored 62%. What a real remote's capture
+does show is the same frame over and over, a test with no threshold to tune.
 
 ## The box
 
@@ -157,10 +192,9 @@ the fan used the no-action codes, 0x400 and 0x800.
 Each button is an MQTT-discovery entity under one device, named as in
 Vornado's Quick-Start Guide. Two of those names are inferences from the first
 post: Fan Speeds and Airflow Modes are the buttons I captured as `Blade` and
-`Menu`. The two oscillation buttons are named for what the fan did when I sent
-them from the Flipper: one toggles an indicator with up and down arrows (my
-guess is the guide's vertical oscillation), the other steps between 90 and
-180. The buttons grey out when the gateway's last-will says it's offline.
+`Menu`. The two oscillation buttons are named for what the fan did when the
+Flipper sent them. The buttons grey out when the gateway's last-will says it's
+offline.
 
 ![The Fan dashboard in Home Assistant at phone width: ten buttons in two columns (Power, 12 Hour Timer, Selection minus and plus, Fan Speeds, Airflow Modes, Vertical Oscillation, Panoramic Oscillation 90/180, Lamp Mode, Light Settings), then an Automation card with the "Fan is on (assumed)" toggle, the apartment temperature at 65.2 F, a slider set to 77 F, time pickers set to 10:00 PM and 7:00 AM, and toggles for the six fan automations.](figs/fan-dashboard.png)
 
@@ -186,32 +220,32 @@ running all day. What I want is the fan on while I'm asleep, which a motion
 sensor in the bedroom would know and the clock only approximates, so the
 sensor is on the list.
 
-Three departures on October 10, from Home Assistant's logbook:
+Three departures in one day, from Home Assistant's logbook:
 
 | I left | The guess was | What happened |
 |---|---|---|
-| 13:41:55 | on | 13:51:55 Power pressed, guess to off |
-| 17:33:24 | off | 17:43 nothing, which is what the guess is for |
-| 21:08:23 | on (set by hand) | 21:18:23 Power pressed, the gateway acknowledged the transmit a second later, guess to off |
+| early afternoon | on | exactly ten minutes later, Power pressed, guess to off |
+| late afternoon | off | nothing, which is what the guess is for |
+| evening | on (set by hand) | exactly ten minutes later, Power pressed, the gateway acknowledged the transmit a second after that, guess to off |
 
 I was out for all three. For the last one the fan was on when I left and off
 when I got home. The hot rule hasn't fired; the apartment has stayed between
 65 and 68 °F.
 
 The 10 PM rule didn't fire that night, because my phone had died while I was
-out, so Home Assistant never learned I was home. When I powered it back on, it
-learned at 22:35:02, the arrival rule pressed Power in the same second, and the
-gateway acknowledged the transmit a second later. A dead phone is invisible to
-GPS and to its own Wi-Fi, so "home" is now broader. eero has no official Home
-Assistant integration; a community one installs through HACS and signs in with
-the account's email and a one-time code. It sees the phone the moment it joins
-the Wi-Fi, and I added that tracker to my Home Assistant person, so every
-presence rule, my older lamp automations included, counts me home as soon as
-the phone is on the network. My Apple Watch is a second tracker, which the
-schedule and hot rules use as a fallback, since a watch joins the Wi-Fi by
-itself when its phone is away or dead. The cost is on the way out: eero keeps a
-device home for five minutes after it disconnects, so the leave rule can fire a
-few minutes later than it did on GPS alone.
+out, so Home Assistant never learned I was home. When I powered it back on,
+Home Assistant saw me home, the arrival rule pressed Power in the same second,
+and the gateway acknowledged the transmit a second later. A dead phone is
+invisible to GPS and to its own Wi-Fi, so "home" is now broader. eero has no
+official Home Assistant integration; a community one installs through HACS and
+signs in with the account's email and a one-time code. It sees the phone the
+moment it joins the Wi-Fi, and I added that tracker to my Home Assistant
+person, so every presence rule, my older lamp automations included, counts me
+home as soon as the phone is on the network. My Apple Watch is a second
+tracker, which the schedule and hot rules use as a fallback, since a watch
+joins the Wi-Fi by itself when its phone is away or dead. The cost is on the
+way out: eero keeps a device home for five minutes after it disconnects, so the
+leave rule can fire a few minutes later than it did on GPS alone.
 
 ## One receiver for the remote and the sensors
 
@@ -264,20 +298,27 @@ stale, and the rules trust the guess. That's the one I'm living with.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the firmware changes
-(the FIFO transmit, the USB logging fix, the Ethernet build, the Vornado
-decoder), the Home Assistant buttons, helpers, automations and dashboard, and
-the test scripts, including the Flipper checks against the real remote and the
-broker-log analysis that found the dropouts. I picked the board and the radio,
-set the constraint that the PoE module stays on, which decided the pins, wired
-and soldered it, chose what the automations do and when, chose the Flipper as
-the test vehicle because it was already proven against the fan, and pushed back
-when Claude Code said one radio couldn't follow the remote and the weather
-sensors at once. Tested: Power on and off on the fan, the transmit timing
-against the real remote, the dropout fix, Ethernet and the Wi-Fi fallback,
-updates over the network, the real remote next to the gateway, and the
-leave-home rule on three real departures, the last one checked against the fan
-itself, the bedtime rule once on a late arrival, and the phone showing as home
-through eero. Not tested: the 10 PM and 7 AM triggers, the hot rule, the leave
-rule since eero joined my presence, the watch as a fallback for a dead phone,
-and PoE power.*
+*[How this was built](/how-i-work/): Claude Code built the Flipper analyzer and
+wrote the remote app's spec, and a cheaper model wrote the app from it, at my
+call. Claude Code also wrote the firmware changes (the FIFO transmit, the USB
+logging fix, the Ethernet build, the Vornado decoder), the Home Assistant
+buttons, helpers, automations and dashboard, and the test scripts, including
+the Flipper checks against the real remote and the broker-log analysis that
+found the dropouts. I set the Flipper step's goal (every frame built from the
+decode) and ran the app on the fan, which is what caught the oscillation
+labels. I picked the board and the radio, set the constraint that the PoE
+module stays on, which decided the pins, wired and soldered it, chose what the
+automations do and when, chose the Flipper as the test vehicle because it was
+already proven against the fan, and pushed back when Claude Code said one radio
+couldn't follow the remote and the weather sensors at once. Tested: the Flipper
+app on the fan (Power, Timer, Selection + and -, Lamp Mode and both oscillation
+codes), the analyzer on the real remote, Power on and off through the gateway,
+the transmit timing against the real remote, the dropout fix, Ethernet and the
+Wi-Fi fallback, updates over the network, the real remote next to the gateway,
+the leave-home rule on three real departures, the last one checked against the
+fan itself, the bedtime rule once on a late arrival, and the phone showing as
+home through eero. Not tested: what Fan Speeds, Airflow Modes and Light
+Settings do, whether Selection + and - follow the last function pressed, which
+way the head moves for the oscillation on/off code, the 10 PM and 7 AM
+triggers, the hot rule, the leave rule since eero joined my presence, the watch
+as a fallback for a dead phone, and PoE power.*

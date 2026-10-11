@@ -63,13 +63,6 @@ The Flipper also showed the catch for the box: the fan never answers, and most
 of its codes are toggles, so whatever controls it has to keep a guess of its
 state.
 
-The first thing I asked for on the Flipper was an analyzer, for the step I did
-by hand in the first post: capture a button, look at the pulses, guess OOK or
-FSK. It didn't earn its keep. Its score measured how much of the capture window
-a signal filled, not whether it was a protocol, so a perfect capture of the
-remote, 23 identical Power frames, scored 62%. What a real remote's capture
-does show is the same frame over and over, a test with no threshold to tune.
-
 ## The box
 
 The board is a Waveshare ESP32-S3-ETH (the PoE version: ESP32-S3R8, 16 MB
@@ -298,27 +291,26 @@ stale, and the rules trust the guess. That's the one I'm living with.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code built the Flipper analyzer and
-wrote the remote app's spec, and a cheaper model wrote the app from it, at my
-call. Claude Code also wrote the firmware changes (the FIFO transmit, the USB
-logging fix, the Ethernet build, the Vornado decoder), the Home Assistant
-buttons, helpers, automations and dashboard, and the test scripts, including
-the Flipper checks against the real remote and the broker-log analysis that
-found the dropouts. I set the Flipper step's goal (every frame built from the
-decode) and ran the app on the fan, which is what caught the oscillation
-labels. I picked the board and the radio, set the constraint that the PoE
-module stays on, which decided the pins, wired and soldered it, chose what the
-automations do and when, chose the Flipper as the test vehicle because it was
-already proven against the fan, and pushed back when Claude Code said one radio
-couldn't follow the remote and the weather sensors at once. Tested: the Flipper
-app on the fan (Power, Timer, Selection + and -, Lamp Mode and both oscillation
-codes), the analyzer on the real remote, Power on and off through the gateway,
-the transmit timing against the real remote, the dropout fix, Ethernet and the
-Wi-Fi fallback, updates over the network, the real remote next to the gateway,
-the leave-home rule on three real departures, the last one checked against the
-fan itself, the bedtime rule once on a late arrival, and the phone showing as
-home through eero. Not tested: what Fan Speeds, Airflow Modes and Light
-Settings do, whether Selection + and - follow the last function pressed, which
-way the head moves for the oscillation on/off code, the 10 PM and 7 AM
-triggers, the hot rule, the leave rule since eero joined my presence, the watch
-as a fallback for a dead phone, and PoE power.*
+*[How this was built](/how-i-work/): Claude Code wrote the Flipper remote app's
+spec, and a cheaper model wrote the app from it, at my call. Claude Code also
+wrote the firmware changes (the FIFO transmit, the USB logging fix, the
+Ethernet build, the Vornado decoder), the Home Assistant buttons, helpers,
+automations and dashboard, and the test scripts, including the Flipper checks
+against the real remote and the broker-log analysis that found the dropouts. I
+set the Flipper step's goal (every frame built from the decode) and ran the app
+on the fan, which is what caught the oscillation labels. I picked the board and
+the radio, set the constraint that the PoE module stays on, which decided the
+pins, wired and soldered it, chose what the automations do and when, chose the
+Flipper as the test vehicle because it was already proven against the fan, and
+pushed back when Claude Code said one radio couldn't follow the remote and the
+weather sensors at once. Tested: the Flipper app on the fan (Power, Timer,
+Selection + and -, Lamp Mode and both oscillation codes), Power on and off
+through the gateway, the transmit timing against the real remote, the dropout
+fix, Ethernet and the Wi-Fi fallback, updates over the network, the real remote
+next to the gateway, the leave-home rule on three real departures, the last one
+checked against the fan itself, the bedtime rule once on a late arrival, and
+the phone showing as home through eero. Not tested: what Fan Speeds, Airflow
+Modes and Light Settings do, whether Selection + and - follow the last function
+pressed, which way the head moves for the oscillation on/off code, the 10 PM
+and 7 AM triggers, the hot rule, the leave rule since eero joined my presence,
+the watch as a fallback for a dead phone, and PoE power.*

@@ -30,7 +30,7 @@ Other Edge 840 owners describe the same thing (none of them say what router they
 
 ## A 2.4 GHz network on the Pi
 
-eero can't do a 2.4 GHz-only network, so the Edge needed one from somewhere else. Claude went through the hardware I had: an ESP32-S3-ETH (busy as my 433 MHz gateway), a plain ESP32 (saved for the TV backlight), the Mac mini, the UNO Q (no Ethernet) and the Pi 5. The Pi 5 won: it's wired to the eero, its Wi-Fi radio wasn't doing anything, and Linux gives me logs. An ESP32 NAT router would have worked too, but with one radio its network has to follow the eero's channel.
+eero can't do a 2.4 GHz-only network, so the Edge needed one from somewhere else. I went through the hardware I had: an ESP32-S3-ETH (busy as my 433 MHz gateway), a plain ESP32 (saved for the TV backlight), the Mac mini, the UNO Q (no Ethernet) and the Pi 5. The Pi 5 won: it's wired to the eero, its Wi-Fi radio wasn't doing anything, and Linux gives me logs. An ESP32 NAT router would have worked too, but with one radio its network has to follow the eero's channel.
 
 ```mermaid
 flowchart TD
@@ -144,10 +144,10 @@ Future work:
 
 - A real ride, start to finish, with nothing pressed.
 - Phone Bluetooth off versus on after saving, to see whether the phone path is why auto upload didn't fire.
-- Move the network off the Pi 5, which I use for AI experiments, to the Pi 3B that runs my Obsidian sync server. Same name and password, so the Edge won't notice.
+- Move the network off the Pi 5, which I have other plans for, to a Pi 3B I have lying around. Same name and password, so the Edge won't notice.
 - When eeroOS 7.17.2 lands, put the Edge back on eero with the Pi's network off and repeat the test.
 - Capture the Edge failing on eero (a Wi-Fi capture on channel 1), or reproduce it with the Pi plus a 5 GHz network of the same name from the Mac, to find the actual trigger.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, picked the Pi 5 from the hardware I had, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, ran every test on the Edge (adding the network, the passwords, Wi-Fi Sync, the trainer ride), sent it back for simpler passwords, and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: auto upload right after saving a ride, a ride with nothing pressed, eeroOS 7.17.2, and what exactly breaks on eero.*
+*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, picked the Pi 5, ran every test on the Edge (adding the network, the passwords, Wi-Fi Sync, the trainer ride), sent it back for simpler passwords, and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: auto upload right after saving a ride, a ride with nothing pressed, eeroOS 7.17.2, and what exactly breaks on eero.*

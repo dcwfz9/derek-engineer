@@ -89,21 +89,11 @@ Raspberry Pi OS keeps Wi-Fi blocked until a country is set, so the script also s
 
 Before the Edge touched it, Claude checked the network from my Mac mini's Wi-Fi: an address from the Pi, Garmin Connect loading, 48 Mbit/s down and 20 up (curl against Cloudflare's speed test), and Home Assistant timing out through the Pi while it loaded fine over Ethernet. Then a reboot, to make sure the firewall comes up before the network does.
 
-## What went wrong first: passwords
+## A "connection failed" that wasn't
 
-The first password Claude generated was 12 random letters and digits, mixed case. One of my two tries actually got through the WPA2 handshake, then the Edge dropped off 28 ms later without asking for an address, and the app said it failed. I don't know why.
+The first time I added the network, the Edge said "connection failed." I figured it was a flaky connection and tried again: same message. Then I switched to a simpler password to rule out a typo, and still got "connection failed." The Pi's log told a different story: a few minutes later the Edge connected, got an address and looked up Garmin's servers (the 12:02 am row below), and a Wi-Fi Sync after that worked. It happened again the next morning: "connection failed," then the Pi's log showed it connected a minute later.
 
-The next password was simpler. The Pi's log showed the first try with it failing on a password mismatch (the Edge was still sending the old one, or I mistyped it):
-
-```
-hostapd_logger: STA 14:13:0b:xx:xx:xx - invalid MIC in msg 2/4 of 4-Way Handshake
-wlan0: AP-STA-POSSIBLE-PSK-MISMATCH 14:13:0b:xx:xx:xx
-hostapd_logger: STA 14:13:0b:xx:xx:xx - PTKSTART: Retry limit 4 reached
-```
-
-The try after that connected. I still asked for a third with no look-alike characters at all (no l, 1, o, 0, s, 5 and so on), since I'll be typing it again. The script only makes passwords like that now: two lowercase words and two digits.
-
-One more "connection failed" the next morning never reached the Pi at all: nothing from the Edge in its log. My guess is the Edge tried an eero network that was still saved on it. A minute later it connected, and I've since deleted every other saved network so it only knows `Garmin Sync 2.4`.
+Just an artifact I found along the way, but worth knowing: the message on the Edge isn't proof the connection failed. Garmin has fixed a cousin of this before, in 27.13: "Fixed manual Wi‑Fi sync incorrectly reporting sync failure."
 
 ## What the Edge does on a network it likes
 
@@ -112,7 +102,7 @@ From the Pi's logs (times are mine, Pacific; the byte counters came in after the
 | When | What started it | Connected for | Up | Down | Garmin hosts it looked up |
 |---|---|---|---|---|---|
 | 12:02 am | first good join | 16 s | not counted | not counted | `clock`, `api.gcs`, `omt`, `download` |
-| 5:31 am | re-added with the new password | 3 min 13 s | about 1.6 MB | about 55 MB | `clock`, `gold`, `api.gcs`, `download` |
+| 5:31 am | re-added the network | 3 min 13 s | about 1.6 MB | about 55 MB | `clock`, `gold`, `api.gcs`, `download` |
 | 5:41 am | nothing I pressed: the Edge restarting after a software update | 105 s | 243 KB | 942 KB | `connectapi`, `services`, `api.gcs`, Connect IQ, and `www.strava.com` |
 | 7:41 am | Wi-Fi Sync, after a short trainer ride | 30 s | 181 KB | 804 KB | `clock`, `gold`, `download` |
 
@@ -124,6 +114,14 @@ One thing didn't. After I saved the trainer ride, the Edge didn't try Wi-Fi at a
 
 A detail for the Wi-Fi people: NetworkManager's access point offers both WPA2-PSK and PSK-SHA256 (it adds SHA256 even with management frame protection off), and the Edge picks SHA256: its handshake messages carry key descriptor version 3. I haven't checked what eero offers, or whether it matters.
 
+## The 5 GHz test
+
+Before blaming the shared name, I wanted to know whether the Edge can see 5 GHz at all. Claude moved the Pi's network to 5 GHz only (channel 36), same name and password, and checked it was up by joining it from my Mac on channel 36. Then I pressed Wi-Fi Sync on the Edge.
+
+The Edge sat on "connecting" for a while, then said "sync failed." The Pi's log has nothing from the Edge in that window: not one association attempt. So it can't use a 5 GHz network even with the right name and password, which matches its spec page.
+
+How it failed is the interesting part. On eero, Wi-Fi Sync sat on "connecting" and never changed (I never waited long enough to see it time out). Here it gave up with "sync failed." My guess is that on eero the Edge does find the network and gets stuck partway through connecting, instead of not finding it at all. That's from the message alone, not a capture.
+
 ## Garmin bug or eero bug
 
 Mostly Garmin, as far as I can tell. My eero networks are ordinary WPA2 on channel 1, which every other device in the apartment handles, and the Edge joins them fine right after the network is added. It's reconnecting later that fails. Garmin's own [Edge 840 change logs](https://forums.garmin.com/sports-fitness/cycling/f/edge-840-series/422288/edge-840-series-version-28-34) keep fixing Wi-Fi: 25.24 "Fixed adding a password protected WiFi network" and 27.13 "Fixed manual Wi‑Fi sync incorrectly reporting sync failure." The owners above have the same pattern, and none of them mention eero.
@@ -134,7 +132,7 @@ eeroOS 7.17.2 (October 7) says "Fixed an issue where certain devices couldn't co
 
 If I could ask each company for one thing: Garmin, reconnect to a saved network after a power cycle when the same name is also on 5 GHz or on more than one access point. eero, an optional 2.4 GHz-only network name for devices like this.
 
-What I can't pin down from here is the exact trigger. Since the Edge can't hear 5 GHz at all, the shared name across bands is a strange suspect. My guess is the two access points sharing one name on channel 1, or eero steering the Edge between them, but that's a guess. The 2.4 GHz-only networks that fixed it for other owners probably changed several of those things at once, so their fix doesn't separate them either.
+What I can't pin down from here is the exact trigger. The 5 GHz test makes the shared name across bands a strange suspect: the Edge can't see the 5 GHz half. My guess is the two access points sharing one name on channel 1, or eero steering the Edge between them, but that's a guess. The 2.4 GHz-only networks that fixed it for other owners probably changed several of those things at once, so their fix doesn't separate them either.
 
 ## Where it stands
 
@@ -146,8 +144,9 @@ Future work:
 - Phone Bluetooth off versus on after saving, to see whether the phone path is why auto upload didn't fire.
 - Move the network off the Pi 5, which I have other plans for, to a Pi 3B I have lying around. Same name and password, so the Edge won't notice.
 - When eeroOS 7.17.2 lands, put the Edge back on eero with the Pi's network off and repeat the test.
-- Capture the Edge failing on eero (a Wi-Fi capture on channel 1), or reproduce it with the Pi plus a 5 GHz network of the same name from the Mac, to find the actual trigger.
+- Finish the reproduction: the Pi on 2.4 GHz plus a same-named 5 GHz network from the Mac, then two 2.4 GHz access points with one name, to see which one makes the Edge hang on connecting.
+- A Wi-Fi capture on channel 1 while the Edge hangs on eero.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, picked the Pi 5, ran every test on the Edge (adding the network, the passwords, Wi-Fi Sync, the trainer ride), sent it back for simpler passwords, and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: auto upload right after saving a ride, a ride with nothing pressed, eeroOS 7.17.2, and what exactly breaks on eero.*
+*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, picked the Pi 5, ran every test on the Edge (adding the network, Wi-Fi Sync, the trainer ride, the 5 GHz test), and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Edge never trying to join a 5 GHz-only version of the network, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: auto upload right after saving a ride, a ride with nothing pressed, eeroOS 7.17.2, and what exactly breaks on eero.*

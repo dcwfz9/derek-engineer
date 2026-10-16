@@ -161,7 +161,7 @@ flowchart TD
     GC --> ST["Strava"]
 ```
 
-The tradeoffs against the Pi: no firewall between that network and my home network, so it gets a stronger password; less logging (DHCP leases and data counts, no handshake detail); and macOS picks the channel. It chose 2.4 GHz channel 11; if it ever picks 5 GHz, the Edge won't see it.
+The tradeoffs against the Pi: no firewall between that network and my home network, so it gets a stronger password; less logging (DHCP leases and data counts, no handshake detail); and the channel is macOS's call. Apple's guide only talks about a "default channel" you can change; mine came up on 2.4 GHz channel 11, the same default other people have reported for years. To make sure the Mac wasn't also broadcasting on 5 GHz, Claude scanned both bands from the Pi: the network showed up once, on channel 11, and nothing from the Mac's radio on 5 GHz (the same scan heard 22 other networks there). If macOS ever moves it to 5 GHz, the Edge won't see it.
 
 Wi-Fi Sync works, and the Edge rejoins by itself after a restart and after a short sleep. The real test hasn't happened yet: a real ride after a couple of days asleep, saved at home, on Strava without me touching anything.
 

@@ -36,7 +36,7 @@ eero can't do a 2.4 GHz-only network, so the Edge needed one from somewhere else
 flowchart TD
     EDGE["Edge 840 Solar"] -->|"2.4 GHz only, ch 6, WPA2"| PI["Raspberry Pi 5\nWi-Fi access point"]
     PI -->|"NAT out Ethernet"| EERO["eero home network"]
-    EDGE -.->|"before: same name on\n2.4 and 5 GHz, syncs once"| EERO
+    EDGE -.->|"before: eero,\nsyncs once"| EERO
     EERO --> GC["Garmin Connect"]
     GC --> ST["Strava"]
 ```
@@ -124,7 +124,7 @@ How it failed is the interesting part. On eero, Wi-Fi Sync sat on "connecting" a
 
 ## Two access points, one name
 
-The plan after that was a 5 GHz network with the same name next to the Pi's, to copy eero's one name across bands. I turned on Internet Sharing on the Mac mini with the same name and password, but macOS wouldn't let me pick a channel and put its network on 2.4 GHz channel 11. That turned it into a copy of the other thing eero does: two access points with one name, like my two eeros. The Pi stayed on channel 6. One difference: the Mac offers WPA2 or WPA3, eero only WPA2.
+The second half of the plan was a same-name 5 GHz network next to the Pi's 2.4 GHz one, to copy eero's one name across bands. I turned on Internet Sharing on the Mac mini with the same name and password, but macOS wouldn't let me pick a channel and put its network on 2.4 GHz channel 11. That turned it into a copy of the other thing eero does: two access points with one name, like my two eeros. The Pi stayed on channel 6. One difference: the Mac offers WPA2 or WPA3, eero only WPA2.
 
 From the Pi's logs and the Mac's own counters:
 
@@ -156,12 +156,12 @@ The network lives on the Mac mini now. Internet Sharing does take the Mac's Wi-F
 flowchart TD
     EDGE["Edge 840 Solar"] -->|"Garmin Sync 2.4\n2.4 GHz, WPA2/WPA3"| MAC["Mac mini\nInternet Sharing"]
     MAC -->|"Ethernet"| EERO["eero home network"]
-    EDGE -.->|"before: syncs once"| EERO
+    EDGE -.->|"before: eero,\nsyncs once"| EERO
     EERO --> GC["Garmin Connect"]
     GC --> ST["Strava"]
 ```
 
-The tradeoffs against the Pi: no firewall between that network and my home network, so it gets a stronger password; less logging (DHCP leases and data counts, no handshake detail); and the channel is macOS's call. Apple's guide only talks about a "default channel" you can change; mine came up on 2.4 GHz channel 11, the same default other people have reported for years. To make sure the Mac wasn't also broadcasting on 5 GHz, Claude scanned both bands from the Pi: the network showed up once, on channel 11, and nothing from the Mac's radio on 5 GHz (the same scan heard 22 other networks there). If macOS ever moves it to 5 GHz, the Edge won't see it.
+The tradeoffs against the Pi: no firewall between that network and my home network, so it gets a stronger password; less logging (DHCP leases and data counts, no handshake detail); and the channel is macOS's call. [Apple's guide](https://support.apple.com/guide/mac-help/share-internet-connection-mac-network-users-mchlp1540/mac) only talks about a "default channel" you can change; mine came up on 2.4 GHz channel 11, the same default other people have reported for years. To make sure the Mac wasn't also broadcasting on 5 GHz, Claude scanned both bands from the Pi: the network showed up once, on channel 11, and nothing from the Mac's radio on 5 GHz (the same scan heard 22 other networks there). If macOS ever moves it to 5 GHz, the Edge won't see it.
 
 Wi-Fi Sync works, and the Edge rejoins by itself after a restart and after a short sleep. The real test hasn't happened yet: a real ride after a couple of days asleep, saved at home, on Strava without me touching anything.
 

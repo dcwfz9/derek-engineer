@@ -10,7 +10,7 @@ specs:
 description: "For a year my Edge 840 only synced over Wi-Fi right after I re-added the network. A separate 2.4 GHz network fixed it, first from a Raspberry Pi 5 and now from my Mac mini, and tests along the way ruled out the usual dual-band explanation."
 ---
 
-For about a year my [Edge 840 Solar](https://www.garmin.com/en-US/p/798946/) hasn't synced over Wi-Fi at home. If I delete the network on the Edge and add it again, it syncs once. After that it sits on "connecting" and never transfers anything, even when I press Wi-Fi Sync.
+For about a year my [Edge 840 Solar](https://www.garmin.com/en-US/p/798946/) hasn't synced over Wi-Fi at home. It started in June 2025, the month I started at eero and brought home dogfood units (the pre-release eeros employees run at home). If I delete the network on the Edge and add it again, it syncs once. After that it sits on "connecting" and never transfers anything, even when I press Wi-Fi Sync.
 
 I want to bring the bike home, stop the ride, and find it on Strava and Garmin Connect without touching my phone. That's how it used to work. I've worked at both Garmin and eero and still have friends at both, so I also wanted real data on whose bug this is instead of a guess.
 
@@ -18,7 +18,7 @@ I want to bring the bike home, stop the ride, and find it on Strava and Garmin C
 
 ## What the network looks like
 
-My Wi-Fi is eero: two access points, my main network, and a guest network I'd named "Garmin Sync" in an earlier attempt to fix this. Claude scanned from the Pi: both names are on 2.4 GHz channel 1 and 5 GHz channel 116, from both access points, WPA2 only (no WPA3). So WPA3 transition mode, the usual suspect for Garmin Wi-Fi trouble, wasn't it. (The main network is on 6 GHz too, where WPA3 is mandatory, but the Edge can't use that band.)
+My Wi-Fi is eero: two access points, my main network, and a guest network I'd named "Garmin Sync" in an earlier attempt to fix this. Claude scanned from the Pi: both names are on 2.4 GHz channel 1 and 5 GHz channel 116, from both access points, WPA2 only (no WPA3). So WPA3 transition mode wasn't it. That's the usual suspect for Garmin Wi-Fi trouble: an [Edge 1040 owner](https://forums.garmin.com/sports-fitness/cycling/f/edge-1040-series/337704/no-wi-fi-since-fw-17-29) traced a firmware update that broke Wi-Fi on routers running WPA2 and WPA3 together and fixed it by putting the router's 2.4 GHz band back on WPA2 only, and a [Forerunner 965 thread](https://forums.garmin.com/sports-fitness/running-multisport/f/forerunner-965/328658/wifi-network-not-found) points out that Garmin's own pages list only WPA and WPA2. (The main network is on 6 GHz too, where WPA3 is mandatory, but the Edge can't use that band.)
 
 The Edge's radios are 2.4 GHz only: its [spec page](https://www8.garmin.com/manuals/webhelp/GUID-16B12CFE-F96E-4DE9-9F5F-8C4A5936D3B9/EN-GB/GUID-62D44DE6-9C4D-4834-8267-8B23F891A9F3.html) lists one wireless frequency, 2.4 GHz at 19.5 dBm. eero puts one network name across every band by design, and the only 2.4 GHz-only option is [a 10-minute pause](https://support.eero.com/hc/en-us/articles/360049983772) meant for setting up new devices ([no permanent split](https://support.eero.com/hc/articles/115005497223)). My guest network had the same shape as the main one, which is probably why it didn't help.
 
@@ -138,9 +138,11 @@ Two access points sharing a name didn't break it, after a full power cycle or a 
 
 ## Garmin bug or eero bug
 
-Mostly Garmin, as far as I can tell. My eero networks are ordinary WPA2 on channel 1, which every other device in the apartment handles, and the Edge joins them fine right after the network is added. It's reconnecting later that fails. Garmin's own [Edge 840 change logs](https://forums.garmin.com/sports-fitness/cycling/f/edge-840-series/422288/edge-840-series-version-28-34) keep fixing Wi-Fi: 25.24 "Fixed adding a password protected WiFi network" and 27.13 "Fixed manual Wi‑Fi sync incorrectly reporting sync failure." The owners above have the same pattern, and none of them mention eero.
+The timing points at eero. It started failing in June 2025, the month I brought home eero dogfood units, and it kept failing after I left eero this June and converted my network. But Garmin shipped [27.14](https://forums.garmin.com/sports-fitness/cycling/f/edge-840-series/412922/edge-840-series-version-27-14---live) to the Edge 840 around the same time (it went live May 27, 2025), and some owners in the threads above date their trouble to the 27 updates without naming a router. So the timing alone can't separate the two.
 
-eero's part is a design choice, not a bug: one name for every band, and no permanent 2.4 GHz-only network. That removes the workaround every other Edge owner uses.
+The rest points at the Edge as the fragile side. My eero networks are ordinary WPA2 on channel 1, which every other device in the apartment handles, and the Edge joins them fine right after the network is added. It's reconnecting later that fails. Garmin's own [Edge 840 change logs](https://forums.garmin.com/sports-fitness/cycling/f/edge-840-series/422288/edge-840-series-version-28-34) keep fixing Wi-Fi: 25.24 "Fixed adding a password protected WiFi network" and 27.13 "Fixed manual Wi‑Fi sync incorrectly reporting sync failure." My read: a Garmin Wi-Fi bug that something eero does sets off.
+
+eero's part, as far as I can see, is a design choice, not a bug: one name for every band, and no permanent 2.4 GHz-only network. That removes the workaround every other Edge owner uses.
 
 eeroOS 7.17.2 (October 7) says "Fixed an issue where certain devices couldn't connect with WPA2 encryption." It hasn't reached my network yet. My guess is it isn't this, since my problem is a year old and the Edge connects fine right after it's added, but that's untested.
 

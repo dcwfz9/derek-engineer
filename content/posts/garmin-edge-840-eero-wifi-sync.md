@@ -7,7 +7,7 @@ specs:
   device: "Garmin Edge 840 Solar, my eero network, a Raspberry Pi 5 and a Mac mini (M4), both wired"
   os: "Raspberry Pi OS (Debian 13) with NetworkManager 1.52; macOS 26.2 Internet Sharing"
   tools: "nmcli, wpa_supplicant in access point mode, dnsmasq, nftables, Claude Code"
-description: "For a year my Edge 840 only synced over Wi-Fi right after I re-added the network. A separate 2.4 GHz network fixed it, first from a Raspberry Pi 5 and now from my Mac mini, and tests along the way ruled out the usual dual-band explanation."
+description: "For a year my Edge 840 only synced over Wi-Fi right after I re-added the network. A separate 2.4 GHz network fixed it, first from a Raspberry Pi 5 and now from my Mac mini, and its spec sheet plus a few tests rule out the usual dual-band explanation."
 ---
 
 For about a year my [Edge 840 Solar](https://www.garmin.com/en-US/p/798946/) hasn't synced over Wi-Fi at home. It started in June 2025, the month I started at eero and brought home dogfood units (the pre-release eeros employees run at home). If I delete the network on the Edge and add it again, it syncs once. After that it sits on "connecting" and never transfers anything, even when I press Wi-Fi Sync.
@@ -30,7 +30,7 @@ Other Edge 840 owners describe the same thing (none of them say what router they
 
 ## A 2.4 GHz network on the Pi
 
-eero can't do a 2.4 GHz-only network, so the Edge needed one from somewhere else. I went through the hardware I had: an ESP32-S3-ETH (busy as my 433 MHz gateway), a plain ESP32 (saved for the TV backlight), the Mac mini, the UNO Q (no Ethernet) and the Pi 5. The Mac mini is wired and always on, so Internet Sharing was the obvious candidate, but I wasn't sure whether sharing over Wi-Fi would take the Mac's Wi-Fi full time, or whether the Mac could stay on my home Wi-Fi at the same time. So I started with the Pi 5: it's wired to the eero, its Wi-Fi radio wasn't doing anything, and Linux gives me logs. An ESP32 NAT router would have worked too, but with one radio its network has to follow the eero's channel.
+eero can't do a 2.4 GHz-only network, so the Edge needed one from somewhere else. I went through the hardware I had: an ESP32-S3-ETH (busy as my [433 MHz gateway](/posts/vornado-fan-on-home-assistant/)), a plain ESP32 (saved for the TV backlight), the Mac mini, the UNO Q (no Ethernet) and the Pi 5. The Mac mini is wired and always on, so Internet Sharing was the obvious candidate, but I wasn't sure whether sharing over Wi-Fi would take the Mac's Wi-Fi full time, or whether the Mac could stay on my home Wi-Fi at the same time. So I started with the Pi 5: it's wired to the eero, its Wi-Fi radio wasn't doing anything, and Linux gives me logs.
 
 ```mermaid
 flowchart TD
@@ -114,17 +114,15 @@ One thing didn't. After I saved the trainer ride, the Edge didn't try Wi-Fi at a
 
 A detail for the Wi-Fi people: NetworkManager's access point offers both WPA2-PSK and PSK-SHA256 (it adds SHA256 even with management frame protection off), and the Edge picks SHA256: its handshake messages carry key descriptor version 3. I haven't checked what eero offers, or whether it matters.
 
-## The 5 GHz test
+## The 5 GHz check
 
-Before blaming the shared name, I wanted to know whether the Edge can see 5 GHz at all. Claude moved the Pi's network to 5 GHz only (channel 36), same name and password, and checked it was up by joining it from my Mac on channel 36. Then I pressed Wi-Fi Sync on the Edge.
+Garmin's spec page already says the Edge is 2.4 GHz only, which by itself rules out the dual-band name the forum owners blame: the Edge can't see the 5 GHz half. I checked anyway, for a few minutes: Claude moved the Pi's network to 5 GHz (channel 36), same name and password, and confirmed it was up by joining it from my Mac. I pressed Wi-Fi Sync. Nothing from the Edge in the Pi's log, not one association attempt, and after a while the Edge said "sync failed."
 
-The Edge sat on "connecting" for a while, then said "sync failed." The Pi's log has nothing from the Edge in that window: not one association attempt. So it can't use a 5 GHz network even with the right name and password, which matches its spec page.
-
-How it failed is the interesting part. On eero, Wi-Fi Sync sat on "connecting" and never changed (I never waited long enough to see it time out). Here it gave up with "sync failed." My guess is that on eero the Edge does find the network and gets stuck partway through connecting, instead of not finding it at all. That's from the message alone, not a capture.
+The useful part was how it failed. With no network it can use, the Edge gives up with "sync failed." On eero, Wi-Fi Sync sat on "connecting" and never changed (I never waited long enough to see it time out). My guess is that on eero the Edge finds the network and gets stuck partway through connecting. That's from the message alone, not a capture.
 
 ## Two access points, one name
 
-The second half of the plan was a same-name 5 GHz network next to the Pi's 2.4 GHz one, to copy eero's one name across bands. I turned on Internet Sharing on the Mac mini with the same name and password, but macOS wouldn't let me pick a channel and put its network on 2.4 GHz channel 11. That turned it into a copy of the other thing eero does: two access points with one name, like my two eeros. The Pi stayed on channel 6. One difference: the Mac offers WPA2 or WPA3, eero only WPA2.
+With 5 GHz out, the eero trait worth copying is the other one: two access points with one name, like my two eeros. I turned on Internet Sharing on the Mac mini with the same name and password. macOS picks the channel itself and put it on 2.4 GHz channel 11; the Pi stayed on channel 6. One difference: the Mac offers WPA2 or WPA3, eero only WPA2.
 
 From the Pi's logs and the Mac's own counters:
 
@@ -148,7 +146,7 @@ eeroOS 7.17.2 (October 7) says "Fixed an issue where certain devices couldn't co
 
 If I could ask each company for one thing: Garmin, keep syncing on a saved eero network the way every other device in the house does, and when it can't, say why instead of sitting on "connecting." eero, an optional 2.4 GHz-only network name for devices like this.
 
-What I can't pin down from here is the exact trigger. Two suspects are out: the shared name across bands (the Edge can't see 5 GHz) and two access points sharing a name (fine on channels 6 and 11). What's left: my two eeros sharing one channel, eero steering the Edge between them, something else in eero's beacons, or sleep. In real life the Edge sleeps a day or two between rides, and my theory is that a reboot re-initializes its Wi-Fi while a long sleep doesn't. A 5-second nap doesn't test that. The 2.4 GHz-only networks that fixed it for other owners probably changed several of these things at once, so their fix doesn't separate them either.
+What I can't pin down from here is the exact trigger. Two suspects are out: the shared name across bands (the Edge can't see 5 GHz, per its spec and the check above) and two access points sharing a name (fine on channels 6 and 11). What's left: my two eeros sharing one channel, eero steering the Edge between them, something else in eero's beacons, or sleep. In real life the Edge sleeps a day or two between rides, and my theory is that a reboot re-initializes its Wi-Fi while a long sleep doesn't. A 5-second nap doesn't test that. The 2.4 GHz-only networks that fixed it for other owners probably changed several of these things at once, so their fix doesn't separate them either.
 
 ## Where it stands
 
@@ -177,4 +175,4 @@ Future work:
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, picked the Pi 5 and later moved it to the Mac mini, set up Internet Sharing, ran every test on the Edge (adding the network, Wi-Fi Sync, the trainer ride, the 5 GHz test, the power cycle and sleep with two access points), came up with the sleep theory, and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Edge never trying to join a 5 GHz-only version of the network, the Edge rejoining and syncing with two same-name access points after a full power cycle and a 5-second sleep, syncs through the Mac mini's Internet Sharing, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: a sleep of a day or more, auto upload right after saving a ride, a ride with nothing pressed, two access points on one channel, eeroOS 7.17.2, and what exactly breaks on eero.*
+*[How this was built](/how-i-work/): Claude Code went through the forum reports and eero's docs, scanned my Wi-Fi, wrote the setup script and the firewall, and read the Pi's logs to see what the Edge was doing. I spotted the pattern (it only syncs right after re-adding the network), set the rule of using hardware I already had, picked the Pi 5 and later moved it to the Mac mini, set up Internet Sharing, ran every test on the Edge (adding the network, Wi-Fi Sync, the trainer ride, the 5 GHz check, the power cycle and sleep with two access points), came up with the sleep theory, and pushed on whether this is a Garmin bug. Tested: the Edge joining the Pi's network, a software update, an unsynced ride and a trainer ride going up through it, the Edge reconnecting by itself after a restart, the Edge never trying to join a 5 GHz-only version of the network, the Edge rejoining and syncing with two same-name access points after a full power cycle and a 5-second sleep, syncs through the Mac mini's Internet Sharing, the Pi coming back after a reboot, and, with my Mac as the client, speed and the firewall keeping clients off my home network. Not tested: a sleep of a day or more, auto upload right after saving a ride, a ride with nothing pressed, two access points on one channel, eeroOS 7.17.2, and what exactly breaks on eero.*

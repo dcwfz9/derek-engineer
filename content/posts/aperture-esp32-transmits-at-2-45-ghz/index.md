@@ -149,8 +149,9 @@ A transmitter asked for one tone also leaks a little of its oscillator, and a
 mirror image of the tone from I/Q imbalance. Comparing the spectrum with the S3
 sending its tone against the same spectrum with the S3 off, only the tone is
 new. The leftover oscillator, the image and the products further out are all at
-least 25 dB down. That's as far as this measurement can see at the weakest
-power step, not a spec.
+least 25 dB down. So are copies of the tone 250 kHz away, which stretching
+250 kS/s up to the DAC's 40 MS/s can leave behind (at least 23 dB down). That's
+as far as this measurement can see at the weakest power step, not a spec.
 
 ![Spectrum around the S3's tone with the S3 on and off: the tone at +50 kHz is the only difference; nothing appears at the marked positions of its leftover oscillator, image or other products](figs/s3-spectrum.png)
 

@@ -8,7 +8,7 @@ specs:
   device: "RTL-SDR Blog V4 with the RTL-SDR Blog dipole kit, bias tee off, on a Mac mini; a Waveshare ESP32-S3-ETH borrowed from my fan gateway, running ESP-SDR; a Flipper Zero on official firmware 1.4.3"
   os: "Mac mini host; librtlsdr 2.0.2 from Homebrew; ESP-SDR 0.1.3 (esp-sdr-zephyr, the multiapp image built for the XIAO ESP32S3 target)"
   tools: "`rtl_sdr`, ESP-SDR's `esdr_usb`, `esptool` 5.5; Python capture, decode and analysis scripts written with Claude Code"
-description: "ESP-SDR turns an ESP32's Wi-Fi radio into a transmitter. My RTL-SDR stops at 1.77 GHz, so I listened through its tuner's third harmonic: a Flipper dry run at 915 MHz, then my gateway's ESP32-S3 sending my own text in Hellschreiber at 2.45 GHz."
+description: "ESP-SDR turns an ESP32's Wi-Fi radio into a transmitter. My RTL-SDR stops at 1.77 GHz, so I listened through its tuner's third harmonic: a Flipper dry run at 915 MHz, then my gateway's ESP32-S3 sending my own text in Hellschreiber at 2.45 GHz and painting it into the spectrum."
 ---
 
 My first thought on reading Hackaday's
@@ -150,11 +150,86 @@ mirror image of the tone from I/Q imbalance. Comparing the spectrum with the S3
 sending its tone against the same spectrum with the S3 off, only the tone is
 new. The leftover oscillator, the image and the products further out are all at
 least 25 dB down. Copies of the tone 250 kHz away, which stretching 250 kS/s
-up to the DAC's 40 MS/s can leave behind, didn't show either: at least 23 dB
+up to the DAC's 40 MS/s leaves behind, didn't show either: at least 23 dB
 down. That's as far as this measurement can see at the weakest power step, not
-a spec.
+a spec. (The painting below shows those copies are real; for a tone this close
+to the middle they're predicted 24 dB down, right at that limit.)
 
 ![Spectrum around the S3's tone with the S3 on and off: the tone at +50 kHz is the only difference; nothing appears at the marked positions of its leftover oscillator, image or other products](figs/s3-spectrum.png)
+
+## Painting the spectrum
+
+Four days later I wanted a harder test than one tone switching on and off.
+Spectrum painting draws a picture in the waterfall: every pixel column gets its
+own tone, and each row of the picture is a slice of time. Claude laid out
+"DEREK." over "ENGINEER" on a 5 kHz grid, 47 columns wide, so the text fills
+230 kHz of the S3's 250 kHz band with up to 29 tones on at once, 0.3 s per row.
+The file opens with a pilot tone, so the receiver can find the S3's frequency
+and the start, and a comb of all 46 columns at once to measure the band. Same
+weakest power step, same third-harmonic trick. ESP-SDR reported no dropped
+samples and no underruns over the 10.6 seconds.
+
+The dongle read 749 of 752 pixels in the first run and 746 in a second. Each
+pixel here is its tone's power, measured over its 0.3 s row:
+
+![Pixel map of DEREK. over ENGINEER as received, 749 of 752 pixels right; the letters at the far left and right are fainter](figs/s3-paint-pixels.png)
+
+And this is the same run as a plain waterfall, straight from the recording:
+
+![Waterfall of the recording: DEREK. and ENGINEER readable as dashes of tones, with a few solid vertical lines that are there with the S3 off](figs/s3-paint-waterfall.png)
+
+The outer letters come out fainter, and that's the S3, not the dongle. ESP-SDR
+takes 250 kS/s over USB and stretches it to the DAC's 40 MS/s by drawing
+straight lines between samples
+([source](https://github.com/cyber-murmel/esp-sdr-zephyr/blob/v0.1.3/lib/esp_sdr/src/esp_sdr_tx_dac.c#L4-L5)).
+That's cheap, and it has a known price: the band droops toward its edges,
+6.5 dB down at ±115 kHz. The comb matched that prediction within 0.6 to 0.8 dB
+rms in both runs:
+
+![Top: comb levels across the band following the straight-line interpolation curve down to about 7 dB at the edges. Bottom: copies 250 kHz over, close to the predicted curves near the band edges](figs/s3-paint-band.png)
+
+The other half of the price is copies. Straight-line interpolation leaves a
+copy of everything 250 kHz to each side. Near the middle of the band they're
+tiny, but near the edges they're almost as strong as the original. To make that
+visible, the S3 painted one E on its own at the top edge of the band, 95 to
+115 kHz, where it gets more power per tone than the full text. Its copy turned
+up at −155 to −135 kHz, pixel for pixel and the right way round (an I/Q image
+would be mirrored), 2 to 9 dB below the original and within about 1 dB of the
+prediction column by column:
+
+![Two pixel maps: the E as sent at 95 to 115 kHz, and a fainter copy of it, not mirrored, at −155 to −135 kHz](figs/s3-paint-ghost.png)
+
+So at 250 kS/s, keep the signal within about ±50 kHz of the centre, where the
+droop is about a decibel and the copies are at least 24 dB down.
+
+The runs showed one thing I didn't expect: the S3's frequency sags while it
+transmits. In the first run it fell almost 700 Hz in 10 seconds (0.28 ppm), in
+the second about 160 Hz. Hellschreiber doesn't care, but anything narrowband
+would have to track it, and the analysis here had to (below). My guess is the
+board warming up, but I didn't measure that.
+
+![The S3's frequency over two 10 second transmissions: falling steadily to about −700 Hz in the first run, about −160 Hz in the second](figs/s3-drift.png)
+
+The pilot put the S3's I/Q image 32 dB down and its leftover oscillator below
+29 dB, in line with Oct 14.
+
+{{< details summary="How the receiver reads it" >}}
+Each pixel is one tone, measured with one spectrum per 0.3 s row (0.24 s of it,
+4.2 Hz bins), against the comb's level for that column scaled to the picture's
+amplitude: lit above half of it, dark below. The receiver first follows the
+S3's drift in 0.1 s windows (the offset that puts the most power on the tones
+that window should carry), fits a smoothing spline, takes it out, and refines
+in 0.25 s windows; what's left is 0.5 Hz rms. The tone grid also allows for the
+S3's sample clock, 5.1 to 5.8 ppm fast in these runs. The copies' levels against the originals match
+the prediction, which says the dongle is flat to about a decibel across these
+frequencies, so the droop is the S3's.
+
+```
+python3 esp-sdr/make_paint_iq.py                                      # paint_s3.cs8, 10.65 s at 250 kS/s
+esdr_usb -f 2450e6 -r 250e3 -b 8 -G 0 -i paint_s3.cs8 -t 10.65 tx      # options before tx
+rtl_sdr -f 814096667 -s 2400000 -g 49.6 -n 33600000 paint.cu8           # 2449.55 MHz through the 3rd harmonic
+```
+{{< /details >}}
 
 ## What went wrong
 
@@ -170,13 +245,27 @@ a spec.
   both.
 - The S3 rebooted itself four times: once during a long tone, three times some
   time after a transmission had ended. Each was a software reset with no fault
-  recorded. Without a way to reproduce it with logs, I'm not reporting it.
+  recorded. It did it once more after the first painting run, with the same
+  empty crash record. Without a way to reproduce it with logs, I'm not
+  reporting it.
+- The first pass at reading the painting assumed the S3 held its frequency. It
+  drifted by up to 700 Hz during the run, which smeared every tone across
+  dozens of bins in the long spectra, and the analysis fell over. Hence the
+  drift tracker.
+- The S3's 5.8 ppm fast sample clock moves the outer columns 0.6 Hz. In spectra
+  with 0.7 Hz bins that faked an 8 dB droop on one side of the band, until the
+  tone grid allowed for it.
+- The first painting waterfalls showed mostly the lines the dongle hears with
+  the S3 off. Smoothing across 2.5 kHz to make the pixels look solid flattened
+  the S3's narrow tones more than the wider lines. Plain 10 Hz bins fixed it.
 
 ## Putting the gateway back
 
 On ESP-SDR's shell, `usj` hands the USB port back to the chip's built-in
 USB-serial, and esptool wrote the backup back in 30 seconds, hash checked on the
 chip. The gateway was online and decoding the weather sensors again within
+minutes. For the painting it went the same way, from a fresh backup because the
+settings area had changed since Oct 14, with the gateway down for about 15
 minutes.
 
 {{< details summary="Commands" >}}
@@ -193,7 +282,9 @@ esptool --chip esp32s3 -p /dev/cu.usbmodem212301 -b 921600 write-flash 0 s3eth-o
 - The S3's higher power steps, a few at a time.
 - The other modulations in the firmware: a QAM/OFDM packet link and 802.15.4.
 - Whatever makes the S3 reboot, if it ever reproduces with logs.
+- Asking upstream whether a smoother interpolator than straight lines would
+  fit. It would shrink the copies near the band edges.
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the Hellschreiber encoder and decoder, the capture and analysis scripts and the figures, built ESP-SDR, backed up and restored the gateway's flash, and drafted this post from our session logs. I picked the article and the hardware, lent the gateway's ESP32-S3 and set it up next to the Flipper, chose the text it sent, pointed the night back at the transmit side when it drifted, and decided what was worth chasing. Tested: everything here was measured on the dongle, the Flipper and the S3 on Oct 13 and 14. Not tested: the S3's higher power steps, its other modulations, and why it rebooted.*
+*[How this was built](/how-i-work/): Claude Code wrote the Hellschreiber encoder and decoder, the spectrum painting generator and its receiver with the drift tracker, the capture and analysis scripts and the figures, built ESP-SDR, backed up and restored the gateway's flash twice, and drafted this post from our session logs. I picked the article and the hardware, lent the gateway's ESP32-S3 and set it up next to the Flipper, chose the text it sent, pointed the night back at the transmit side when it drifted, picked the painting as the one extra experiment worth the gateway's downtime, and decided what was worth chasing. Tested: everything here was measured on the dongle, the Flipper and the S3 on Oct 13, 14 and 18. Not tested: the S3's higher power steps, its other modulations, and why it rebooted or drifts.*

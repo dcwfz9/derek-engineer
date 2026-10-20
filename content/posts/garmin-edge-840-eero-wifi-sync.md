@@ -1,7 +1,7 @@
 ---
 title: "Getting My Garmin Edge 840 to Sync Over eero Wi-Fi Again"
 date: 2026-10-16
-draft: true
+draft: false
 tags: ["networking", "garmin", "raspberry-pi", "home-lab", "hardware-in-the-loop"]
 specs:
   device: "Garmin Edge 840 Solar, eero Wi-Fi, a Mac mini (M4) on Ethernet"

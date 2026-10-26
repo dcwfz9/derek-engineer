@@ -101,7 +101,9 @@ Claude checked the change against Sunday's recordings on the Pi before installin
 | Music with 25 s turned down 26 dB, as a fake quiet stretch | "Side over" at 31 s, back to playing at 48 s | Playing throughout |
 | The real end of Sunday's first record | End groove at 114 s | End groove at 114 s |
 
-Then I played both sides again and let each one run into the end groove.
+Then I played both sides again and let each one run into the end groove. Here's what Home Assistant logged for both runs:
+
+![Two timelines on one minutes scale. Morning, old rule: playing, the end groove after side A, the flip, two brief false end-groove slivers in the middle of side B, the real end, then idle. Songs are labelled where Shazam named them, including a wrong match, Water Tower Town. Afternoon, new rule: playing, end groove, flip, playing, a long end groove, then idle, with every song named and no false alerts.](figs/sessions.png)
 
 | | Old rule (morning) | New rule (afternoon) |
 |---|---|---|
@@ -121,13 +123,11 @@ Shazam also reports how far the pitch is off the original recording, which on a 
 
 The play log is one line of JSON per song on the Pi, and Home Assistant's logbook shows the same list under the card.
 
-## Two bugs that weren't the turntable
+## Two smaller fixes
 
 The first "Side's over" push never arrived. Every Home Assistant push to my phone had been failing silently for five days: the notify script still called the service for my old phone, which went away when I switched. One Home Assistant script fix brought them all back.
 
-The other one I reported as flaky signal. The card went from the song to "Nothing playing" to "Listening…" and back to the same song. That was Claude reinstalling the listener in the middle of the song: the restart wiped its state. Now the installer won't restart the listener while a record is on.
-
-One real fix in the same area: `arecord`'s default buffer is half a second, and a single hiccup on the Pi 3 dropped about a second of audio right as a side ended. The buffer is now 2 seconds, which is as much as the USB driver would give.
+`arecord`'s default buffer is half a second, and a single hiccup on the Pi 3 dropped about a second of audio right as a side ended. The buffer is now 2 seconds, which is as much as the USB driver would give.
 
 ## Future work
 

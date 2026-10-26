@@ -40,9 +40,9 @@ What it does now:
 3. Pushes "Side's over. Lift the arm." to my phone when a side ends, then reminds me at 5, 15 and 30 minutes if the stylus is still in the groove.
 4. After 8 PM, a record starting pauses the Chromecast Audio, turns off the TV, pauses the motion-triggered lights and dims a lamp to warm. The motion lights come back 15 minutes after the record stops.
 
-![The now-playing card on my phone in Home Assistant: album cover, song title, artist, album and year](figs/now-playing.png)
+![Two screenshots of the Home Assistant dashboard on my phone. Left, while a record plays: an On the turntable card with the album cover, song title, artist, album and year. Right, afterward: the Turntable section with the state (idle), stylus hours (8.16 h) and a Played list of songs with the time each was named.](figs/on-my-phone.png)
 
-That card is showing a song it named from Sunday night's recording.
+That's the dashboard on my phone: on the left while a record plays (a song it named from Sunday night's recording), on the right afterward, with the state, the stylus hours and everything it played.
 
 ## A quiet song or the end of the side?
 
@@ -55,11 +55,13 @@ Loudness gets you most of the way. Here's what the deck reads at the Pi, as RMS 
 | The end groove | -37 to -58 |
 | Arm up | -85 to -94 |
 
-Music against arm up is easy. A quiet passage against the end groove isn't: they overlap. The end groove does have two tells. It usually clicks once per revolution, every 1.8 seconds at 33⅓, and the audio repeats almost exactly, because the stylus keeps going around the same circle.
+Music against arm up is easy. A quiet passage against the end groove isn't: they overlap. The end groove does have two tells, and both come from the platter. One revolution at 33⅓ rpm takes 60 / 33.33 = 1.8 seconds (1.333 at 45). The groove usually clicks once per revolution, and its audio repeats almost exactly, because the stylus keeps going around the same circle. Claude turned each tell into a test. Neither one is an FFT: the platter only has two speeds, so it's enough to try shifts near those two periods and see which one lines up.
 
-Claude's first version listened for the clicks: autocorrelate the loudness envelope and look for a peak at 1.8 seconds. It found them in a recording of the first record's end. Then I went to bed with a different record on. That one ended in a locked groove with music in it, a short loop that just keeps playing, so the listener counted it as music until I stopped it the next morning, 6.5 hours later. Those hours are on the stylus counter, and they're real wear.
+**The click test.** Every 0.1 seconds the listener keeps the loudest sample, so a stretch of quiet becomes a short list of peaks. It subtracts the median so only the clicks stick out, multiplies the list by a copy of itself shifted by 1.0, 1.1 and so on up to 2.1 seconds, and adds up each product (an autocorrelation). If the clicks come every 1.8 seconds, the 1.8-second shift lines each click up with the next one and scores far above the rest. The test fires when the best shift is within 8% of 1.8 or 1.333 seconds, scores at least 1.6 times the median, and does it on two checks in a row.
 
-So Claude added a second test: compare each revolution of audio with the one before it.
+That found the clicks in a recording of the first record's end. Then I went to bed with a different record on. That one ended in a locked groove with music in it, a short loop that just keeps playing, so the listener counted it as music until I stopped it the next morning, 6.5 hours later. Those hours are on the stylus counter, and they're real wear.
+
+**The repeat test.** So Claude added a test on the audio itself: the last revolution, downsampled to 4,410 samples a second (7,938 samples at 33⅓), against the revolution before it. It's a normalized correlation: multiply the two sample by sample, add it up, and divide by the energy of each, so 1.0 means identical and 0 means unrelated, at any volume. The platter is never exactly at 33.33 rpm, so it tries every shift within 1% of a revolution and keeps the best:
 
 ```python
 # The last revolution of audio against the one before it, at 4,410 samples/s.
@@ -72,13 +74,19 @@ for lag in range(-slack, slack + 1):
     corr = np.dot(last, prev) / np.sqrt(np.dot(last, last) * np.dot(prev, prev))
 ```
 
-The first version of the lag search stepped a few samples at a time and never matched: on a synthetic loop the best it found was 0.45. A two-sample miss is enough to hide the match. One sample at a time got the same loop to 1.00. The lag that wins also gives the platter speed to a sample, which is how Home Assistant knows the deck runs at 33.33 rpm.
+Here are both tests, run the way the listener runs them, on Sunday's recordings:
+
+![Three panels. Top, the click test: the end groove's score peaks at a 1.8 second shift at 2.8 times the median, while a quiet stretch of music ripples above the 1.6 line at 1.1, 1.3 and 1.5 seconds, with the 1.3 second peak inside the 45 rpm window. Middle, the repeat test across shifts within 1 percent: the end groove reaches 0.94 in a broad hump, music stays near zero. Bottom, a few samples either side of the best shift: the end groove stays at 0.94, a loop of music drops from 1.00 to 0.33 one sample off.](figs/groove-tests.png)
+
+The top panel is the click test on the end groove and on a stretch of music turned down 26 dB to fake a quiet passage. The end groove peaks at 1.8 seconds, 2.8 times the median, as planned. The quiet music ripples with its beat, and one ripple lands at 1.3 seconds, inside the 45 rpm window, at 1.9 times the median. That's a false "side over", with a platter speed of 60 / 1.3 = 46 rpm. The middle panel is the repeat test on the same audio: 0.94 for the end groove, 0.07 at best for the music.
+
+The bottom panel is why the search moves one sample at a time. On the quiet end groove the score hardly changes when the shift is a few samples off. On a loop of music, like the one that ran all night, it's 1.00 at the right shift and 0.33 one sample off. Claude's first version stepped a few samples at a time and only reached 0.45 on a test loop. The shift that wins also gives the platter speed to a sample, which is how Home Assistant knows the deck runs at 33.33 rpm.
 
 ## The test that found the real bug
 
 On Monday morning I played Novo Amor's Collapse List, both sides, to test the whole chain on one record. Side A worked: every song named, the push about 10 seconds after the music stopped, the 5-minute reminder on time.
 
-Side B sent me two "Side's over" pushes in the middle of the side, both during quiet stretches between songs. The click test was firing on music. My guess is a soft beat near 1.3 or 1.8 seconds looks like a click train to an autocorrelation with 0.1-second resolution. It had also read the platter at 46 rpm, for the same reason.
+Side B sent me two "Side's over" pushes in the middle of the side, both during quiet stretches between songs. The click test was firing on music. Nothing records the audio, so I can't replay those exact moments, but my guess is what the fake quiet stretch above shows: a soft beat makes the score ripple, and a ripple lands in one of the windows. The click period was also how it read the platter at 46 rpm at the end of side A.
 
 What I told Claude: I'm fine with it showing nothing in a gap between songs. It shouldn't tell me the side is over, and be that confident about it, when it isn't true.
 

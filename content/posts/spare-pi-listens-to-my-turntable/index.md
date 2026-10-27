@@ -39,7 +39,7 @@ What it does now:
 2. Names each song, shows it on a now-playing card with the cover art, and keeps a log of every song played.
 3. Pushes "Side's over. Lift the arm." to my phone when a side ends, then reminds me at 5, 15 and 30 minutes if the stylus is still in the groove.
 4. After 8 PM, a record starting turns off the ceiling lights in the living room and kitchen and pauses the motion-triggered lamps, so their timer doesn't switch them off while I sit still. The lamps go back to normal 15 minutes after the record stops.
-5. Uses the Pi's own two LEDs as a status light, so I can tell what it thinks from across the room: green blips when idle, stays on while a record plays and blinks fast in the end groove; red means something's wrong (no audio from the deck, no connection to Home Assistant, or the listener isn't running).
+5. Uses the Pi's own two LEDs as a status light, so I can tell what it thinks from across the room: green blips when idle, stays on while a record plays and blinks fast in the end groove; red means something's wrong (no audio from the deck, no connection to Home Assistant, or the listener isn't running). On this Pi the green one lit when the software switched it off; the kernel's driver says it shouldn't, so the flip is in the board or its firmware, and the device tree has a setting for exactly that (`act_led_activelow`).
 
 ![Two screenshots of the Home Assistant dashboard on my phone. Left, while a record plays: an On the turntable card with the album cover, song title, artist, album and year. Right, afterward: the Turntable section with the state (idle), stylus hours (8.16 h) and a Played list of songs with the time each was named.](figs/on-my-phone.png)
 
@@ -97,7 +97,7 @@ So the clicks alone no longer end a side. The audio also has to repeat once per 
 flowchart LR
     IDLE["idle"] -->|"music, 3 s"| PLAY["playing"]
     PLAY -->|"quiet 8 s, click,\nrepeat 3 s"| GROOVE["end groove"]
-    PLAY -->|"repeat 20 s"| GROOVE
+    PLAY -->|"repeat 90 s"| GROOVE
     GROOVE -->|"music again"| PLAY
     PLAY -->|"silence 3 s"| IDLE
     GROOVE -->|"silence 3 s"| IDLE
@@ -126,9 +126,9 @@ Top: loudness, with the dashed line at -36 dBFS, where music starts. Bottom: the
 
 ## Naming the songs
 
-The names come from Shazam, through [ShazamIO](https://github.com/shazamio/ShazamIO), an unofficial Python client. Its Rust core computes the fingerprint on the Pi, and only the fingerprint goes to Shazam, never the audio. A lookup takes about a second on the Pi 3. The listener asks 12 seconds after a record starts, 12 seconds after each gap between songs, and every 2 minutes otherwise for albums that run songs together, so a new song shows up about 15 seconds in.
+The names come from Shazam, through [ShazamIO](https://github.com/shazamio/ShazamIO), an unofficial Python client. Its Rust core computes the fingerprint on the Pi, and only the fingerprint goes to Shazam, never the audio. A lookup takes about a second on the Pi 3. The listener asks 12 seconds after a record starts and 12 seconds after each gap between songs. Shazam's answer also says where in the song the clip fell, and Apple's public iTunes lookup gives the song's length, so the next lookup lands about 12 seconds after the song should end, even when songs run together. It never waits more than 2 minutes, and asks every minute when Apple doesn't know the length.
 
-Shazam also reports how far the pitch is off the original recording, which on a turntable is the platter's speed error. Across 23 matches on this deck it read -0.07% to +0.10%. That turned out to be useful beyond trivia. On Monday morning, side B's first song came back as "Water Tower Town" by Scotty McCreery, on a Novo Amor record, and that match read +0.5%: five times further off than any real one. So now a match more than 0.25% off gets a second lookup 8 seconds later before it's shown. The afternoon run caught one: a lookup during "Sand & Sky" came back as a song from the soundtrack of the film Jersey, it never showed, and the second look said "Sand & Sky" again.
+Shazam also reports how far the pitch is off the original recording, which on a turntable is the platter's speed error. Across 23 matches on this deck it read -0.07% to +0.10%. That turned out to be useful beyond trivia. On Monday morning, side B's first song came back as "Water Tower Town" by Scotty McCreery, on a Novo Amor record, and that match read +0.5%: five times further off than any real one. So now a match more than 0.25% off gets a second lookup 8 seconds later before it's shown. The afternoon run caught one: a lookup during "Sand & Sky" came back as a song from the soundtrack of the film Jersey, it never showed, and the second look said "Sand & Sky" again. Later that night a quiet ending matched "Swift Pulse" by DDMusik, a stock-music track, at a believable -0.1%, so a match from a different artist in the middle of a side now gets a second look too, 30 seconds later.
 
 The play log is one line of JSON per song on the Pi, and Home Assistant's logbook shows the same list under the card.
 
@@ -137,6 +137,16 @@ The play log is one line of JSON per song on the Pi, and Home Assistant's logboo
 The first "Side's over" push never arrived. Every Home Assistant push to my phone had been failing silently for five days: the notify script still called the service for my old phone, which went away when I switched. One Home Assistant script fix brought them all back.
 
 `arecord`'s default buffer is half a second, and a single hiccup on the Pi 3 dropped about a second of audio right as a side ended. The buffer is now 2 seconds, which is as much as the USB driver would give.
+
+## Changes since publishing
+
+October 26, the same night:
+
+- The rule for a locked groove with music in it waits for 90 seconds of repeats instead of 20. "doing my best" by Hazlett ends in a loop that repeats every 1.8 seconds, one revolution, and it set off "Side's over" while the record kept playing.
+- A match from a different artist mid-side gets a second look before it's shown (the "Swift Pulse" story above).
+- The next lookup is timed from the song's length instead of every 2 minutes, so short interludes and songs that run together show up about 15 seconds in. Not run on a full side yet.
+- After a Wi-Fi blip it reconnects to Home Assistant in about 20 seconds instead of 90.
+- The green LED's polarity is set in config.txt instead of in the listener's code.
 
 ## Future work
 
@@ -147,4 +157,4 @@ The first "Side's over" push never arrived. Every Home Assistant push to my phon
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the listener, the Home Assistant entities, automations and dashboard card, and the monitor test page, analyzed the recordings and Home Assistant's history, and did the installs over SSH. I picked the project and what it had to do (a wind-down for records at night, stylus hours, knowing what's playing; not concert alerts or audio in other rooms), set up the Pi and the cabling, played the records, designed the end-to-end test, and called out what was wrong on the real deck, including the "Side's over" push during a quiet song that became the rule: never say a side is over unless it's sure. Tested: both sides of Collapse List on the deck, twice (before and after the fix), replays of Sunday's recordings on the Pi, the wind-down, and the status LEDs. Not tested: 45 rpm records, a record Shazam doesn't know, a real locked groove with music in it (only loops cut from a recording), and IR (no LEDs yet).*
+*[How this was built](/how-i-work/): Claude Code wrote the listener, the Home Assistant entities, automations and dashboard card, and the monitor test page, analyzed the recordings and Home Assistant's history, and did the installs over SSH. I picked the project and what it had to do (a wind-down for records at night, stylus hours, knowing what's playing; not concert alerts or audio in other rooms), set up the Pi and the cabling, played the records, designed the end-to-end test, and called out what was wrong on the real deck, including the "Side's over" push during a quiet song that became the rule: never say a side is over unless it's sure. Tested: both sides of Collapse List on the deck, twice (before and after the fix), replays of Sunday's recordings on the Pi, the wind-down, and the status LEDs. Not tested: 45 rpm records, a record Shazam doesn't know, a real locked groove with music in it (only loops cut from a recording), IR (no LEDs yet), and timing lookups from the song's length on a full side.*

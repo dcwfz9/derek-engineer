@@ -1,6 +1,6 @@
 ---
 title: "A Small Local Model Running My Home Over Telegram: Two Error Rates and Where They Come From"
-date: 2026-10-26
+date: 2026-10-20
 draft: true
 tags: ["home-assistant", "llm", "benchmarking", "claude-code", "home-lab", "hardware-in-the-loop"]
 specs:
@@ -147,17 +147,17 @@ That's 387 requests, 91 of them written before the fixes existed. By slice, from
 | 17 new "if" requests | 11.8% to 0% | 22.2% to 0% |
 | 11 new one-versus-several | 45.5% to 9.1% | 18.2% to 18.2% |
 
-I told Claude to switch the bot to all three, and it has run them since October 20. The sample sizes in the last two rows are small. Run to run, design A agreed with itself on 205 of 212 shared requests, so differences of a point or two are noise.
+I told Claude to switch the bot to all three, and it did, just after midnight on October 20. The sample sizes in the last two rows are small. Run to run, design A agreed with itself on 205 of 212 shared requests, so differences of a point or two are noise.
 
-## A week of real use
+## Update, October 26: a week of real use
 
-I sent the bot 15 messages in a week. Eleven were shortcut buttons, three were answered by Home Assistant's own rules in under a second ("Tv off", "turn on the TV", "Turn off all the lights"), and one went to the model. No errors, and the three new fixes never fired, because nothing I sent needed them. The model is the part I touch least.
+I sent the bot 15 messages in the week after the switch. Eleven were shortcut buttons, three were answered by Home Assistant's own rules in under a second ("Tv off", "turn on the TV", "Turn off all the lights"), and one went to the model. No errors, and the three new fixes never fired, because nothing I sent needed them. The model is the part I touch least.
 
 The one that went to the model was "Are you sure they're all off", after the bot said it had turned everything off. It took 65 seconds and was right: the donut lamp was on. The logbook shows the lamp going off at 23:48:34 and back on six seconds later, then again at 23:49:05 and 23:49:11. The context on each "on" is my sunset automation, not the bot. That automation starts a script that fades the lamp between two ambers, 500 repeats of two turn-on calls ten seconds apart, almost three hours, restarted at the top of every hour from sunset. Its 11 pm step turns the lamp off once and doesn't stop the loop, so while the 10 pm run is going the lamp is back on within ten seconds (off at 23:00:00, on at 23:00:09). My Midnight automation does stop it, with `script.turn_off`. The bot did what I asked and told the truth about it, and the house undid it.
 
 Two smaller things from the same review. The 65 seconds was mostly a cold prompt cache, though that night was slower than the cold answers measured since (27 to 35 seconds), and I can't explain the difference. Claude captured what the bench's Home Assistant sends the model, and the prompt and its 27 tools are byte-identical between conversations (4,236 tokens), so the text isn't what changes. A first question on the real Home Assistant took 35 seconds after days idle, 27 seconds right after Claude wrote an unrelated prompt over the cache on purpose, and 2.7 seconds warm. Why the cache is gone after a long idle isn't pinned down. And for questions about the donut specifically, the model often returns an empty message (after 37 tokens in the one captured), which Home Assistant reports as "Unable to get response". I suspect the emoji in the lamp's name. I haven't tested that.
 
-## What's left
+## What's left, as of October 26
 
 - Stop the sunset loop at 11 pm the way the Midnight automation does.
 - Find out why the cache goes cold after a long idle: ask twice, ten minutes apart, and see.

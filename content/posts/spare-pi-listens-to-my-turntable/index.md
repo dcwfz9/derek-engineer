@@ -1,7 +1,7 @@
 ---
 title: "A Spare Pi 3 That Listens to My Turntable"
 date: 2026-10-26
-draft: true
+draft: false
 tags: ["raspberry-pi", "home-assistant", "python", "home-lab", "claude-code", "hardware-in-the-loop"]
 specs:
   device: "Audio-Technica AT-LP120XUSB, a Raspberry Pi 3, Edifier R1280T speakers"

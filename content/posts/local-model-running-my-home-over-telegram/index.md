@@ -1,7 +1,7 @@
 ---
 title: "A Small Local Model Running My Home Over Telegram: Two Error Rates and Where They Come From"
 date: 2026-10-20
-draft: true
+draft: false
 tags: ["home-assistant", "llm", "benchmarking", "claude-code", "home-lab", "hardware-in-the-loop"]
 specs:
   device: "Mac mini M4 (16 GB) running Ollama; Home Assistant on its own PC"

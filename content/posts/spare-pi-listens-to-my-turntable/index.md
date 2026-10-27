@@ -30,7 +30,7 @@ flowchart LR
     PI -->|"fingerprint"| SHZ["Shazam"]
     PI -->|"MQTT"| HA["Home Assistant"]
     HA -->|"push"| PHONE["my phone"]
-    HA -->|"after 8 PM"| ROOM["lamps, TV,\nChromecast"]
+    HA -->|"after 8 PM"| ROOM["ceiling light,\nmotion lamps"]
 ```
 
 What it does now:
@@ -38,7 +38,7 @@ What it does now:
 1. Tracks the state: idle, playing, or the stylus in the end groove. It also logs session length and platter speed, and counts stylus hours against the 300 the manual gives the stock stylus, with a reset button for when I replace it. Warnings come at 240 and 300 hours.
 2. Names each song, shows it on a now-playing card with the cover art, and keeps a log of every song played.
 3. Pushes "Side's over. Lift the arm." to my phone when a side ends, then reminds me at 5, 15 and 30 minutes if the stylus is still in the groove.
-4. After 8 PM, a record starting pauses the Chromecast Audio, turns off the TV, pauses the motion-triggered lights and dims a lamp to warm. The motion lights come back 15 minutes after the record stops.
+4. After 8 PM, a record starting turns off the living room ceiling light and pauses the motion-triggered lamps, so their timer doesn't switch them off while I sit still. The lamps go back to normal 15 minutes after the record stops.
 5. Uses the Pi's own two LEDs as a status light, so I can tell what it thinks from across the room: green blips when idle, stays on while a record plays and blinks fast in the end groove; red means something's wrong (no audio from the deck, no connection to Home Assistant, or the listener isn't running).
 
 ![Two screenshots of the Home Assistant dashboard on my phone. Left, while a record plays: an On the turntable card with the album cover, song title, artist, album and year. Right, afterward: the Turntable section with the state (idle), stylus hours (8.16 h) and a Played list of songs with the time each was named.](figs/on-my-phone.png)
@@ -147,4 +147,4 @@ The first "Side's over" push never arrived. Every Home Assistant push to my phon
 
 ---
 
-*[How this was built](/how-i-work/): Claude Code wrote the listener, the Home Assistant entities, automations and dashboard card, and the monitor test page, analyzed the recordings and Home Assistant's history, and did the installs over SSH. I picked the project and what it had to do (a wind-down for records at night, stylus hours, knowing what's playing; not concert alerts or audio in other rooms), set up the Pi and the cabling, played the records, designed the end-to-end test, and called out what was wrong on the real deck, including the "Side's over" push during a quiet song that became the rule: never say a side is over unless it's sure. Tested: both sides of Collapse List on the deck, twice (before and after the fix), replays of Sunday's recordings on the Pi, the wind-down on Sunday night, and the status LEDs. Not tested: 45 rpm records, a record Shazam doesn't know, a real locked groove with music in it (only loops cut from a recording), and IR (no LEDs yet).*
+*[How this was built](/how-i-work/): Claude Code wrote the listener, the Home Assistant entities, automations and dashboard card, and the monitor test page, analyzed the recordings and Home Assistant's history, and did the installs over SSH. I picked the project and what it had to do (a wind-down for records at night, stylus hours, knowing what's playing; not concert alerts or audio in other rooms), set up the Pi and the cabling, played the records, designed the end-to-end test, and called out what was wrong on the real deck, including the "Side's over" push during a quiet song that became the rule: never say a side is over unless it's sure. Tested: both sides of Collapse List on the deck, twice (before and after the fix), replays of Sunday's recordings on the Pi, the wind-down, and the status LEDs. Not tested: 45 rpm records, a record Shazam doesn't know, a real locked groove with music in it (only loops cut from a recording), and IR (no LEDs yet).*

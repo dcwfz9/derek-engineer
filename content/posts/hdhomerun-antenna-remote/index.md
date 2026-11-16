@@ -65,6 +65,8 @@ flowchart LR
     HTTP -->|Tailscale| PHONE
 ```
 
+*Update, 2026-11-15: Home Assistant now reads the tuner through uvjim's [HDHomeRun integration](https://github.com/uvjim/hass_hdhomerun), which I had Claude Code install from the Marketplace (HACS, built into Home Assistant since 2026.11). It shows each tuner's status, channel and signal, the channel count, and whether there's new firmware. It replaced a few REST sensors in my config that broke with 2026.11, when `hdhr-10914695.local` started resolving to an IPv6 link-local address.*
+
 ---
 
 ## Remote Access via Tailscale

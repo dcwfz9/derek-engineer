@@ -68,3 +68,6 @@ html.lightbox-open { overflow: hidden; }
 .related li { margin: 0.3rem 0; }
 .related-date { margin-left: 0.5rem; font-size: 0.85rem; color: var(--secondary); }
 @media (max-width: 600px) { .specs dl { grid-template-columns: 1fr; gap: 0; } .specs dd { margin-bottom: 0.4rem; } }
+
+/* Tall portrait figures (phone/watch screenshots): add #portrait to the image path to keep them from filling the column. */
+.post-content img[src$="#portrait"] { max-width: min(340px, 100%); display: block; margin-left: auto; margin-right: auto; }

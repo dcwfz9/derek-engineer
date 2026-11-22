@@ -8,7 +8,7 @@ specs:
   device: "Waveshare ESP32-S3-ETH with a 433 MHz CC1101 module; Vornado EOS 9 fan"
   os: "OpenMQTTGateway built from source with local changes; Home Assistant 2026.7"
   tools: "PlatformIO, Mosquitto, ufbt and a Flipper Zero (official firmware 1.4.3), Claude Code"
-description: "A Flipper Zero, an ESP32-S3 and a CC1101 put a fan with a perfectly good remote on Home Assistant: a transmit path with no data line, a logging bug that dropped MQTT every few minutes, and one receiver for the remote and the neighbors' weather sensors."
+description: "An ESP32-S3 and a CC1101 put a fan with a perfectly good remote on Home Assistant: a transmit path with no data line, and a logging bug that dropped MQTT every few minutes."
 ---
 
 I'm on a mission to automate my life, and I over-engineer it along the way.

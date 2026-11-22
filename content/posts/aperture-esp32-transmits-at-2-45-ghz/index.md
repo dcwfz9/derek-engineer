@@ -8,7 +8,7 @@ specs:
   device: "RTL-SDR Blog V4 with the RTL-SDR Blog dipole kit, bias tee off, on a Mac mini; a Waveshare ESP32-S3-ETH borrowed from my fan gateway, running ESP-SDR; a Flipper Zero on official firmware 1.4.3"
   os: "Mac mini host; librtlsdr 2.0.2 from Homebrew; ESP-SDR 0.1.3 (esp-sdr-zephyr, the multiapp image built for the XIAO ESP32S3 target)"
   tools: "`rtl_sdr`, ESP-SDR's `esdr_usb`, `esptool` 5.5; Python capture, decode and analysis scripts written with Claude Code"
-description: "ESP-SDR turns an ESP32's Wi-Fi radio into a transmitter. My RTL-SDR stops at 1.77 GHz, so I listened through its tuner's third harmonic: a Flipper dry run at 915 MHz, then my gateway's ESP32-S3 sending my own text in Hellschreiber at 2.45 GHz and painting it into the spectrum."
+description: "ESP-SDR turns an ESP32's Wi-Fi radio into a transmitter. I heard my own text from it at 2.45 GHz on an RTL-SDR that stops at 1.77 GHz, through the tuner's third harmonic."
 ---
 
 My first thought on reading Hackaday's

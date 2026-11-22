@@ -69,5 +69,19 @@ html.lightbox-open { overflow: hidden; }
 .related-date { margin-left: 0.5rem; font-size: 0.85rem; color: var(--secondary); }
 @media (max-width: 600px) { .specs dl { grid-template-columns: 1fr; gap: 0; } .specs dd { margin-bottom: 0.4rem; } }
 
+/* Post cards show the post's description in full (layouts/_default/list.html); the theme clamps the body excerpt it shows otherwise to two lines. */
+.post-entry .entry-desc { display: block; -webkit-line-clamp: unset; }
+
+/* Home page "Start here" box (partials/start-here.html), under the intro. */
+.start-here {
+    margin-bottom: var(--gap); padding: 0.75rem 1rem; font-size: 0.95rem;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--entry);
+}
+.start-here-head { margin-bottom: 0.3rem; font-size: 0.85rem; color: var(--secondary); }
+.start-here ul { margin: 0 0 0.5rem; padding-left: 1.1rem; }
+.start-here li { margin: 0.3rem 0; line-height: 1.45; }
+.start-here a { box-shadow: 0 1px 0; }
+.start-here-foot { font-size: 0.88rem; color: var(--secondary); }
+
 /* Tall portrait figures (phone/watch screenshots): add #portrait to the image path to keep them from filling the column. */
 .post-content img[src$="#portrait"] { max-width: min(340px, 100%); display: block; margin-left: auto; margin-right: auto; }

@@ -1,0 +1,14 @@
+{{- /* Home page box under the intro: the posts listed under start in data/stack.yaml, then a link to /stack/. */ -}}
+{{- with hugo.Data.stack.start }}
+<aside class="start-here" aria-label="Start here">
+  <div class="start-here-head">Start here</div>
+  <ul>
+    {{- range . }}
+    {{- with partial "stack-page.html" . }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{- end }}
+    {{- end }}
+  </ul>
+  <div class="start-here-foot">Everything by system: <a href="{{ "stack/" | relURL }}">the stack</a></div>
+</aside>
+{{- end }}

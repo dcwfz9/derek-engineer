@@ -1,0 +1,28 @@
+/* /stack/: the system diagram and the index under it (layouts/_default/stack.html, data/stack.yaml).
+   The diagram is drawn 360 units wide, so on a 360px phone 13 units of text show at about 12px. */
+.stack-figure { margin: 0 0 2rem; }
+.stack-map { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+.stack-map line { stroke: var(--secondary); stroke-width: 1.25; }
+.stack-block rect { fill: var(--code-bg); stroke: var(--tertiary); }
+.stack-name { fill: var(--primary); font-size: 15px; font-weight: 600; }
+.stack-short { fill: var(--secondary); font-size: 13px; }
+.stack-chip .hit { fill: transparent; }
+.stack-chip .pill { fill: var(--tertiary); }
+.stack-chip text { fill: var(--primary); font-size: 13px; text-anchor: middle; dominant-baseline: central; }
+@media (hover: hover) {
+    .stack-block:hover rect { stroke: var(--secondary); }
+    .stack-chip:hover .pill { fill: var(--secondary); }
+    .stack-chip:hover text { fill: var(--theme); }
+}
+.stack-block:focus-visible rect, .stack-chip:focus-visible .pill { stroke: var(--primary); stroke-width: 2; }
+.md-content .stack-map a { text-decoration: none; }
+.md-content .stack-figure > figcaption { margin: 0.6rem 0 0; text-align: center; font-size: 0.85rem; font-weight: normal; color: var(--secondary); }
+
+.stack-system { margin-bottom: 1.75rem; }
+.post-content .stack-system h2 { margin: 0 0 0.2rem; font-size: 1.35rem; }
+.post-content .stack-parts { margin: 0 0 0.7rem; font-size: 0.9rem; color: var(--secondary); }
+.post-content .stack-posts { margin: 0; padding: 0; list-style: none; }
+.post-content .stack-posts li { margin: 0 0 0.85rem; }
+.stack-meta { margin-left: 0.5rem; font-size: 0.82rem; color: var(--secondary); white-space: nowrap; }
+.post-content .stack-posts p { margin: 0.15rem 0 0; font-size: 0.9rem; line-height: 1.5; color: var(--secondary); }
+.post-content .stack-other { margin-top: 2rem; font-size: 0.92rem; color: var(--secondary); }

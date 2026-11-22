@@ -1,0 +1,106 @@
+# The /stack/ page (layouts/_default/stack.html) and the home page's "Start here" box
+# (layouts/partials/start-here.html) are built from this file.
+# A post is named by its folder or file name under content/posts (its URL slug).
+# Every published post goes in at least one system: the build warns about a post that isn't,
+# and fails on a name that matches no post.
+
+# The home page's "Start here" box, in this order.
+start:
+  - vornado-eos-9-rf-remote-reverse-engineering
+  - ikea-vindriktning-esp8266
+  - what-limits-local-ai-speed
+  - samsung-tv-hdhomerun-app
+
+# The sections of the index, in this order; posts are listed oldest first.
+# A system with a box is drawn on the diagram: box is x, y, width, height on a drawing
+# 360 wide, and short is the text in the box, one entry per line.
+systems:
+  - id: network
+    name: Network
+    box: [0, 0, 360, 54]
+    short: ["eero mesh, PoE gateway, Tailscale"]
+    parts: eero mesh and an eero PoE gateway, Tailscale, and a Pi 3B that syncs my Obsidian vault
+    posts:
+      - obsidian-sync-pi-tailscale
+      - hdhomerun-antenna-remote
+      - garmin-edge-840-eero-wifi-sync
+      - eero-home-assistant-fork
+
+  - id: home-assistant
+    name: Home Assistant
+    box: [0, 110, 168, 76]
+    short: ["lamp, sensors, fan,", "turntable, watch"]
+    parts: IKEA VARMBLIXT lamp, TIMMERFLOTTE and VINDRIKTNING sensors, a Vornado EOS 9 fan, a Pi 3 on the turntable, an Apple Watch Ultra 4
+    posts:
+      - ikea-varmblixt-home-assistant-automations
+      - sf-apartment-thermal-lag
+      - vornado-fan-on-home-assistant
+      - local-model-running-my-home-over-telegram
+      - spare-pi-listens-to-my-turntable
+      - eero-home-assistant-fork
+      - ikea-vindriktning-esp8266
+      - making-the-ultra-4-worth-wearing
+
+  - id: tv
+    name: TV corner
+    box: [192, 110, 168, 76]
+    short: ["Samsung TV, antenna,", "tuner, Ambilight Pi"]
+    parts: 2024 Samsung Q80D, HDHomeRun FLEX DUO with an indoor antenna, and a Pi 3 with an HDMI capture board for the Ambilight
+    posts:
+      - diy-ambilight-pi3-b101-setup
+      - diy-ambilight-part-2-capture-and-led-planning
+      - hdhomerun-antenna-remote
+      - ota-antenna-rain-gauge
+      - samsung-tv-hdhomerun-app
+      - game-night-ogle-on-the-tv
+      - clicker-samsung-tv-remote-iphone-mac
+
+  - id: mac-mini
+    name: Mac mini
+    box: [72, 242, 216, 76]
+    short: ["local models, game relay,", "e-paper server, SDR"]
+    parts: A Mac mini M4 with local models on Ollama, the TRMNL X's server, the game relay, and the RTL-SDR
+    posts:
+      - trmnl-x-byos-server-setup
+      - trmnl-x-part-2
+      - what-limits-local-ai-speed
+      - local-model-running-my-home-over-telegram
+
+  - id: rf
+    name: RF bench
+    box: [0, 374, 360, 54]
+    short: ["RTL-SDR, Flipper Zero, ESP32 with a CC1101"]
+    parts: RTL-SDR Blog V4 with its dipole kit, Flipper Zero, and a Waveshare ESP32-S3-ETH with a CC1101
+    posts:
+      - vornado-eos-9-rf-remote-reverse-engineering
+      - aperture-433mhz-weather-sensors
+      - aperture-ships-and-aircraft
+      - ota-antenna-rain-gauge
+      - aperture-whats-on-the-air
+      - aperture-mystery-carrier-dc-spike
+      - vornado-fan-on-home-assistant
+      - aperture-esp32-transmits-at-2-45-ghz
+
+  - id: notes
+    name: Software and notes
+    posts:
+      - spotify-concert-discovery
+      - molty-personal-ai-assistant
+      - migrating-derekwelty-hugo-github-actions
+      - reading-build-tony-fadell
+      - how-this-blog-was-built
+      - latex-resume-github-actions
+      - ogle-daily-word-game
+
+# The diagram's lines: a vertical line at x from y "from" to y "to", with its label centered at y "at".
+# Each label opens its post.
+diagram_height: 428
+links:
+  - {label: presence, post: eero-home-assistant-fork, x: 84, from: 54, to: 110, at: 82}
+  - {label: Garmin sync, post: garmin-edge-840-eero-wifi-sync, x: 180, from: 54, to: 242, at: 82}
+  - {label: TV anywhere, post: hdhomerun-antenna-remote, x: 290, from: 54, to: 110, at: 82}
+  - {label: local model, post: local-model-running-my-home-over-telegram, x: 120, from: 186, to: 242, at: 214}
+  - {label: game relay, post: game-night-ogle-on-the-tv, x: 240, from: 186, to: 242, at: 214}
+  - {label: 433 MHz, post: vornado-fan-on-home-assistant, x: 46, from: 186, to: 374, at: 346}
+  - {label: SDR, post: aperture-433mhz-weather-sensors, x: 180, from: 318, to: 374, at: 346}
+  - {label: rain gauge, post: ota-antenna-rain-gauge, x: 310, from: 186, to: 374, at: 346}

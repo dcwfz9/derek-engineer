@@ -24,13 +24,16 @@ description: "One line summary shown in post list."
 - `draft: true` = built locally only, not deployed
 - Use today's date unless told otherwise
 - Tags should be lowercase, specific (e.g. `raspberry-pi`, `hyperion`, `python`, `home-lab`). Add `hardware-in-the-loop` when the device was the test bench, and `notes` for pure setup or web plumbing
+- `description` is what the post cards (home, `/posts/`, tags, series) and `/stack/` show, so keep it to a sentence or two
+- Add every new post to `data/stack.yaml`, under each system it touches. That file builds `/stack/` (the system diagram and the index by system) and the home page's Start here box. The build warns about a published post that isn't in it and fails on a name that matches no post
 
 Optional front matter that the layouts understand (added 2026-10-09):
 - `series: ["aperture"]` puts the post in a series: every post in it gets a "Part of the series" box (oldest first), and `/series/<slug>/` lists them. Give a new series a one-line `content/series/<slug>/_index.md` (title and description).
 - `specs:` with `device`, `os` and `tools` (any may be left out) shows a "Setup at a glance" box under the title: the hardware model, the OS or firmware version, the key software. Only facts the post itself states.
 - Posts with no series still get a "More like this" list of up to three posts that share a specific tag (generic tags such as `home-lab` are ignored: see `layouts/partials/related.html`).
 - Every markdown image is a link to the full-size file, and a script in `layouts/partials/extend_footer.html` opens it in an overlay (Esc or a click outside closes it; on a phone it opens at full size and scrolls). Keep figures at the resolution a reader would need; there is no resizing.
-- The feed is `/index.xml`; it is linked from the menu, the footer and the home page icons.
+- The feed is `/index.xml`; it is linked from the footer, the home page icons and the last line of `/stack/`. A page with `hiddenInRss: true` stays out of it (About and How I work are in it; Stack isn't).
+- The menu holds five items (Posts, Stack, Search, About, How I work) so it fits one line on a phone. The archive, series, tags and feed are linked from the last line of `/stack/`.
 
 ## Publish workflow
 
@@ -118,7 +121,6 @@ Good tone examples:
 ## Known TODOs
 
 - **Mermaid dark/light toggle**: diagram doesn't re-render when toggling theme after page load. MutationObserver is wired but not working — likely a timing or SVG restore issue. Low priority.
-- **Archive nav link**: hidden until more posts exist. Re-add by uncommenting the `[[menu.main]]` block in `hugo.toml`.
 
 ## Preview locally
 

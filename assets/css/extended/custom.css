@@ -85,3 +85,11 @@ html.lightbox-open { overflow: hidden; }
 
 /* Tall portrait figures (phone/watch screenshots): add #portrait to the image path to keep them from filling the column. */
 .post-content img[src$="#portrait"] { max-width: min(340px, 100%); display: block; margin-left: auto; margin-right: auto; }
+
+/* Search is the last menu item, drawn as a magnifier. The word stays in the link for screen readers, and the link's title still says Search (Alt + /). */
+#menu a[href$="/search/"] span {
+    display: inline-block; width: 18px; height: 18px; vertical-align: -3px;
+    overflow: hidden; text-indent: 100%; white-space: nowrap; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m20 20-4.9-4.9'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m20 20-4.9-4.9'/%3E%3C/svg%3E") center / contain no-repeat;
+}

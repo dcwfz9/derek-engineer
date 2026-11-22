@@ -1,8 +1,0 @@
-{{- /* A post named in data/stack.yaml -> its page. A name with no file under content/posts fails the build; a draft or future post that isn't being built gives nil. */ -}}
-{{- $p := site.GetPage (printf "/posts/%s" .) -}}
-{{- if not $p -}}
-  {{- if not (or (fileExists (printf "content/posts/%s.md" .)) (fileExists (printf "content/posts/%s/index.md" .))) -}}
-    {{- errorf "data/stack.yaml names %q, but content/posts has no such post" . -}}
-  {{- end -}}
-{{- end -}}
-{{- return $p -}}

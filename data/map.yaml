@@ -1,4 +1,4 @@
-# The /stack/ page (layouts/_default/stack.html) and the home page's "Start here" box
+# The /map/ page (layouts/_default/map.html) and the home page's "Start here" box
 # (layouts/partials/start-here.html) are built from this file.
 # A post is named by its folder or file name under content/posts (its URL slug).
 # Every published post goes in at least one system: the build warns about a post that isn't,

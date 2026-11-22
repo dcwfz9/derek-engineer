@@ -1,6 +1,6 @@
-{{- /* The system diagram on /stack/, drawn from data/stack.yaml: the lines, then the blocks over their ends, then the labels. */ -}}
+{{- /* The system diagram on /map/, drawn from data/map.yaml: the lines, then the blocks over their ends, then the labels. */ -}}
 {{- $d := . -}}
-<svg class="stack-map" viewBox="0 0 360 {{ $d.diagram_height }}" role="group" aria-label="The systems in my apartment and how they connect">
+<svg class="map-diagram" viewBox="0 0 360 {{ $d.diagram_height }}" role="group" aria-label="The systems in my apartment and how they connect">
   {{- range $d.links }}
   <line x1="{{ .x }}" y1="{{ .from }}" x2="{{ .x }}" y2="{{ .to }}"/>
   {{- end }}
@@ -8,12 +8,12 @@
   {{- $s := . }}
   {{- with .box }}
   {{- $x := index . 0 }}{{ $y := index . 1 }}
-  <a class="stack-block" href="#{{ $s.id }}">
+  <a class="map-block" href="#{{ $s.id }}">
     <title>{{ $s.name }}: {{ len $s.posts }} posts</title>
     <rect x="{{ $x }}" y="{{ $y }}" width="{{ index . 2 }}" height="{{ index . 3 }}" rx="8"/>
-    <text class="stack-name" x="{{ add $x 12 }}" y="{{ add $y 23 }}">{{ $s.name }}</text>
+    <text class="map-name" x="{{ add $x 12 }}" y="{{ add $y 23 }}">{{ $s.name }}</text>
     {{- range $i, $t := $s.short }}
-    <text class="stack-short" x="{{ add $x 12 }}" y="{{ add $y 42 (mul $i 18) }}">{{ $t }}</text>
+    <text class="map-short" x="{{ add $x 12 }}" y="{{ add $y 42 (mul $i 18) }}">{{ $t }}</text>
     {{- end }}
   </a>
   {{- end }}
@@ -22,8 +22,8 @@
   {{- $l := . }}
   {{- /* Pill width from the label: about 6.6 units a character at 13px, 2.1 more for a capital or digit, 10 of padding a side. */}}
   {{- $w := div (add (mul (len $l.label) 66) (mul (len (replaceRE "[^A-Z0-9]" "" $l.label)) 21) 200) 10 }}
-  {{- with partial "stack-page.html" $l.post }}
-  <a class="stack-chip" href="{{ .RelPermalink }}">
+  {{- with partial "map-page.html" $l.post }}
+  <a class="map-chip" href="{{ .RelPermalink }}">
     <title>{{ .Title }}</title>
     <rect class="hit" x="{{ sub $l.x (div $w 2) }}" y="{{ sub $l.at 20 }}" width="{{ $w }}" height="40"/>
     <rect class="pill" x="{{ sub $l.x (div $w 2) }}" y="{{ sub $l.at 13 }}" width="{{ $w }}" height="26" rx="13"/>

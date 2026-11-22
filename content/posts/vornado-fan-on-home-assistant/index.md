@@ -3,6 +3,7 @@ title: "The Vornado EOS 9 on Home Assistant"
 date: 2026-10-11
 draft: false
 tags: ["home-assistant", "esp32", "cc1101", "openmqttgateway", "mqtt", "rf", "flipper-zero", "hardware-in-the-loop"]
+series: ["Vornado EOS 9"]
 specs:
   device: "Waveshare ESP32-S3-ETH with a 433 MHz CC1101 module; Vornado EOS 9 fan"
   os: "OpenMQTTGateway built from source with local changes; Home Assistant 2026.7"

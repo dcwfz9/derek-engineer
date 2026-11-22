@@ -1,4 +1,6 @@
-baseURL = "https://derek.engineer/"
+# www, not the bare name: Netlify serves www as the primary domain and 301s derek.engineer to it
+# (its docs recommend www when DNS is outside Netlify). Canonical links, the sitemap and the feed follow this.
+baseURL = "https://www.derek.engineer/"
 languageCode = "en-us"
 title = "derek.engineer"
 theme = "PaperMod"
@@ -44,23 +46,23 @@ enableRobotsTXT = true
     text = "[RSS feed](/index.xml)"
 
 [menu]
-  # Five items so the menu fits one line on a phone. The archive, series, tags and RSS are linked
-  # from the last line of /stack/ (RSS also from the footer and the home page icons).
+  # Five items so the menu fits one line on a phone; Search is last and shows as a magnifier (custom.css).
+  # The archive, series, tags and RSS are linked from the last line of /map/ (RSS also from the footer and the home page icons).
   [[menu.main]]
     identifier = "posts"
     name = "Posts"
     url = "/posts/"
     weight = 10
   [[menu.main]]
-    identifier = "stack"
-    name = "Stack"
-    url = "/stack/"
+    identifier = "map"
+    name = "Map"
+    url = "/map/"
     weight = 15
   [[menu.main]]
     identifier = "search"
     name = "Search"
     url = "/search/"
-    weight = 19
+    weight = 30
   [[menu.main]]
     identifier = "about"
     name = "About"

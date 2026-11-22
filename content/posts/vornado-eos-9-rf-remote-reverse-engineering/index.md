@@ -3,6 +3,7 @@ title: "Reverse-Engineering the Vornado EOS 9's RF Remote"
 date: 2026-08-04
 draft: false
 tags: ["rf", "hardware", "home-lab", "python", "hardware-in-the-loop"]
+series: ["Vornado EOS 9"]
 specs:
   device: "Vornado EOS 9 fan with a 433.9 MHz RF remote; Flipper Zero; RTL-SDR Blog V4"
   tools: "The Flipper's SubGHz analyzer, RTL-SDR with the vendor's librtlsdr fork (the V4 needs it), Python scripts for the capture analysis"

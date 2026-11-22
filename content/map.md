@@ -1,6 +1,6 @@
 ---
-title: "Stack"
-layout: "stack"
+title: "Map"
+layout: "map"
 description: "The systems in my apartment, how they connect, and every post filed under the system it touches."
 hiddenInRss: true
 ---

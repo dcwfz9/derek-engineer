@@ -1,0 +1,14 @@
+{{- /* Home page box under the intro: the posts listed under start in data/map.yaml, then a link to /map/. */ -}}
+{{- with hugo.Data.map.start }}
+<aside class="start-here" aria-label="Start here">
+  <div class="start-here-head">Start here</div>
+  <ul>
+    {{- range . }}
+    {{- with partial "map-page.html" . }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{- end }}
+    {{- end }}
+  </ul>
+  <div class="start-here-foot">Everything by system: <a href="{{ "map/" | relURL }}">the map</a></div>
+</aside>
+{{- end }}

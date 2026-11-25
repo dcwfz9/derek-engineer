@@ -3,7 +3,7 @@ title: "What Limits Local AI Speed on an Arduino, a Raspberry Pi and a Mac Mini"
 date: 2026-10-09
 draft: false
 tags: ["llm", "benchmarking", "raspberry-pi", "arduino", "claude-code", "hardware-in-the-loop"]
-description: "Two weeks of measurements on an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini M4, backed by real data: what limits how fast a small language model runs, where the usual rules hold and where they break, and what a token costs in energy."
+description: "Two weeks of measurements on an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini M4: what limits how fast a small language model runs, and what a token costs in energy."
 ---
 
 I wanted to know what actually limits how fast a small language model runs, and I wanted numbers I could trust. The usual answer is two rules: memory capacity decides which model fits, and memory bandwidth decides how fast it writes. I spent two weeks testing how far that goes on the three devices I had: an Arduino UNO Q, a Raspberry Pi 5 and a Mac mini with an M4, each writing one answer at a time (single-stream decoding; batching has its own section). Claude Code wrote the harness and ran most of the measurements. I'm a systems electrical engineer, not an ML person, so I wanted a method that rests on real data.

@@ -7,7 +7,7 @@ specs:
   device: "IKEA VINDRIKTNING (Cubic PM1006 inside), AI-Thinker ESP-12F, TI LM1117T-3.3"
   os: "ESPHome 2026.10.2"
   tools: "esptool, a multimeter, Home Assistant, Claude Code"
-description: "Getting an IKEA VINDRIKTNING air quality sensor onto Wi-Fi with parts I already had."
+description: "An ESP8266 from a college project, a 3.3V regulator and two resistors put IKEA's discontinued VINDRIKTNING on Home Assistant, while the IKEA keeps working as before."
 ---
 
 I already had a temperature and humidity sensor in Home Assistant, and I wanted particulates too.

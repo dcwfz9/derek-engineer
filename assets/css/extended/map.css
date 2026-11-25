@@ -1,0 +1,28 @@
+/* /map/: the system diagram and the index under it (layouts/_default/map.html, data/map.yaml).
+   The diagram is drawn 360 units wide, so on a 360px phone 13 units of text show at about 12px. */
+.map-figure { margin: 0 0 2rem; }
+.map-diagram { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+.map-diagram line { stroke: var(--secondary); stroke-width: 1.25; }
+.map-block rect { fill: var(--code-bg); stroke: var(--tertiary); }
+.map-name { fill: var(--primary); font-size: 15px; font-weight: 600; }
+.map-short { fill: var(--secondary); font-size: 13px; }
+.map-chip .hit { fill: transparent; }
+.map-chip .pill { fill: var(--tertiary); }
+.map-chip text { fill: var(--primary); font-size: 13px; text-anchor: middle; dominant-baseline: central; }
+@media (hover: hover) {
+    .map-block:hover rect { stroke: var(--secondary); }
+    .map-chip:hover .pill { fill: var(--secondary); }
+    .map-chip:hover text { fill: var(--theme); }
+}
+.map-block:focus-visible rect, .map-chip:focus-visible .pill { stroke: var(--primary); stroke-width: 2; }
+.md-content .map-diagram a { text-decoration: none; }
+.md-content .map-figure > figcaption { margin: 0.6rem 0 0; text-align: center; font-size: 0.85rem; font-weight: normal; color: var(--secondary); }
+
+.map-system { margin-bottom: 1.75rem; }
+.post-content .map-system h2 { margin: 0 0 0.2rem; font-size: 1.35rem; }
+.post-content .map-parts { margin: 0 0 0.7rem; font-size: 0.9rem; color: var(--secondary); }
+.post-content .map-posts { margin: 0; padding: 0; list-style: none; }
+.post-content .map-posts li { margin: 0 0 0.85rem; }
+.map-meta { margin-left: 0.5rem; font-size: 0.82rem; color: var(--secondary); white-space: nowrap; }
+.post-content .map-posts p { margin: 0.15rem 0 0; font-size: 0.9rem; line-height: 1.5; color: var(--secondary); }
+.post-content .map-other { margin-top: 2rem; font-size: 0.92rem; color: var(--secondary); }

@@ -1,0 +1,58 @@
+{{- define "main" }}
+{{- $d := hugo.Data.map }}
+<article class="post-single map">
+  <header class="post-header">
+    <h1 class="post-title">{{ .Title }}</h1>
+    {{- with .Description }}
+    <div class="post-description">{{ . }}</div>
+    {{- end }}
+  </header>
+  <div class="post-content md-content">
+    {{- .Content }}
+    <figure class="map-figure">
+      {{- partial "map-diagram.html" $d }}
+      <figcaption>A block jumps to its posts below. A label on a line opens the post behind that connection.</figcaption>
+    </figure>
+    {{- range $d.systems }}
+    <section class="map-system" id="{{ .id }}">
+      <h2>{{ .name }}</h2>
+      {{- with .parts }}
+      <p class="map-parts">{{ . }}</p>
+      {{- end }}
+      {{- $pages := slice }}
+      {{- range .posts }}{{ with partial "map-page.html" . }}{{ $pages = $pages | append . }}{{ end }}{{ end }}
+      <ul class="map-posts">
+        {{- range sort $pages "Date" }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a><span class="map-meta">{{ .Date | time.Format "Jan 2006" }} · {{ .ReadingTime }} min</span>
+          {{- with .Description }}
+          <p>{{ . }}</p>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+    </section>
+    {{- end }}
+    {{- $placed := slice }}
+    {{- range $d.systems }}{{ range .posts }}{{ $placed = $placed | append . }}{{ end }}{{ end }}
+    {{- $unplaced := slice }}
+    {{- range where site.RegularPages "Section" "posts" }}
+    {{- if not (in $placed .File.ContentBaseName) }}
+    {{- warnf "/map/: %q is published but not in data/map.yaml" .File.ContentBaseName }}
+    {{- $unplaced = $unplaced | append . }}
+    {{- end }}
+    {{- end }}
+    {{- with $unplaced }}
+    <section class="map-system" id="not-placed">
+      <h2>Not placed yet</h2>
+      <ul class="map-posts">
+        {{- range . }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{- end }}
+      </ul>
+    </section>
+    {{- end }}
+    <p class="map-other">Other ways in: every post by month in the <a href="{{ "archive/" | relURL }}">archive</a>, plus <a href="{{ "series/" | relURL }}">series</a>, <a href="{{ "tags/" | relURL }}">tags</a>, <a href="{{ "search/" | relURL }}">search</a> and the <a href="{{ "index.xml" | relURL }}">RSS feed</a>.</p>
+  </div>
+</article>
+{{- end }}{{/* end main */}}

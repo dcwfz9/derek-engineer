@@ -1,4 +1,6 @@
-baseURL = "https://derek.engineer/"
+# www, not the bare name: Netlify serves www as the primary domain and 301s derek.engineer to it
+# (its docs recommend www when DNS is outside Netlify). Canonical links, the sitemap and the feed follow this.
+baseURL = "https://www.derek.engineer/"
 languageCode = "en-us"
 title = "derek.engineer"
 theme = "PaperMod"
@@ -34,6 +36,9 @@ enableRobotsTXT = true
     name = "github"
     url = "https://github.com/dcwfz9"
   [[params.socialIcons]]
+    name = "email"
+    url = "mailto:derek@derekwelty.com"
+  [[params.socialIcons]]
     name = "rss"
     url = "/index.xml"
 
@@ -41,32 +46,23 @@ enableRobotsTXT = true
     text = "[RSS feed](/index.xml)"
 
 [menu]
+  # Five items so the menu fits one line on a phone; Search is last and shows as a magnifier (custom.css).
+  # The archive, series, tags and RSS are linked from the last line of /map/ (RSS also from the footer and the home page icons).
   [[menu.main]]
     identifier = "posts"
     name = "Posts"
     url = "/posts/"
     weight = 10
-  # archive hidden until more posts — re-add when ready
-  # [[menu.main]]
-  #   identifier = "archive"
-  #   name = "Archive"
-  #   url = "/archive/"
-  #   weight = 15
-[[menu.main]]
-    identifier = "series"
-    name = "Series"
-    url = "/series/"
-    weight = 17
   [[menu.main]]
-    identifier = "tags"
-    name = "Tags"
-    url = "/tags/"
-    weight = 18
+    identifier = "map"
+    name = "Map"
+    url = "/map/"
+    weight = 15
   [[menu.main]]
     identifier = "search"
     name = "Search"
     url = "/search/"
-    weight = 19
+    weight = 30
   [[menu.main]]
     identifier = "about"
     name = "About"
@@ -77,8 +73,3 @@ enableRobotsTXT = true
     name = "How I work"
     url = "/how-i-work/"
     weight = 21
-  [[menu.main]]
-    identifier = "rss"
-    name = "RSS"
-    url = "/index.xml"
-    weight = 22
